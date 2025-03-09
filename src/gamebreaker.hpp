@@ -32,6 +32,7 @@ typedef struct GBMusic {
     int type;
     double x, y;
     double pan;
+    std::string tag[4];
 } GBMusic;
 
 typedef struct GBSprite {
@@ -91,9 +92,9 @@ public:
             SDL_DestroyTexture(this->tex);
 
 #ifdef __PSP__
-        this->surf = TTF_RenderUTF8_Blended(m_font->font, this->txt.c_str(), _realcol_);
+        this->surf = TTF_RenderUTF8_Blended(m_font->font, this->txt.c_str(), m_col);
 #else
-        this->surf = TTF_RenderUTF8_Solid(m_font->font, this->txt.c_str(), _realcol_);
+        this->surf = TTF_RenderUTF8_Solid(m_font->font, this->txt.c_str(), m_col);
 #endif
         this->tex = SDL_CreateTextureFromSurface(gb_win->ren, this->surf);
         //if(this->tex==nullptr or this->surf->w==0 or this->surf->h==0) exit(0x000010);
@@ -101,6 +102,7 @@ public:
         return *this;
     }
 
+    SDL_Color m_col {(SDL_Color){255,255,255,255}};
     std::string txt {};
     SDL_Surface* surf { nullptr };
     SDL_Texture* tex { nullptr };
@@ -186,7 +188,7 @@ public:
     static void set_vol(GBMusic* snd, double vol);
     static int get_wave(GBMusic* snd,int pos);
     static void destroy(GBMusic* snd);
-    static std::vector<std::string> get_tags(GBMusic *snd);
+    static void get_tags(GBMusic *snd);
 };
 
 class sound {

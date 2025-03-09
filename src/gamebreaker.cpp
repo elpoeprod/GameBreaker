@@ -8,6 +8,17 @@
 #include <dirent.h>
 #include <filesystem>
 
+std::string __error_string;
+
+void __error_write(std::string errstr)
+{
+    std::string tempf=SDL_GetBasePath();
+    var f=GameBreaker::fs::text::open((tempf+"/error.txt").c_str(),GameBreaker::fs::fmode::write);
+    GameBreaker::fs::text::write(f,errstr);
+    GameBreaker::fs::text::close(f);
+    __error_string=errstr;
+}
+
 int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius)
 {
     int offsetx, offsety, d;
@@ -151,7 +162,11 @@ int init(int x, int y, int w, int h, std::string label)
 #endif
     Mix_Init(mix_flags);
     IMG_Init(IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_AVIF | IMG_INIT_JXL | IMG_INIT_TIF);
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+    int hz=44100;
+    int channels=2;
+    Uint16 format=MIX_DEFAULT_FORMAT;
+    //Mix_QuerySpec(&hz,&format,&channels);
+    Mix_OpenAudio(hz, format, channels, 1024);
     gb_win = new GBWindow;
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
     gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, SDL_RENDERER_ACCELERATED);
@@ -386,31 +401,28 @@ ds_list fs::find::list(gb_str directory, gb_str filter, Uint32 mask)
  */
 GBMusic* music::add(std::string fname, int type)
 {
-    if (!fs::exists(fname)) {
-        graphics::message("FATAL ERROR", "At sound::add:\nFile doesn't exist: \"" + fname + "\".");
-        exit(0x0010010);
-        return nullptr;
-    }
-    GBMusic* snd = new GBMusic;
-    snd->pos = 0;
-    snd->vol = 1 * master_vol;
-    snd->type = type;
-    snd->x = 0;
-    snd->y = 0;
-    snd->pan = 0;
-    snd->chunk = Mix_LoadMUS(fname.c_str());
-    curmusic = snd;
-    return snd;
+    GBMusic* mus = new GBMusic;
+    mus->pos = 0;
+    mus->vol = 1 * master_vol;
+    mus->type = type;
+    mus->x = 0;
+    mus->y = 0;
+    mus->pan = 0;
+    mus->chunk = Mix_LoadMUS(fname.c_str());
+    if(mus->chunk==nullptr) __error_write("At function music::add:\nCan't load file with name "+fname);
+    mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
+    mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
+    mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
+    mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
+    curmusic = mus;
+    return mus;
 }
 
-std::vector<std::string> music::get_tags(GBMusic *mus) {
-    std::vector<std::string> m_tags;
-    m_tags.resize(4);
-    m_tags[0]=Mix_GetMusicArtistTag(mus->chunk);
-    m_tags[1]=Mix_GetMusicTitle(mus->chunk);
-    m_tags[2]=Mix_GetMusicAlbumTag(mus->chunk);
-    m_tags[3]=Mix_GetMusicCopyrightTag(mus->chunk);
-    return m_tags;
+void music::get_tags(GBMusic *mus) {
+    mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
+    mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
+    mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
+    mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
 }
 
 /**
