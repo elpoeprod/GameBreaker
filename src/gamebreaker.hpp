@@ -228,6 +228,7 @@ public:
         static void circle(int x, int y, int r, int outline);
         static void line(int x1, int y1, int x2, int y2);
         static void point(int x, int y);
+        static void alpha(float alpha);
         static void color(Uint32 color);
         static void color_rgb(Uint8 r,Uint8 g,Uint8 b);
         static void color_sdl(SDL_Color color);

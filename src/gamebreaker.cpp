@@ -102,7 +102,7 @@ int SDL_RenderFillCircle(SDL_Renderer* renderer, int x, int y, int radius)
     return status;
 }
 
-int mybut[3];
+int mybut[4]; //fucking warning i hate it
 int mylastbut[3];
 
 int myjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
@@ -308,6 +308,7 @@ GBFont* font::add(gb_str fname, int size)
     fn->size = size;
     gb_fonts.resize(gb_fonts.size() + 1);
     gb_fonts[gb_fonts.size() - 1] = fn;
+    TTF_SetFontHinting(fn->font,TTF_HINTING_NORMAL);
     return fn;
 }
 void font::destroy(GBFont* font)
@@ -644,6 +645,10 @@ void graphics::draw::text(float x, float y, GBText* text)
     SDL_FRect extrect = { x - (float)_gm_halign * text->surf->w, y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
     SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
     SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
+}
+
+void graphics::draw::alpha(float alpha) {
+    _realcol_.a=alpha;
 }
 
 /**
