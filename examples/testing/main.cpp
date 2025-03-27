@@ -5,20 +5,20 @@ namespace gm = GameBreaker;
 
 int main()
 {
-    gm::init(640, 480, 640, 480, "test");
-    GMSprite* spr = sprite::add("elpaudio.png", 1, 0, 0);
-    GMSound *sndMusic=sound::add("A.ogg",0);
-    GMObject *obj=object::add(spr,nullptr,50,50);
-    GMFont *fnt0=font::add("clacon2.ttf",14);
+    gb::init(640, 480, 640, 480, "test");
+    GBSprite* spr = sprite::add("elpaudio.png", 1, 0, 0);
+    GBSound *sndMusic=sound::add("A.ogg",0);
+    GBObject *obj=object::add(spr,nullptr,50,50);
+    GBFont *fnt0=font::add("clacon2.ttf",14);
 
-    gm::sound::loop(sndMusic,-1);
+    gb::sound::loop(sndMusic,-1);
 
     ds_list temp=file::find::list(".","*.ogg;*.png;",fa::fullpath);
-    gm::graphics::message("test",gm::list::get_string(temp,"\n"));
+    gb::graphics::message("test",gm::list::get_string(temp,"\n"));
 	draw::set_font(fnt0);
 	draw::color_sdl(col::lime);
     GMText *text=new GMText("Hello world");
-    while (gm::running()) {
+    while (gb::running()) {
         draw::color(0xFFFFFF);
         draw::rect(0, 0, 640, 480, 0);
         draw::sprite(obj->spr, 0, obj->x+math::lendir_x(60,SDL_GetTicks()), obj->y, 1 + 4 * mouse::holding(mb::left), 2, 0);
@@ -34,5 +34,5 @@ int main()
 
         screen::draw(60);
     }
-    gm::shutdown();
+    gb::shutdown();
 }
