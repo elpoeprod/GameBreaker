@@ -10,11 +10,24 @@
 #include <string>
 #include <vector>
 
+/***
+ define GB_DONT_USE_* to not use something. Available:
+    KEYB,
+    MOUSE,
+    JOY,
+    MUS,
+    SFX,
+
+ ***/
+
+#define repeat(a) if(a>0) for(int __rep_i=0;__rep_i<a;__rep_i++)
+
 namespace GameBreaker {
 typedef std::string gb_str;
 extern int current_time;
 extern SDL_Color _realcol_;
 
+#ifndef GB_DONT_USE_SFX
 typedef struct GBSound {
     Mix_Chunk* chunk;
     double vol;
@@ -24,7 +37,9 @@ typedef struct GBSound {
     double pan;
     int channel;
 } GBSound;
+#endif
 
+#ifndef GB_DONT_USE_MUSIC
 typedef struct GBMusic {
     Mix_Music* chunk;
     double vol;
@@ -34,6 +49,7 @@ typedef struct GBMusic {
     double pan;
     std::string tag[4];
 } GBMusic;
+#endif
 
 typedef struct GBSprite {
     int offx, offy;
@@ -131,7 +147,15 @@ public:
 class io {public:
     static void clear();
 };
+#ifndef GB_DONT_USE_KEYB
+class keyboard {public:
+    static int pressed(int key);
+    static int released(int key);
+    static int holding(int key);
+};
+#endif
 
+#ifndef GB_DONT_USE_JOY
 class joy {
 public:
     static int count();
@@ -165,6 +189,9 @@ public:
         max
     };
 };
+#endif
+
+
 class window {
 public:
     static void size(int w, int h);
@@ -177,6 +204,7 @@ public:
     static SDL_Renderer* get_renderer();
 };
 
+#ifndef GB_DONT_USE_MUSIC
 class music {
 public:
     static GBMusic* add(gb_str fname, int type);
@@ -190,7 +218,9 @@ public:
     static void destroy(GBMusic* snd);
     static void get_tags(GBMusic *snd);
 };
+#endif
 
+#ifndef GB_DONT_USE_SFX
 class sound {
 public:
     static GBSound* add(gb_str fname, int type);
@@ -203,6 +233,8 @@ public:
     static int get_wave(GBSound* snd,int pos);
     static void destroy(GBSound* snd);
 };
+#endif
+
 class color {
 public:
     static SDL_Color black, white, red, blue, green, lime,
@@ -257,7 +289,11 @@ struct __gblist {
 
 class list {
 public:
-    static gb_str get_string(std::vector<GameBreaker::__gblist> list, gb_str sep);
+    static gb_str get_string(std::vector<__gblist> list, gb_str sep);
+    class find {public:
+        static int pos(std::vector<__gblist> list, gb_str value);
+        static gb_str value(std::vector<__gblist>,int pos);
+    };
 };
 struct _gm_file {
     FILE *file;
@@ -357,6 +393,7 @@ typedef GameBreaker::color col;
 typedef GameBreaker::fs file;
 typedef GameBreaker::screen screen;
 typedef GameBreaker::joy joystick;
+typedef GameBreaker::keyboard keyboard;
 typedef GameBreaker::math math;
 typedef GameBreaker::object object;
 typedef GameBreaker::font font;

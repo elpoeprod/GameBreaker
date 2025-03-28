@@ -1,5 +1,6 @@
 #include "gamebreaker.hpp"
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_messagebox.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_mouse.h>
@@ -105,6 +106,10 @@ int SDL_RenderFillCircle(SDL_Renderer* renderer, int x, int y, int radius)
 int mybut[4]; //fucking warning i hate it
 int mylastbut[3];
 
+#include <map>
+std::map<std::string,int> mykey;
+std::map<std::string,int> mylastkey;
+
 int myjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
 int mylastjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
 int gb_working_joystick = -1;
@@ -202,6 +207,8 @@ void io::clear() {
             myjoybut[i][ii] = 0;
         }
     }
+    mykey.clear();
+    mylastkey.clear();
 }
 
 void update()
@@ -217,6 +224,7 @@ void update()
             myjoybut[i][ii] = SDL_GameControllerGetButton(controllers[i], (SDL_GameControllerButton)ii);
         }
     }
+    mylastkey=mykey;
 
     while (SDL_PollEvent(&gb_win->ev) != 0) {
         if (gb_win->ev.type == SDL_QUIT)
@@ -232,22 +240,41 @@ void update()
                 mybut[3] = gb_win->ev.button.type == SDL_MOUSEBUTTONDOWN;
                 break;
         }
+        switch(gb_win->ev.type) {
+            case SDL_KEYDOWN: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=1; break;
+            case SDL_KEYUP: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=0; break;
+        }
+
     }
     current_time=SDL_GetTicks();
     SDL_GetMouseState(&mouse::x, &mouse::y);
 }
 int running(void) { update(); return gb_win->running; }
 
+int keyboard::holding(int key) {return mykey[SDL_GetKeyName(key)]&&mylastkey[SDL_GetKeyName(key)];}
+int keyboard::pressed(int key) {return mykey[SDL_GetKeyName(key)]&&!mylastkey[SDL_GetKeyName(key)];}
+int keyboard::released(int key) {return !mykey[SDL_GetKeyName(key)]&&mylastkey[SDL_GetKeyName(key)];}
+
+
 /**
  * returns  string with all of the ds_list data separated with sep
  **/
-gb_str list::get_string(std::vector<__gblist> list, gb_str sep)
+gb_str list::get_string(ds_list list, gb_str sep)
 {
     gb_str tempstr;
     for (int i = 0; i < list.size(); i++) {
         tempstr += list[i].data + sep;
     }
     return tempstr;
+}
+gb_str list::find::value(ds_list list, int pos) {
+    return list[pos].data;
+}
+int list::find::pos(ds_list list, gb_str str) {
+    for(int i=0;i<list.size();i++) {
+        if(list[i].data==str) return i;
+    }
+    return -1;
 }
 
 /**
