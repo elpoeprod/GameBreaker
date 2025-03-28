@@ -7,6 +7,7 @@ GameMaker functions for C++ using SDL2
 - window manipulating functions
 - some useful math functions
 - can use 32 joysticks (0-31)
+- can use keyboard!
 - mouse/joystick functions
 - additional to that, you can clear them using GameBreaker::io::clear()
 - can draw circles
