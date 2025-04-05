@@ -1,7 +1,7 @@
 #define GB_USE_SMALL_FUNCNAMES
 #include "gamebreaker.hpp"
 
-namespace gm = GameBreaker;
+namespace gb = GameBreaker;
 
 int main()
 {
@@ -14,10 +14,10 @@ int main()
     gb::sound::loop(sndMusic,-1);
 
     ds_list temp=file::find::list(".","*.ogg;*.png;",fa::fullpath);
-    gb::graphics::message("test",gm::list::get_string(temp,"\n"));
+    gb::graphics::message("test",gb::list::get_string(temp,"\n"));
 	draw::set_font(fnt0);
 	draw::color_sdl(col::lime);
-    GMText *text=new GMText("Hello world");
+    GBText *text=new GBText("Hello world");
     while (gb::running()) {
         draw::color(0xFFFFFF);
         draw::rect(0, 0, 640, 480, 0);
@@ -30,7 +30,7 @@ int main()
         for(int i=0;i<256;i++) {
             draw::line(120+i*(360/256),400+sound::get_wave(sndMusic,i),12+(i+1)*(360/256),400+sound::get_wave(sndMusic,i));
         }
-        if(mouse::released(mb::left)&&mouse::x>500&&mouse::y>400) gm::graphics::message("Test","H...");
+        if(mouse::released(mb::left)&&mouse::x>500&&mouse::y>400) gb::graphics::message("Test","H...");
 
         screen::draw(60);
     }
