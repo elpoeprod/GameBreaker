@@ -22,6 +22,8 @@
 
 #define repeat(a) if(a>0) for(int __rep_i=0;__rep_i<a;__rep_i++)
 
+#define GB_WINPOS_CENTER SDL_WINDOWPOS_CENTERED
+
 namespace GameBreaker {
 typedef std::string gb_str;
 extern int current_time;
@@ -47,6 +49,7 @@ typedef struct GBMusic {
     int type;
     double x, y;
     double pan;
+    double len;
     std::string tag[4];
 } GBMusic;
 #endif
@@ -59,9 +62,10 @@ typedef struct GBSprite {
 } GBSprite;
 
 typedef struct GBObject {
-    double x, y,
-        xprevious, yprevious,
-        direction, gravity, gravity_direction;
+    double x, y;
+    double xprevious, yprevious;
+    double direction, gravity, gravity_direction,friction;
+    double spd,hspd,vspd;
     GBSprite *spr, *mask;
 } GBObject;
 
@@ -107,11 +111,7 @@ public:
         if (this->tex != nullptr)
             SDL_DestroyTexture(this->tex);
 
-#ifdef __PSP__
         this->surf = TTF_RenderUTF8_Blended(m_font->font, this->txt.c_str(), m_col);
-#else
-        this->surf = TTF_RenderUTF8_Solid(m_font->font, this->txt.c_str(), m_col);
-#endif
         this->tex = SDL_CreateTextureFromSurface(gb_win->ren, this->surf);
         //if(this->tex==nullptr or this->surf->w==0 or this->surf->h==0) exit(0x000010);
 
@@ -135,13 +135,15 @@ extern void shutdown();
 
 class font {
 public:
-    static GBFont* add(gb_str fname, int size);
+    static GBFont* add(gb_str fname, int size, int bold, int italic);
     static void destroy(GBFont* font);
+    static void option(Uint32 style_flags);
 };
 
 class object {
 public:
     static GBObject* add(GBSprite* spr, GBSprite* mask, double x, double y);
+    static void destroy(GBObject* obj);
 };
 
 class io {public:
@@ -191,7 +193,6 @@ public:
 };
 #endif
 
-
 class window {
 public:
     static void size(int w, int h);
@@ -200,6 +201,7 @@ public:
     static int get_y();
     static int get_width();
     static int get_height();
+    static void set_icon(gb_str ico);
     static SDL_Point get_size();
     static SDL_Renderer* get_renderer();
 };
@@ -211,12 +213,15 @@ public:
     static void set_pos(GBMusic* snd, double pos);
     static void play(GBMusic* snd);
     static void loop(GBMusic* snd, int loops);
-    static void pause(GBMusic* snd);
+    static void pause();
+    static void resume();
     static void stop(GBMusic* snd);
     static void set_vol(GBMusic* snd, double vol);
     static int get_wave(GBMusic* snd,int pos);
     static void destroy(GBMusic* snd);
     static void get_tags(GBMusic *snd);
+    static double get_pos(GBMusic *snd);
+    static double get_len(GBMusic *snd);
 };
 #endif
 
@@ -248,8 +253,7 @@ public:
         static GBSprite* add(gb_str fname, int frames, int offx, int offy);
         static int get_offset_x(GBSprite* spr);
         static int get_offset_y(GBSprite* spr);
-        static void set_offset_x(GBSprite* spr, int x);
-        static void set_offset_y(GBSprite* spr, int y);
+        static void set_offset(GBSprite* spr, int x, int y);
         static void destroy(GBSprite* spr);
     };
     class draw {
@@ -267,7 +271,9 @@ public:
         static SDL_Color color_get();
         static void blendmode(SDL_BlendMode mode);
         static void sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot);
+        static void sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot);
         static void sprite_ext(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot, SDL_Color col);
+        static int button(int x, int y, int w, int h, GBSprite *spr, int types);
         static void text(float x, float y, GBText* text);
         static void set_font(GBFont *fnt);
         static void set_text_align(double halign, double valign);
@@ -277,6 +283,7 @@ public:
 class screen {
 public:
     static void draw(double fps);
+    static void end();
 };
 enum type {
     real = 0,
@@ -320,6 +327,7 @@ public:
     class find {
     public:
         static std::vector<__gblist> list(gb_str directory, gb_str filter, Uint32 mask);
+        static std::vector<__gblist> list_ext(gb_str directory, std::vector<std::string> filter, Uint32 mask);
     };
     class text {public:
         static int open(gb_str fname,int mode);
@@ -327,6 +335,7 @@ public:
         static void close(int file);
     };
     static gb_str path_parent(gb_str path);
+    static gb_str path(gb_str fname);
 };
 
 class d3d {
@@ -347,6 +356,7 @@ public:
     static int pressed(mb mouse_button);
     static int released(mb mouse_button);
     static int holding(mb mouse_button);
+    static int nothing(mb mouse_button);
     static int x, y;
 };
 class math {

@@ -1,4 +1,5 @@
 #include "gamebreaker.hpp"
+#include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_messagebox.h>
@@ -8,6 +9,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <filesystem>
+
+#ifndef GB_DEFAULT_SAMPLESIZE
+#define GB_DEFAULT_SAMPLESIZE 1024
+#endif
 
 std::string __error_string;
 
@@ -104,7 +109,7 @@ int SDL_RenderFillCircle(SDL_Renderer* renderer, int x, int y, int radius)
 }
 
 int mybut[4]; //fucking warning i hate it
-int mylastbut[3];
+int mylastbut[4];
 
 #include <map>
 std::map<std::string,int> mykey;
@@ -157,6 +162,10 @@ int joy::holding(int joy, int button) { return myjoybut[joy][button] && mylastjo
 int mouse::x = 0;
 int mouse::y = 0;
 
+Uint32 fps_lasttime = SDL_GetTicks();
+Uint32 fps_current;
+Uint32 fps_frames = 0;
+
 int init(int x, int y, int w, int h, std::string label)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -171,7 +180,7 @@ int init(int x, int y, int w, int h, std::string label)
     int channels=2;
     Uint16 format=MIX_DEFAULT_FORMAT;
     //Mix_QuerySpec(&hz,&format,&channels);
-    Mix_OpenAudio(hz, format, channels, 1024);
+    Mix_OpenAudio(hz, format, channels, GB_DEFAULT_SAMPLESIZE);
     gb_win = new GBWindow;
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
     gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, SDL_RENDERER_ACCELERATED);
@@ -197,6 +206,14 @@ int init(int x, int y, int w, int h, std::string label)
     return 1;
 }
 
+
+void window::set_icon(gb_str ico) {
+    SDL_Surface *temp=IMG_Load(ico.c_str());
+    SDL_SetWindowIcon(gb_win->win,temp);
+    SDL_FreeSurface(temp);
+}
+
+
 void io::clear() {
     for (int i = 0; i < 3; i++) {
         mylastbut[i] = 0;
@@ -210,6 +227,10 @@ void io::clear() {
     mykey.clear();
     mylastkey.clear();
 }
+
+int keyboard::holding(int key) {return mykey[SDL_GetKeyName(key)]&&mylastkey[SDL_GetKeyName(key)];}
+int keyboard::pressed(int key) {return mykey[SDL_GetKeyName(key)]&&!mylastkey[SDL_GetKeyName(key)];}
+int keyboard::released(int key) {return !mykey[SDL_GetKeyName(key)]&&mylastkey[SDL_GetKeyName(key)];}
 
 void update()
 {
@@ -248,13 +269,62 @@ void update()
     }
     current_time=SDL_GetTicks();
     SDL_GetMouseState(&mouse::x, &mouse::y);
+#ifdef GB_GAME_END_ON_ESC
+    if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0;
+#endif
+    /*int i=0;
+    repeat(gb_objects.size()) {
+        (*gb_objects[i])->hspd=math::lendir_x((*gb_objects[i])->spd,(*gb_objects[i])->direction);
+        (*gb_objects[i])->vspd=math::lendir_y((*gb_objects[i])->spd,(*gb_objects[i])->direction);
+        (*gb_objects[i])->x+=(*gb_objects[i])->hspd;
+        (*gb_objects[i])->y+=(*gb_objects[i])->vspd;
+        if((*gb_objects[i])->spd>0)
+            (*gb_objects[i])->spd-=(*gb_objects[i])->friction;
+        else {
+            if((*gb_objects[i])->spd<0)
+                (*gb_objects[i])->spd+=(*gb_objects[i])->friction;
+            else (*gb_objects[i])->spd=0;
+        }
+        i++;
+    }*/
+
+    fps_frames++;
+    if (fps_lasttime < current_time - 1.0*1000) //1.0 is one second; update 1 second
+    {
+        fps_lasttime = current_time;
+        fps_current = fps_frames;
+        fps_frames = 0;
+    }
 }
 int running(void) { update(); return gb_win->running; }
 
-int keyboard::holding(int key) {return mykey[SDL_GetKeyName(key)]&&mylastkey[SDL_GetKeyName(key)];}
-int keyboard::pressed(int key) {return mykey[SDL_GetKeyName(key)]&&!mylastkey[SDL_GetKeyName(key)];}
-int keyboard::released(int key) {return !mykey[SDL_GetKeyName(key)]&&mylastkey[SDL_GetKeyName(key)];}
 
+/**
+ * returns new object
+ * \sa spr - sprite, can be passed as nullptr
+ * \sa mask - mask of the object, if passed as nullptr, the mask will be the same as the sprite
+ * \sa x, y - coordinates of the object
+ **/
+GBObject* object::add(GBSprite* spr, GBSprite* mask, double x, double y)
+{
+    GBObject* obj=new GBObject;
+        obj->x=x;
+        obj->y=y;
+        obj->xprevious=x;
+        obj->yprevious=y;
+        obj->direction=0;
+        obj->gravity=0;
+        obj->gravity_direction=270;
+        obj->friction=0;
+        obj->spd=0;
+        obj->hspd=0;
+        obj->vspd=0;
+        obj->spr=spr;
+        obj->mask=mask!=nullptr?mask:spr;
+    gb_objects.resize(gb_objects.size() + 1);
+    gb_objects[gb_objects.size() - 1] = obj;
+    return obj;
+}
 
 /**
  * returns  string with all of the ds_list data separated with sep
@@ -328,14 +398,22 @@ void screen::draw(double fps)
     SDL_Delay(1000.f / fps);
 }
 
-GBFont* font::add(gb_str fname, int size)
+int graphics::draw::button(int x, int y, int w, int h, GBSprite *spr, int types) {
+    int inrect=math::point_in_rect(mouse::x,mouse::y,x,y,x+w,y+h);
+    int press=mouse::holding(mb::left);
+    graphics::draw::sprite(spr,(types==3)?inrect+press:inrect and press,x,y,w/(spr->w/spr->frames),h/(spr->h),0);
+    return inrect and mouse::released(mb::left);
+}
+
+GBFont* font::add(gb_str fname, int size, int bold, int italic)
 {
     GBFont* fn = new GBFont;
     fn->font = TTF_OpenFont(fname.c_str(), size);
     fn->size = size;
     gb_fonts.resize(gb_fonts.size() + 1);
     gb_fonts[gb_fonts.size() - 1] = fn;
-    TTF_SetFontHinting(fn->font,TTF_HINTING_NORMAL);
+    TTF_SetFontHinting(fn->font,TTF_HINTING_LIGHT_SUBPIXEL);
+    TTF_SetFontStyle(fn->font,bold?TTF_STYLE_BOLD:italic?TTF_STYLE_ITALIC:TTF_STYLE_NORMAL);
     return fn;
 }
 void font::destroy(GBFont* font)
@@ -345,10 +423,25 @@ void font::destroy(GBFont* font)
     delete font;
 }
 
+void object::destroy(GBObject* obj) {
+    obj->direction=0;
+    obj->gravity_direction=0;
+    obj->friction=0;
+    obj->gravity=0;
+    obj->hspd=0;
+    obj->mask=nullptr;
+    obj->spd=0;
+    obj->vspd=0;
+    obj->spr=nullptr;
+    obj->x=0;
+    obj->y=0;
+    delete obj;
+}
+
 void shutdown()
 {
     for (int i = 0; i < gb_objects.size(); i++) {
-        delete[] gb_objects[i];
+        object::destroy(gb_objects[i]);
     }
     for (int i = 0; i < gb_sprites.size(); i++) {
         graphics::sprite::destroy(gb_sprites[i]);
@@ -394,19 +487,16 @@ ds_list fs::find::list(gb_str directory, gb_str filter, Uint32 mask)
     struct dirent* d = nullptr;
     DIR* dir = opendir(directory.c_str());
 
-    char* mytempdir = (char*)malloc(2 * sizeof(char));
-    directory.copy(mytempdir, 1, directory.length() - 1);
-    std::string mynewdir = mytempdir;
-    delete[] mytempdir;
-
-    if (mynewdir.compare("/") != 0)
+    std::string mynewdir=directory;
+    if (strcasecmp(&mynewdir[mynewdir.length()-1],"/")!=0)
         mynewdir = directory + "/";
 
     while ((d = readdir(dir)) != nullptr) {
         std::filesystem::path temp = d->d_name;
+        std::string temptemp=temp.extension();
         if(temp.compare(".") != 0 && temp.compare("..") != 0) {
             if((d->d_type==DT_REG&&!i_dir)) {
-                if(directory.find_last_of(filter)!=std::string::npos) {
+                if(temptemp.find(filter)!=std::string::npos) {
                     list.resize(list.size()+1);
                     list[list.size()-1].type=d->d_type;
                     list[list.size()-1].data=i_path ? mynewdir+d->d_name : d->d_name;
@@ -424,6 +514,52 @@ ds_list fs::find::list(gb_str directory, gb_str filter, Uint32 mask)
     return list;
 }
 
+ds_list fs::find::list_ext(gb_str directory, std::vector<std::string> filter, Uint32 mask)
+{
+    ds_list list;
+
+    int i_path=mask&fa::fullpath,
+    i_dir=mask&fa::dir,
+    i_hidden=mask&fa::hidden,
+    i_sysfile=mask&fa::sysfile;
+
+    struct dirent* d = nullptr;
+    DIR* dir = opendir(directory.c_str());
+
+    std::string mynewdir=directory;
+    if (strcasecmp(&mynewdir[mynewdir.length()-1],"/")!=0)
+        mynewdir = directory + "/";
+
+    while ((d = readdir(dir)) != nullptr) {
+        std::filesystem::path temp = d->d_name;
+        std::string temptemp=temp.extension();
+        if(temp.compare(".") != 0 && temp.compare("..") != 0) {
+            if((d->d_type==DT_REG&&!i_dir)) {
+                for(int i=0;i<filter.size();i++) {
+                    if(temptemp.find(filter[i])!=std::string::npos) {
+                        list.resize(list.size()+1);
+                        list[list.size()-1].type=d->d_type;
+                        list[list.size()-1].data=i_path ? mynewdir+d->d_name : d->d_name;
+                        break;
+                    }
+                }
+            }
+            if(d->d_type==DT_DIR&&i_dir) {
+                list.resize(list.size()+1);
+                list[list.size()-1].type=d->d_type;
+                list[list.size()-1].data=i_path ? mynewdir+d->d_name : d->d_name;
+            }
+        }
+    }
+    closedir(dir);
+    delete[] d;
+    return list;
+}
+
+gb_str fs::path(gb_str fname) {
+    return fname.substr(0,fname.find_last_of("/\\"))+"/";
+}
+
 /**
  * returns new sound that was added from fname and type (unused)
  */
@@ -437,6 +573,7 @@ GBMusic* music::add(std::string fname, int type)
     mus->y = 0;
     mus->pan = 0;
     mus->chunk = Mix_LoadMUS(fname.c_str());
+    mus->len=-1;
     if(mus->chunk==nullptr) __error_write("At function music::add:\nCan't load file with name "+fname);
     mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
     mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
@@ -467,18 +604,19 @@ void music::set_pos(GBMusic* snd, double pos)
  * play sound
  * \sa snd - sound
  **/
-void music::play(GBMusic* snd) { Mix_PlayMusic(snd->chunk, 0); }
+void music::play(GBMusic* snd) { Mix_PlayMusic(snd->chunk, 0); snd->len=Mix_MusicDuration(snd->chunk);}
 /**
  * play sound looped
  * \sa snd - sound
  * \sa loops - how many times the sound should be repeated
  **/
-void music::loop(GBMusic* snd, int loops) { Mix_PlayMusic(snd->chunk, loops); }
+void music::loop(GBMusic* snd, int loops) { Mix_PlayMusic(snd->chunk, loops); snd->len=Mix_MusicDuration(snd->chunk);}
 /**
  * pauses the sound
  * \sa snd - sound
  **/
-void music::pause(GBMusic* snd) { Mix_PauseMusic(); }
+void music::pause() { Mix_PauseMusic(); }
+void music::resume() {Mix_ResumeMusic();}
 /**
  * stops the sound entirely
  * \sa snd - sound
@@ -489,7 +627,13 @@ void music::stop(GBMusic* snd) { Mix_HaltMusic(); }
  * \sa snd - sound
  * \sa vol - volume
  **/
-void music::set_vol(GBMusic* snd, double vol) { Mix_VolumeMusic(vol * 128); }
+void music::set_vol(GBMusic* snd, double vol) {
+#ifdef GB_USE_GM_VOLUME
+    Mix_VolumeMusic(vol * 128); }
+#else
+    Mix_VolumeMusic(vol);
+#endif
+}
 /**
  * destroy sound if it will not be used anymore
  * \sa snd - sound
@@ -504,6 +648,19 @@ void music::destroy(GBMusic* snd)
     snd->type = 0;
     snd->vol = 0;
     delete snd;
+}
+
+double music::get_pos(GBMusic *mus) {
+    if(mus->chunk==nullptr) return 0;
+    return Mix_GetMusicPosition(mus->chunk);
+}
+
+double music::get_len(GBMusic *mus) {
+    return mus->len;
+}
+
+void screen::end() {
+    gb_win->running=0;
 }
 
 /**
@@ -570,7 +727,13 @@ void sound::stop(GBSound* snd) { Mix_HaltChannel(snd->channel); }
  * \sa snd - sound
  * \sa vol - volume
  **/
-void sound::set_vol(GBSound* snd, double vol) { Mix_Volume(snd->channel, vol * 128); }
+void sound::set_vol(GBSound* snd, double vol) {
+#ifdef GB_USE_GM_VOLUME
+Mix_Volume(snd->channel, vol * 128);
+#else
+Mix_Volume(snd->channel,vol);
+#endif
+}
 /**
  * destroy sound if it will not be used anymore
  * \sa snd - sound
@@ -610,28 +773,6 @@ void fs::text::close(int file) {
 }
 
 /**
- * returns new object
- * \sa spr - sprite, can be passed as nullptr
- * \sa mask - mask of the object, if passed as nullptr, the mask will be the same as the sprite
- * \sa x, y - coordinates of the object
- **/
-GBObject* object::add(GBSprite* spr, GBSprite* mask, double x, double y)
-{
-    GBObject* obj = new GBObject;
-    obj->spr = spr;
-    obj->mask = mask != nullptr ? mask : spr;
-    obj->x = x;
-    obj->y = y;
-    obj->direction = 0;
-    obj->gravity_direction = 270;
-    obj->gravity = 0;
-    obj->xprevious = 0;
-    obj->yprevious = 0;
-    gb_objects.resize(gb_objects.size() + 1);
-    gb_objects[gb_objects.size() - 1] = obj;
-    return obj;
-}
-/**
  * show a message box with title and message
  * \sa title - message box title
  * \sa msg - message box message
@@ -660,6 +801,8 @@ GBSprite* graphics::sprite::add(std::string fname, int frames, int offx, int off
     spr->tex = SDL_CreateTextureFromSurface(gb_win->ren, temp);
     spr->w = temp->w;
     spr->h = temp->h;
+    spr->offx=offx;
+    spr->offy=offy;
     SDL_FreeSurface(temp);
     gb_sprites.resize(gb_sprites.size() + 1);
     gb_sprites[gb_sprites.size() - 1] = spr;
@@ -692,6 +835,11 @@ void graphics::sprite::destroy(GBSprite* spr)
     SDL_DestroyTexture(spr->tex);
     delete spr;
 }
+
+void graphics::sprite::set_offset(GBSprite *spr, int x, int y) {
+    spr->offx=x;
+    spr->offy=y;
+}
 /**
  * draw a sprite on screen
  * \sa spr - sprite
@@ -703,8 +851,19 @@ void graphics::sprite::destroy(GBSprite* spr)
 void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot)
 {
     SDL_Rect rect = { (spr->w / spr->frames) * (frame % spr->frames), 0, (spr->w / spr->frames) * ((frame % spr->frames) + 1), spr->h };
-    SDL_FRect dstrect = { (float)x, (float)y, ((float)spr->w / spr->frames) * xscale, (float)spr->h * yscale };
-    SDL_FPoint cen = { (float)spr->offx, (float)spr->offy };
+    SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, ((float)spr->w / spr->frames) * xscale, (float)spr->h * yscale };
+    float cenx=spr->offx,ceny=spr->offy;
+    SDL_FPoint cen = { 0,0 };
+    SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+    SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
+}
+
+void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot)
+{
+    SDL_Rect rect = {(spr->w / spr->frames)*(frame % spr->frames),0,w,(int)math::clamp(h,0,spr->h)};
+    SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, ((float)spr->w / spr->frames) * xscale, (float)spr->h * yscale };
+    float cenx=spr->offx,ceny=spr->offy;
+    SDL_FPoint cen = { cenx,ceny };
     SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
     SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
 }
@@ -922,7 +1081,16 @@ int mouse::released(mb mouse_button)
  **/
 int mouse::holding(mb mouse_button)
 {
-    return mybut[mouse_button] && mylastbut[mouse_button];
+    return mybut[mouse_button];// && mylastbut[mouse_button];
+}
+
+/**
+ * opposite of mouse::holding
+ * \sa mouse_button - mb::*
+ **/
+int mouse::nothing(mb mouse_button)
+{
+    return !mybut[mouse_button] && !mylastbut[mouse_button];
 }
 
 /**
