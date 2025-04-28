@@ -28,6 +28,7 @@ namespace GameBreaker {
 typedef std::string gb_str;
 extern int current_time;
 extern SDL_Color _realcol_;
+//extern void *__sel_obj_;
 
 #ifndef GB_DONT_USE_SFX
 typedef struct GBSound {
@@ -375,6 +376,7 @@ public:
     static double degtorad(double deg);
     static double clamp(double val, double minval, double maxval);
     static double point_in_rect(double px, double py, double rx1, double ry1, double rx2, double ry2);
+    static int round(double x);
 };
 
 struct __gbmap {
@@ -419,5 +421,6 @@ typedef GameBreaker::font font;
 typedef GameBreaker::music music;
 typedef GameBreaker::io io;
 typedef GameBreaker::gstr gstr;
+//typedef GameBreaker::__sel_obj_ id;
 
 #endif

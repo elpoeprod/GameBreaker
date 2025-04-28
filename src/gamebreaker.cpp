@@ -17,6 +17,8 @@
 
 std::string __error_string;
 
+
+
 void __error_write(std::string errstr)
 {
     std::string tempf=SDL_GetBasePath();
@@ -138,7 +140,9 @@ void findControllers()
     }
 }
 
+/**********START*********************/
 namespace GameBreaker {
+
 SDL_Color _realcol_={255,255,255,255};
 GBFont *curfon;
 int current_time=0;
@@ -150,6 +154,10 @@ std::vector<GBObject*> gb_objects;
 std::vector<GBFont*> gb_fonts;
 std::vector<_gm_file *>gb_files;
 GBWindow* gb_win;
+
+//void *__sel_obj_;
+
+//#define with(a) __sel_obj_=(void *)a;
 
 int joy::count()
 {
@@ -237,7 +245,7 @@ void update()
 {
     //findControllers();
     SDL_SetRenderDrawBlendMode(gb_win->ren, SDL_BlendMode::SDL_BLENDMODE_BLEND);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 1; i < 4; i++) {
         mylastbut[i] = mybut[i];
     }
     for (int i = 0; i < controllers.size(); i++) {
@@ -649,6 +657,7 @@ void music::destroy(GBMusic* snd)
     snd->type = 0;
     snd->vol = 0;
     delete snd;
+    snd=nullptr;
 }
 
 double music::get_pos(GBMusic *mus) {
@@ -749,6 +758,7 @@ void sound::destroy(GBSound* snd)
     snd->type = 0;
     snd->vol = 0;
     delete snd;
+    snd = nullptr;
 }
 
 int fs::text::open(gb_str fname, int mode) {
@@ -1171,6 +1181,10 @@ double math::point_in_rect(double px, double py, double rx1, double ry1, double 
     return px > rx1 && py > ry1 && px <= rx2 && py <= ry2;
 }
 
+int math::round(double x) {
+    return (int)std::round(x);
+}
+
 int gstr::count(gb_str text, gb_str n) {
     int _count=0;
     for(int __l=0;__l<text.length()-n.length()+1;__l++) {
@@ -1188,9 +1202,11 @@ gb_str gstr::replace(gb_str text, gb_str in, gb_str out) {
 }
 
 gb_str gstr::replace_all(gb_str text, gb_str in, gb_str out) {
-    gb_str tempt=text;
-    for(int __i=0;__i<gstr::count(text,in);__i++) {
-        tempt=gstr::replace(tempt,in,out);
+    var tempt=text;
+    var mypos=0;
+    for(var __i=0;__i<gstr::count(tempt,in);__i++) {
+        tempt=tempt.replace(tempt.find_first_of(in,mypos),in.length(),out);
+        mypos+=out.length();
     }
     return tempt;
 }
