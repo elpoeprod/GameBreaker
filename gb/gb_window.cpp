@@ -1,0 +1,46 @@
+#include "gamebreaker.hpp"
+
+
+namespace GameBreaker {
+
+    /**
+    * sets window width and height
+    **/
+    void window::size(int w, int h)
+    {
+        SDL_SetWindowSize(gb_win->win, w, h);
+        gb_win->w = w;
+        gb_win->h = h;
+    }
+    /**
+    * sets window position (x and y)
+    **/
+    void window::pos(int x, int y)
+    {
+        SDL_SetWindowPosition(gb_win->win, x, y);
+        gb_win->x = x;
+        gb_win->y = y;
+    }
+    /**
+    * returns window x
+    **/
+    int window::get_x() { return gb_win->x; }
+    /**
+    * returns window y
+    **/
+    int window::get_y() { return gb_win->y; }
+    /**
+    * returns window width
+    **/
+    int window::get_width() { return gb_win->w; }
+    /**
+    * returns window height
+    **/
+    int window::get_height() { return gb_win->h; }
+
+    /**
+    * returns window size as a struct {w,h} that can be used somewhere
+    **/
+    SDL_Point window::get_size() { return (SDL_Point) { gb_win->w, gb_win->h }; }
+
+}
