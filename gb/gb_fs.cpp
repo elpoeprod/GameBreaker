@@ -1,5 +1,6 @@
 #include "gamebreaker.hpp"
 #include <filesystem>
+#include "3rdparty/nfd/nfd.hpp"
 
 namespace GameBreaker {
 
@@ -133,4 +134,35 @@ namespace GameBreaker {
         std::filesystem::path mypath=path;
         return mypath.parent_path();
     }
+
+    gb_str fs::get_fname(std::vector<fname_list> filter, gb_str title) {
+
+        NFD::Guard __nfd_g;
+
+        NFD::UniquePath _mypath;
+
+        nfdfilteritem_t _filter[filter.size()];
+        for(int i=0;i<filter.size();i++) {
+            _filter[i]={filter[i].title.c_str(),filter[i].filter.c_str()};
+        }
+        nfdresult_t __res=NFD::OpenDialog(_mypath,_filter);
+        if(__res==NFD_OKAY) 
+            return _mypath.get();
+
+        return "";
+    
+    }
+
+    gb_str fs::get_folder(gb_str title) {
+        NFD::Guard __nfd_g;
+
+        NFD::UniquePath _mypath;
+
+        nfdresult_t _res=NFD::PickFolder(_mypath);
+        if(_res==NFD_OKAY) 
+            return _mypath.get();
+
+        return "";
+    }
+    
 }

@@ -15,7 +15,15 @@ namespace GameBreaker {
     **/
     int mouse::pressed(mb mouse_button)
     {
-        return mybut[mouse_button] && !mylastbut[mouse_button];
+        if(mouse_button==mb::any) {
+            return  mybut[1] && !mylastbut[1] or
+                    mybut[2] && !mylastbut[2] or
+                    mybut[3] && !mylastbut[3];
+        }
+        if(mouse_button!=mb::none)
+            return mybut[mouse_button] && !mylastbut[mouse_button];
+
+        return 0;
     }
     /**
     * check if mouse button was released
@@ -23,7 +31,15 @@ namespace GameBreaker {
     **/
     int mouse::released(mb mouse_button)
     {
-        return !mybut[mouse_button] && mylastbut[mouse_button];
+        if(mouse_button==mb::any) {
+            return  !mybut[1] && mylastbut[1] or
+                    !mybut[2] && mylastbut[2] or
+                    !mybut[3] && mylastbut[3];
+        }
+        if(mouse_button!=mb::none)
+            return !mybut[mouse_button] && mylastbut[mouse_button];
+
+        return 0;
     }
     /**
     * check if mouse button is holding
@@ -32,8 +48,15 @@ namespace GameBreaker {
     //int __debug__hold=0;
     int mouse::holding(mb mouse_button)
     {
-        //if(__debug__hold<20) __debug__hold++; else {printf("IS HOLDING??????????? %i\n",mybut[mouse_button]);__debug__hold=0;}
-        return mybut[mouse_button];// && mylastbut[mouse_button];
+        if(mouse_button==mb::any) {
+            return  mybut[1] or
+                    mybut[2] or
+                    mybut[3];
+        }
+        if(mouse_button!=mb::none)
+            return mybut[mouse_button];
+
+        return 0;
     }
 
     /**
@@ -42,6 +65,21 @@ namespace GameBreaker {
     **/
     int mouse::nothing(mb mouse_button)
     {
-        return !mybut[mouse_button] && !mylastbut[mouse_button];
+        if(mouse_button==mb::any) {
+            return  !mybut[1] && !mylastbut[1] or
+                    !mybut[2] && !mylastbut[2] or
+                    !mybut[3] && !mylastbut[3];
+        }
+        if(mouse_button!=mb::none)
+            return !mybut[mouse_button] && !mylastbut[mouse_button];
+
+        return 0;
+    }
+
+    mb mouse::which() {
+        for(int i=0;i<4;i++) {
+            if(mybut[i]) return (mb)i;
+        }
+        return mb::none;
     }
 }

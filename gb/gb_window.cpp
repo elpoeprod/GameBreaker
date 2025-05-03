@@ -3,6 +3,12 @@
 
 namespace GameBreaker {
 
+    void window::set_icon(gb_str ico) {
+        SDL_Surface *temp=IMG_Load(ico.c_str());
+        SDL_SetWindowIcon(gb_win->win,temp);
+        SDL_FreeSurface(temp);
+    }
+
     /**
     * sets window width and height
     **/

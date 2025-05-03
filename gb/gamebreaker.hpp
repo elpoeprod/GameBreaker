@@ -11,6 +11,20 @@
 #include <vector>
 #include <map>
 
+/*****GameBreaker Header File*****/
+/*
+    Options:
+    GB_EXIT_ON_CLOSEBUTTON  -   Ends game if "Close" button was pressed.
+    GB_USE_SMALL_FUNCNAMES  -   Makes typedefs of functions. 
+                                    Example:    from "GameBreaker::graphics::draw::rect(...)"
+                                                to "draw::rect(...)"
+    GB_USE_GM_VOLUME        -   Forces GameBreaker to use legacy GM volume, from 0 to 1
+                                If not defined, GameBreaker uses volume from 0 to 128.
+    
+
+*/
+
+
 /***
  define GB_DONT_USE_* to not use something. Available:
     KEYB,
@@ -234,19 +248,20 @@ public:
 #ifndef GB_DONT_USE_MUSIC
 class music {
 public:
-    static GBMusic* add(gb_str fname, int type);
-    static void set_pos(GBMusic* snd, double pos);
-    static void play(GBMusic* snd);
-    static void loop(GBMusic* snd, int loops);
-    static void pause();
-    static void resume();
-    static void stop(GBMusic* snd);
-    static void set_vol(GBMusic* snd, double vol);
-    static int get_wave(GBMusic* snd,int pos);
-    static void destroy(GBMusic* snd);
-    static void get_tags(GBMusic *snd);
-    static double get_pos(GBMusic *snd);
-    static double get_len(GBMusic *snd);
+    static GBMusic*     add(gb_str fname, int type);
+    static void         set_pos(GBMusic* snd, double pos);
+    static void         play(GBMusic* snd);
+    static void         loop(GBMusic* snd, int loops);
+    static void         pause();
+    static void         resume();
+    static void         stop(GBMusic* snd);
+    static void         set_vol(GBMusic* snd, double vol);
+    static int          get_wave(GBMusic* snd,int pos);
+    static void         destroy(GBMusic* snd);
+    static void         get_tags(GBMusic *snd);
+    static double       get_pos(GBMusic *snd);
+    static double       get_len(GBMusic *snd);
+    static void         set_loops(int loops);
 };
 #endif
 
@@ -276,6 +291,28 @@ class show {public:
     static void error(gb_str msg, int abort);
 };
 
+enum mb {
+    none    = -1,
+    left    = SDL_BUTTON_LEFT,
+    right   = SDL_BUTTON_MIDDLE,
+    middle  = SDL_BUTTON_RIGHT,
+    any     = 0x100
+};
+class mouse {
+public:
+    static int pressed(mb mouse_button);
+    static int released(mb mouse_button);
+    static int holding(mb mouse_button);
+    static int nothing(mb mouse_button);
+    static mb which();
+    static int x, y;
+};
+
+struct gb_button_state {
+    int released;
+    mb button;
+};
+
 class graphics {
 public:
     class sprite {
@@ -303,7 +340,7 @@ public:
         static void sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot);
         static void sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot);
         static void sprite_ext(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot, SDL_Color col);
-        static int button(int x, int y, int w, int h, GBSprite *spr, int types);
+        static gb_button_state button(int x, int y, int w, int h, GBSprite *spr, int types);
         static void text(float x, float y, GBText* text);
         static void text_rt(float x, float y, gb_str text);
         static void set_font(GBFont *fnt);
@@ -333,6 +370,12 @@ public:
         static gb_str value(std::vector<__gblist>,int pos);
     };
 };
+
+struct fname_list {
+    gb_str title;
+    gb_str filter;
+};
+
 class fs {
 public:
     enum fmode {
@@ -363,6 +406,17 @@ public:
     };
     static gb_str path_parent(gb_str path);
     static gb_str path(gb_str fname);
+    static gb_str get_fname(std::vector<fname_list> filter, gb_str title);
+    static gb_str get_folder(gb_str title);
+};
+
+class ini {public:
+    static int      open(gb_str fname);
+    static int      read_int(int file, gb_str section, gb_str keyName, int defKey);
+    static gb_str   read_str(int file, gb_str section, gb_str keyName, gb_str defKey);
+    static void     write_int(int file, gb_str section, gb_str key, int num);
+    static void     write_str(int file, gb_str section, gb_str key, gb_str num);
+    static void     close(int file);
 };
 
 class d3d {
@@ -380,19 +434,6 @@ enum ERROR {
     SPRITE_FILE_NOT_SUPPORTED=0x000101
 };
 
-enum mb {
-    left = SDL_BUTTON_LEFT,
-    right = SDL_BUTTON_MIDDLE,
-    middle = SDL_BUTTON_RIGHT
-};
-class mouse {
-public:
-    static int pressed(mb mouse_button);
-    static int released(mb mouse_button);
-    static int holding(mb mouse_button);
-    static int nothing(mb mouse_button);
-    static int x, y;
-};
 class math {
 public:
     static double lendir_x(double len, int dir);
@@ -445,6 +486,7 @@ typedef GameBreaker::font font;
 typedef GameBreaker::music music;
 typedef GameBreaker::io io;
 typedef GameBreaker::gstr gstr;
-//typedef GameBreaker::__sel_obj_ id;
+typedef std::vector<GameBreaker::fname_list> fname_list;
+typedef GameBreaker::gb_button_state gb_button_state;
 
 #endif

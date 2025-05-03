@@ -108,14 +108,6 @@ int init(int x, int y, int w, int h, std::string label)
     return 1;
 }
 
-
-void window::set_icon(gb_str ico) {
-    SDL_Surface *temp=IMG_Load(ico.c_str());
-    SDL_SetWindowIcon(gb_win->win,temp);
-    SDL_FreeSurface(temp);
-}
-
-
 void io::clear() {
     for (int i = 0; i < 3; i++) {
         mylastbut[i] = 0;
@@ -146,13 +138,13 @@ void update()
     mylastkey=mykey;
 
     while (SDL_PollEvent(&gb_win->ev) != 0) {
-        //if (gb_win->ev.type == SDL_MOUSEMOTION) 
-        //    SDL_GetMouseState(&mouse::x, &mouse::y);
         switch(gb_win->ev.type) {
             case SDL_KEYDOWN: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=1; break;
             case SDL_KEYUP: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=0; break;
+            #ifdef GB_EXIT_ON_CLOSEBUTTON
             case SDL_QUIT: gb_win->running = 0; break;
-            case SDL_MOUSEMOTION: mouse::x=gb_win->ev.motion.x; mouse::y=gb_win->ev.motion.y; break;//SDL_GetMouseState(&mouse::x, &mouse::y); break;
+            #endif
+            case SDL_MOUSEMOTION: mouse::x=gb_win->ev.motion.x; mouse::y=gb_win->ev.motion.y; break;
             case SDL_MOUSEBUTTONDOWN: {
                     mybut[gb_win->ev.button.button] = 1;
             } break;
@@ -200,6 +192,10 @@ void screen::draw(double fps)
 {
     SDL_RenderPresent(gb_win->ren);
     SDL_Delay(1000.f / fps);
+}
+
+void screen::end() {
+    gb_win->running=0;
 }
 
 void shutdown()

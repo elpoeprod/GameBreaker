@@ -111,9 +111,9 @@ namespace GameBreaker {
     double music::get_len(GBMusic *mus) {
         return mus->len;
     }
-    
-    void screen::end() {
-        gb_win->running=0;
+
+    void music::set_loops(int loops) {
+        return; // no function in sdl2 to set loop count after song was played
     }
     
     /**

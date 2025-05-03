@@ -323,8 +323,9 @@ namespace GameBreaker {
     **/
     void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot)
     {
-        SDL_Rect rect = { (spr->w / spr->frames) * (frame % spr->frames), 0, (spr->w / spr->frames) * ((frame % spr->frames) + 1), spr->h };
-        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, ((float)spr->w / spr->frames) * xscale, (float)spr->h * yscale };
+        int myw=(spr->w / spr->frames);
+        SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
+        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { 0,0 };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
@@ -333,8 +334,9 @@ namespace GameBreaker {
 
     void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot)
     {
-        SDL_Rect rect = {(spr->w / spr->frames)*(frame % spr->frames),0,w,(int)math::clamp(h,0,spr->h)};
-        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, ((float)spr->w / spr->frames) * xscale, (float)spr->h * yscale };
+        int myw=(spr->w / spr->frames);
+        SDL_Rect rect = {myw*(frame % spr->frames),0,(int)math::clamp(w,0,myw),(int)math::clamp(h,0,spr->h)};
+        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
@@ -376,11 +378,13 @@ namespace GameBreaker {
             SDL_RenderDrawRect(gb_win->ren, &myrect);
     }
 
-    int graphics::draw::button(int x, int y, int w, int h, GBSprite *spr, int types) {
+    gb_button_state graphics::draw::button(int x, int y, int w, int h, GBSprite *spr, int types) {
+        gb_button_state mystate={0,mb::none};
         int inrect=math::point_in_rect(mouse::x,mouse::y,x,y,x+w,y+h);
-        int press=mouse::holding(mb::left);
-        graphics::draw::sprite(spr,(types==3)?inrect+press:inrect and press,x,y,w/(spr->w/spr->frames),h/(spr->h),0);
-        return inrect and mouse::released(mb::left);
+        int press=mouse::holding(mb::any);
+        graphics::draw::sprite(spr,(inrect&&press)?spr->frames-1:types,x,y,w/(spr->w/spr->frames),h/(spr->h),0);
+        mystate={inrect and mouse::released(mb::any),mouse::which()};
+        return mystate;
     }
     void graphics::draw::blendmode(SDL_BlendMode mode) { SDL_SetRenderDrawBlendMode(gb_win->ren, mode); }
 
