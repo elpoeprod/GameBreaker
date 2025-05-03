@@ -122,6 +122,8 @@ extern GBMusic *curmusic;
 extern int mybut[4];
 extern int mylastbut[4];
 
+extern Uint32 fps_current;
+
 extern std::map<std::string,int> mykey;
 extern std::map<std::string,int> mylastkey;
 
@@ -335,6 +337,7 @@ public:
         static void color(Uint32 color);
         static void color_rgb(Uint8 r,Uint8 g,Uint8 b);
         static void color_sdl(SDL_Color color);
+        static void color_hsv(double h, double s, double v);
         static SDL_Color color_get();
         static void blendmode(SDL_BlendMode mode);
         static void sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot);

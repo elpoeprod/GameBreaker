@@ -87,6 +87,47 @@ int SDL_RenderFillCircle(SDL_Renderer* renderer, int x, int y, int radius)
     return status;
 }
 
+void HSVtoRGB(float& fR, float& fG, float& fB, float& fH, float& fS, float& fV) {
+    float fC = fV * fS; // Chroma
+    float fHPrime = fmod(fH / 60.0, 6);
+    float fX = fC * (1 - fabs(fmod(fHPrime, 2) - 1));
+    float fM = fV - fC;
+    
+    if(0 <= fHPrime && fHPrime < 1) {
+      fR = fC;
+      fG = fX;
+      fB = 0;
+    } else if(1 <= fHPrime && fHPrime < 2) {
+      fR = fX;
+      fG = fC;
+      fB = 0;
+    } else if(2 <= fHPrime && fHPrime < 3) {
+      fR = 0;
+      fG = fC;
+      fB = fX;
+    } else if(3 <= fHPrime && fHPrime < 4) {
+      fR = 0;
+      fG = fX;
+      fB = fC;
+    } else if(4 <= fHPrime && fHPrime < 5) {
+      fR = fX;
+      fG = 0;
+      fB = fC;
+    } else if(5 <= fHPrime && fHPrime < 6) {
+      fR = fC;
+      fG = 0;
+      fB = fX;
+    } else {
+      fR = 0;
+      fG = 0;
+      fB = 0;
+    }
+    
+    fR += fM;
+    fG += fM;
+    fB += fM;
+  }
+
 namespace GameBreaker {
 
     std::vector<GBSprite*> gb_sprites;
@@ -228,6 +269,15 @@ namespace GameBreaker {
         SDL_SetRenderDrawColor(gb_win->ren, _realcol_.r, _realcol_.g, _realcol_.b, _realcol_.a);
     }
 
+    void graphics::draw::color_hsv(double h, double s, double v) {
+        float r,g,b;
+        float _h=h,_s=s,_v=v;
+        HSVtoRGB(r,g,b,_h,_s,_v);
+        Uint8 _r=r,_g=g,_b=b;
+        SDL_Color mycol={_r,_g,_b};
+        graphics::draw::color_sdl(mycol);
+    }
+
     /**
     * adds a sprite
     * \sa fname - filename
@@ -277,11 +327,10 @@ namespace GameBreaker {
         int finder=__gb_find_text_in_db(txt);
         if(finder!=-1) {
             text=_gb_txt_[finder];
-            //*text=text->txt+"(debug: "+stringify(finder)+")";
         }
         else {
             _gb_txt_.resize(_gb_txt_.size()+1);
-            _gb_txt_[_gb_txt_.size()-1]=new GBText(txt);//+" (debug: "+stringify(finder)+")");
+            _gb_txt_[_gb_txt_.size()-1]=new GBText(txt);
             text=_gb_txt_[_gb_txt_.size()-1];
         }
         SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
