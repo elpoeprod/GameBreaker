@@ -145,7 +145,7 @@ namespace GameBreaker {
         for(int i=0;i<filter.size();i++) {
             _filter[i]={filter[i].title.c_str(),filter[i].filter.c_str()};
         }
-        nfdresult_t __res=NFD::OpenDialog(_mypath,_filter);
+        nfdresult_t __res=NFD::OpenDialog(_mypath,title,_filter);
         if(__res==NFD_OKAY) 
             return _mypath.get();
 
@@ -158,7 +158,7 @@ namespace GameBreaker {
 
         NFD::UniquePath _mypath;
 
-        nfdresult_t _res=NFD::PickFolder(_mypath);
+        nfdresult_t _res=NFD::PickFolder(_mypath,title);
         if(_res==NFD_OKAY) 
             return _mypath.get();
 

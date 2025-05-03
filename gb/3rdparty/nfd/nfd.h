@@ -121,6 +121,7 @@ typedef struct {
     nfdfiltersize_t filterCount;
     const nfdu8char_t* defaultPath;
     nfdwindowhandle_t parentWindow;
+    const nfdu8char_t* windowName;
 } nfdopendialogu8args_t;
 
 #ifdef _WIN32
@@ -129,6 +130,7 @@ typedef struct {
     nfdfiltersize_t filterCount;
     const nfdnchar_t* defaultPath;
     nfdwindowhandle_t parentWindow;
+    const nfdnchar_t* windowName;
 } nfdopendialognargs_t;
 #else
 typedef nfdopendialogu8args_t nfdopendialognargs_t;
@@ -139,6 +141,7 @@ typedef struct {
     nfdfiltersize_t filterCount;
     const nfdu8char_t* defaultPath;
     const nfdu8char_t* defaultName;
+    const nfdu8char_t* windowName;
     nfdwindowhandle_t parentWindow;
 } nfdsavedialogu8args_t;
 
@@ -148,6 +151,7 @@ typedef struct {
     nfdfiltersize_t filterCount;
     const nfdnchar_t* defaultPath;
     const nfdnchar_t* defaultName;
+    const nfdnchar_t* windowName;
     nfdwindowhandle_t parentWindow;
 } nfdsavedialognargs_t;
 #else
@@ -157,12 +161,14 @@ typedef nfdsavedialogu8args_t nfdsavedialognargs_t;
 typedef struct {
     const nfdu8char_t* defaultPath;
     nfdwindowhandle_t parentWindow;
+    const nfdu8char_t* windowName;
 } nfdpickfolderu8args_t;
 
 #ifdef _WIN32
 typedef struct {
     const nfdnchar_t* defaultPath;
     nfdwindowhandle_t parentWindow;
+    const nfdnchar_t* windowName;
 } nfdpickfoldernargs_t;
 #else
 typedef nfdpickfolderu8args_t nfdpickfoldernargs_t;
@@ -200,7 +206,8 @@ NFD_API void NFD_Quit(void);
 NFD_API nfdresult_t NFD_OpenDialogN(nfdnchar_t** outPath,
                                     const nfdnfilteritem_t* filterList,
                                     nfdfiltersize_t filterCount,
-                                    const nfdnchar_t* defaultPath);
+                                    const nfdnchar_t* defaultPath,
+                                    const nfdnchar_t* windowName);
 
 /** Single file open dialog
  *
@@ -212,7 +219,8 @@ NFD_API nfdresult_t NFD_OpenDialogN(nfdnchar_t** outPath,
 NFD_API nfdresult_t NFD_OpenDialogU8(nfdu8char_t** outPath,
                                      const nfdu8filteritem_t* filterList,
                                      nfdfiltersize_t filterCount,
-                                     const nfdu8char_t* defaultPath);
+                                     const nfdu8char_t* defaultPath,
+                                     const nfdu8char_t* windowName);
 
 /** This function is a library implementation detail.  Please use NFD_OpenDialogN_With() instead. */
 NFD_API nfdresult_t NFD_OpenDialogN_With_Impl(nfdversion_t version,
@@ -253,7 +261,8 @@ NFD_INLINE nfdresult_t NFD_OpenDialogU8_With(nfdu8char_t** outPath,
 NFD_API nfdresult_t NFD_OpenDialogMultipleN(const nfdpathset_t** outPaths,
                                             const nfdnfilteritem_t* filterList,
                                             nfdfiltersize_t filterCount,
-                                            const nfdnchar_t* defaultPath);
+                                            const nfdnchar_t* defaultPath,
+                                            const nfdnchar_t* windowName);
 
 /** Multiple file open dialog
  *
@@ -265,7 +274,8 @@ NFD_API nfdresult_t NFD_OpenDialogMultipleN(const nfdpathset_t** outPaths,
 NFD_API nfdresult_t NFD_OpenDialogMultipleU8(const nfdpathset_t** outPaths,
                                              const nfdu8filteritem_t* filterList,
                                              nfdfiltersize_t filterCount,
-                                             const nfdu8char_t* defaultPath);
+                                             const nfdu8char_t* defaultPath,
+                                             const nfdu8char_t* windowName);
 
 /** This function is a library implementation detail.  Please use NFD_OpenDialogMultipleN_With()
  * instead. */
@@ -308,7 +318,8 @@ NFD_API nfdresult_t NFD_SaveDialogN(nfdnchar_t** outPath,
                                     const nfdnfilteritem_t* filterList,
                                     nfdfiltersize_t filterCount,
                                     const nfdnchar_t* defaultPath,
-                                    const nfdnchar_t* defaultName);
+                                    const nfdnchar_t* defaultName,
+                                    const nfdnchar_t* windowName);
 
 /** Save dialog
  *
@@ -321,7 +332,8 @@ NFD_API nfdresult_t NFD_SaveDialogU8(nfdu8char_t** outPath,
                                      const nfdu8filteritem_t* filterList,
                                      nfdfiltersize_t filterCount,
                                      const nfdu8char_t* defaultPath,
-                                     const nfdu8char_t* defaultName);
+                                     const nfdu8char_t* defaultName,
+                                     const nfdu8char_t* windowName);
 
 /** This function is a library implementation detail.  Please use NFD_SaveDialogN_With() instead. */
 NFD_API nfdresult_t NFD_SaveDialogN_With_Impl(nfdversion_t version,
@@ -358,7 +370,7 @@ NFD_INLINE nfdresult_t NFD_SaveDialogU8_With(nfdu8char_t** outPath,
  *  NFD_OKAY.
  *  @param[out] outPath
  *  @param defaultPath If null, the operating system will decide. */
-NFD_API nfdresult_t NFD_PickFolderN(nfdnchar_t** outPath, const nfdnchar_t* defaultPath);
+NFD_API nfdresult_t NFD_PickFolderN(nfdnchar_t** outPath, const nfdnchar_t* defaultPath, const nfdnchar_t* windowName);
 
 /** Select single folder dialog
  *
@@ -366,7 +378,7 @@ NFD_API nfdresult_t NFD_PickFolderN(nfdnchar_t** outPath, const nfdnchar_t* defa
  *  returns NFD_OKAY.
  *  @param[out] outPath
  *  @param defaultPath If null, the operating system will decide. */
-NFD_API nfdresult_t NFD_PickFolderU8(nfdu8char_t** outPath, const nfdu8char_t* defaultPath);
+NFD_API nfdresult_t NFD_PickFolderU8(nfdu8char_t** outPath, const nfdu8char_t* defaultPath, const nfdu8char_t* windowName);
 
 /** This function is a library implementation detail.  Please use NFD_PickFolderN_With() instead. */
 NFD_API nfdresult_t NFD_PickFolderN_With_Impl(nfdversion_t version,
@@ -404,7 +416,8 @@ NFD_INLINE nfdresult_t NFD_PickFolderU8_With(nfdu8char_t** outPath,
  *  @param[out] outPaths
  *  @param defaultPath If null, the operating system will decide. */
 NFD_API nfdresult_t NFD_PickFolderMultipleN(const nfdpathset_t** outPaths,
-                                            const nfdnchar_t* defaultPath);
+                                            const nfdnchar_t* defaultPath,
+                                            const nfdnchar_t* windowName);
 
 /** Select multiple folder dialog
  *
@@ -413,7 +426,8 @@ NFD_API nfdresult_t NFD_PickFolderMultipleN(const nfdpathset_t** outPaths,
  *  @param[out] outPaths
  *  @param defaultPath If null, the operating system will decide. */
 NFD_API nfdresult_t NFD_PickFolderMultipleU8(const nfdpathset_t** outPaths,
-                                             const nfdu8char_t* defaultPath);
+                                             const nfdu8char_t* defaultPath,
+                                             const nfdu8char_t* windowName);
 
 /** This function is a library implementation detail.  Please use NFD_PickFolderMultipleN_With()
  * instead. */

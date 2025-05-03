@@ -15,6 +15,7 @@
 
 #include "nfd.h"
 //#include <cstddef>  // for std::size_t
+#include <string>
 #include <memory>   // for std::unique_ptr
 #ifdef NFD_THROWS_EXCEPTIONS
 #include <stdexcept>
@@ -35,45 +36,50 @@ inline void FreePath(nfdnchar_t* outPath) noexcept {
 }
 
 inline nfdresult_t OpenDialog(nfdnchar_t*& outPath,
+                              std::string windowName,
                               const nfdnfilteritem_t* filterList = nullptr,
                               nfdfiltersize_t filterCount = 0,
                               const nfdnchar_t* defaultPath = nullptr,
                               nfdwindowhandle_t parentWindow = {}) noexcept {
-    const nfdopendialognargs_t args{filterList, filterCount, defaultPath, parentWindow};
+    const nfdopendialognargs_t args{filterList, filterCount, defaultPath, parentWindow,windowName.c_str()};
     return ::NFD_OpenDialogN_With(&outPath, &args);
 }
 
 inline nfdresult_t OpenDialogMultiple(const nfdpathset_t*& outPaths,
+                                      std::string windowName,
                                       const nfdnfilteritem_t* filterList = nullptr,
                                       nfdfiltersize_t filterCount = 0,
                                       const nfdnchar_t* defaultPath = nullptr,
                                       nfdwindowhandle_t parentWindow = {}) noexcept {
-    const nfdopendialognargs_t args{filterList, filterCount, defaultPath, parentWindow};
+    const nfdopendialognargs_t args{filterList, filterCount, defaultPath, parentWindow,windowName.c_str()};
     return ::NFD_OpenDialogMultipleN_With(&outPaths, &args);
 }
 
 inline nfdresult_t SaveDialog(nfdnchar_t*& outPath,
+                              std::string windowName,
                               const nfdnfilteritem_t* filterList = nullptr,
                               nfdfiltersize_t filterCount = 0,
                               const nfdnchar_t* defaultPath = nullptr,
                               const nfdnchar_t* defaultName = nullptr,
                               nfdwindowhandle_t parentWindow = {}) noexcept {
     const nfdsavedialognargs_t args{
-        filterList, filterCount, defaultPath, defaultName, parentWindow};
+        filterList, filterCount, defaultPath, defaultName, windowName.c_str(), parentWindow};
     return ::NFD_SaveDialogN_With(&outPath, &args);
 }
 
 inline nfdresult_t PickFolder(nfdnchar_t*& outPath,
+                              std::string windowName,
                               const nfdnchar_t* defaultPath = nullptr,
                               nfdwindowhandle_t parentWindow = {}) noexcept {
-    const nfdpickfoldernargs_t args{defaultPath, parentWindow};
+    const nfdpickfoldernargs_t args{defaultPath, parentWindow,windowName.c_str()};
     return ::NFD_PickFolderN_With(&outPath, &args);
 }
 
 inline nfdresult_t PickFolderMultiple(const nfdpathset_t*& outPaths,
+                                      std::string windowName,
                                       const nfdnchar_t* defaultPath = nullptr,
                                       nfdwindowhandle_t parentWindow = {}) noexcept {
-    const nfdpickfoldernargs_t args{defaultPath, parentWindow};
+    const nfdpickfoldernargs_t args{defaultPath, parentWindow,windowName.c_str()};
     return ::NFD_PickFolderMultipleN_With(&outPaths, &args);
 }
 
@@ -215,12 +221,13 @@ typedef std::unique_ptr<nfdnchar_t, PathSetPathDeleter<nfdnchar_t>> UniquePathSe
 typedef std::unique_ptr<nfdu8char_t, PathSetPathDeleter<nfdu8char_t>> UniquePathSetPathU8;
 
 inline nfdresult_t OpenDialog(UniquePathN& outPath,
+                              std::string windowName,
                               const nfdnfilteritem_t* filterList = nullptr,
                               nfdfiltersize_t filterCount = 0,
                               const nfdnchar_t* defaultPath = nullptr,
                               nfdwindowhandle_t parentWindow = {}) noexcept {
     nfdnchar_t* out;
-    nfdresult_t res = OpenDialog(out, filterList, filterCount, defaultPath, parentWindow);
+    nfdresult_t res = OpenDialog(out, windowName, filterList, filterCount, defaultPath, parentWindow);
     if (res == NFD_OKAY) {
         outPath.reset(out);
     }
@@ -228,12 +235,13 @@ inline nfdresult_t OpenDialog(UniquePathN& outPath,
 }
 
 inline nfdresult_t OpenDialogMultiple(UniquePathSet& outPaths,
+                                      std::string windowName,
                                       const nfdnfilteritem_t* filterList = nullptr,
                                       nfdfiltersize_t filterCount = 0,
                                       const nfdnchar_t* defaultPath = nullptr,
                                       nfdwindowhandle_t parentWindow = {}) noexcept {
     const nfdpathset_t* out;
-    nfdresult_t res = OpenDialogMultiple(out, filterList, filterCount, defaultPath, parentWindow);
+    nfdresult_t res = OpenDialogMultiple(out, windowName, filterList, filterCount, defaultPath, parentWindow);
     if (res == NFD_OKAY) {
         outPaths.reset(out);
     }
@@ -241,6 +249,7 @@ inline nfdresult_t OpenDialogMultiple(UniquePathSet& outPaths,
 }
 
 inline nfdresult_t SaveDialog(UniquePathN& outPath,
+                              std::string windowName,
                               const nfdnfilteritem_t* filterList = nullptr,
                               nfdfiltersize_t filterCount = 0,
                               const nfdnchar_t* defaultPath = nullptr,
@@ -248,7 +257,7 @@ inline nfdresult_t SaveDialog(UniquePathN& outPath,
                               nfdwindowhandle_t parentWindow = {}) noexcept {
     nfdnchar_t* out;
     nfdresult_t res =
-        SaveDialog(out, filterList, filterCount, defaultPath, defaultName, parentWindow);
+        SaveDialog(out, windowName, filterList, filterCount, defaultPath, defaultName, parentWindow);
     if (res == NFD_OKAY) {
         outPath.reset(out);
     }
@@ -256,10 +265,11 @@ inline nfdresult_t SaveDialog(UniquePathN& outPath,
 }
 
 inline nfdresult_t PickFolder(UniquePathN& outPath,
+                              std::string windowName,
                               const nfdnchar_t* defaultPath = nullptr,
                               nfdwindowhandle_t parentWindow = {}) noexcept {
     nfdnchar_t* out;
-    nfdresult_t res = PickFolder(out, defaultPath, parentWindow);
+    nfdresult_t res = PickFolder(out, windowName,defaultPath, parentWindow);
     if (res == NFD_OKAY) {
         outPath.reset(out);
     }
@@ -267,10 +277,11 @@ inline nfdresult_t PickFolder(UniquePathN& outPath,
 }
 
 inline nfdresult_t PickFolderMultiple(UniquePathSet& outPaths,
+                                      std::string windowName,
                                       const nfdnchar_t* defaultPath = nullptr,
                                       nfdwindowhandle_t parentWindow = {}) noexcept {
     const nfdpathset_t* out;
-    nfdresult_t res = PickFolderMultiple(out, defaultPath, parentWindow);
+    nfdresult_t res = PickFolderMultiple(out, windowName, defaultPath, parentWindow);
     if (res == NFD_OKAY) {
         outPaths.reset(out);
     }

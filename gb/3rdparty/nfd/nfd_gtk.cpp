@@ -563,11 +563,13 @@ void NFD_FreePathU8(nfdu8char_t* filePath) __attribute__((alias("NFD_FreePathN")
 nfdresult_t NFD_OpenDialogN(nfdnchar_t** outPath,
                             const nfdnfilteritem_t* filterList,
                             nfdfiltersize_t filterCount,
-                            const nfdnchar_t* defaultPath) {
+                            const nfdnchar_t* defaultPath,
+                            const nfdnchar_t* windowName) {
     nfdopendialognargs_t args{};
     args.filterList = filterList;
     args.filterCount = filterCount;
     args.defaultPath = defaultPath;
+    args.windowName = windowName;
     return NFD_OpenDialogN_With_Impl(NFD_INTERFACE_VERSION, outPath, &args);
 }
 
@@ -577,7 +579,7 @@ nfdresult_t NFD_OpenDialogN_With_Impl(nfdversion_t version,
     // We haven't needed to bump the interface version yet.
     (void)version;
 
-    GtkWidget* widget = gtk_file_chooser_dialog_new("Open File",
+    GtkWidget* widget = gtk_file_chooser_dialog_new(args->windowName,
                                                     nullptr,
                                                     GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "_Cancel",
@@ -617,7 +619,8 @@ nfdresult_t NFD_OpenDialogN_With_Impl(nfdversion_t version,
 nfdresult_t NFD_OpenDialogU8(nfdu8char_t** outPath,
                              const nfdu8filteritem_t* filterList,
                              nfdfiltersize_t filterCount,
-                             const nfdu8char_t* defaultPath)
+                             const nfdu8char_t* defaultPath,
+                             const nfdu8char_t* windowName)
     __attribute__((alias("NFD_OpenDialogN")));
 
 nfdresult_t NFD_OpenDialogU8_With_Impl(nfdversion_t version,
@@ -628,11 +631,13 @@ nfdresult_t NFD_OpenDialogU8_With_Impl(nfdversion_t version,
 nfdresult_t NFD_OpenDialogMultipleN(const nfdpathset_t** outPaths,
                                     const nfdnfilteritem_t* filterList,
                                     nfdfiltersize_t filterCount,
-                                    const nfdnchar_t* defaultPath) {
+                                    const nfdnchar_t* defaultPath,
+                                    const nfdnchar_t* windowName) {
     nfdopendialognargs_t args{};
     args.filterList = filterList;
     args.filterCount = filterCount;
     args.defaultPath = defaultPath;
+    args.windowName = windowName;
     return NFD_OpenDialogMultipleN_With_Impl(NFD_INTERFACE_VERSION, outPaths, &args);
 }
 
@@ -642,7 +647,7 @@ nfdresult_t NFD_OpenDialogMultipleN_With_Impl(nfdversion_t version,
     // We haven't needed to bump the interface version yet.
     (void)version;
 
-    GtkWidget* widget = gtk_file_chooser_dialog_new("Open Files",
+    GtkWidget* widget = gtk_file_chooser_dialog_new(args->windowName,
                                                     nullptr,
                                                     GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "_Cancel",
@@ -686,7 +691,8 @@ nfdresult_t NFD_OpenDialogMultipleN_With_Impl(nfdversion_t version,
 nfdresult_t NFD_OpenDialogMultipleU8(const nfdpathset_t** outPaths,
                                      const nfdu8filteritem_t* filterList,
                                      nfdfiltersize_t filterCount,
-                                     const nfdu8char_t* defaultPath)
+                                     const nfdu8char_t* defaultPath,
+                                     const nfdu8char_t* windowName)
     __attribute__((alias("NFD_OpenDialogMultipleN")));
 
 nfdresult_t NFD_OpenDialogMultipleU8_With_Impl(nfdversion_t version,
@@ -698,12 +704,14 @@ nfdresult_t NFD_SaveDialogN(nfdnchar_t** outPath,
                             const nfdnfilteritem_t* filterList,
                             nfdfiltersize_t filterCount,
                             const nfdnchar_t* defaultPath,
-                            const nfdnchar_t* defaultName) {
+                            const nfdnchar_t* defaultName,
+                            const nfdnchar_t* windowName) {
     nfdsavedialognargs_t args{};
     args.filterList = filterList;
     args.filterCount = filterCount;
     args.defaultPath = defaultPath;
     args.defaultName = defaultName;
+    args.windowName = windowName;
     return NFD_SaveDialogN_With_Impl(NFD_INTERFACE_VERSION, outPath, &args);
 }
 
@@ -713,7 +721,7 @@ nfdresult_t NFD_SaveDialogN_With_Impl(nfdversion_t version,
     // We haven't needed to bump the interface version yet.
     (void)version;
 
-    GtkWidget* widget = gtk_file_chooser_dialog_new("Save File",
+    GtkWidget* widget = gtk_file_chooser_dialog_new(args->windowName,
                                                     nullptr,
                                                     GTK_FILE_CHOOSER_ACTION_SAVE,
                                                     "_Cancel",
@@ -775,7 +783,8 @@ nfdresult_t NFD_SaveDialogU8(nfdu8char_t** outPath,
                              const nfdu8filteritem_t* filterList,
                              nfdfiltersize_t filterCount,
                              const nfdu8char_t* defaultPath,
-                             const nfdu8char_t* defaultName)
+                             const nfdu8char_t* defaultName,
+                             const nfdu8char_t* windowName)
     __attribute__((alias("NFD_SaveDialogN")));
 
 nfdresult_t NFD_SaveDialogU8_With_Impl(nfdversion_t version,

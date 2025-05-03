@@ -488,5 +488,6 @@ typedef GameBreaker::io io;
 typedef GameBreaker::gstr gstr;
 typedef std::vector<GameBreaker::fname_list> fname_list;
 typedef GameBreaker::gb_button_state gb_button_state;
+typedef GameBreaker::show show;
 
 #endif
