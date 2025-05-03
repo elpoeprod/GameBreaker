@@ -792,9 +792,10 @@ nfdresult_t NFD_SaveDialogU8_With_Impl(nfdversion_t version,
                                        const nfdsavedialogu8args_t* args)
     __attribute__((alias("NFD_SaveDialogN_With_Impl")));
 
-nfdresult_t NFD_PickFolderN(nfdnchar_t** outPath, const nfdnchar_t* defaultPath) {
+nfdresult_t NFD_PickFolderN(nfdnchar_t** outPath, const nfdnchar_t* defaultPath,const nfdnchar_t* windowName) {
     nfdpickfoldernargs_t args{};
     args.defaultPath = defaultPath;
+    args.windowName = windowName;
     return NFD_PickFolderN_With_Impl(NFD_INTERFACE_VERSION, outPath, &args);
 }
 
@@ -804,7 +805,7 @@ nfdresult_t NFD_PickFolderN_With_Impl(nfdversion_t version,
     // We haven't needed to bump the interface version yet.
     (void)version;
 
-    GtkWidget* widget = gtk_file_chooser_dialog_new("Select Folder",
+    GtkWidget* widget = gtk_file_chooser_dialog_new(args->windowName,
                                                     nullptr,
                                                     GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
                                                     "_Cancel",
@@ -838,7 +839,7 @@ nfdresult_t NFD_PickFolderN_With_Impl(nfdversion_t version,
     }
 }
 
-nfdresult_t NFD_PickFolderU8(nfdu8char_t** outPath, const nfdu8char_t* defaultPath)
+nfdresult_t NFD_PickFolderU8(nfdu8char_t** outPath, const nfdu8char_t* defaultPath, const nfdu8char_t* windowName)
     __attribute__((alias("NFD_PickFolderN")));
 
 nfdresult_t NFD_PickFolderU8_With_Impl(nfdversion_t version,
@@ -846,9 +847,10 @@ nfdresult_t NFD_PickFolderU8_With_Impl(nfdversion_t version,
                                        const nfdpickfolderu8args_t* args)
     __attribute__((alias("NFD_PickFolderN_With_Impl")));
 
-nfdresult_t NFD_PickFolderMultipleN(const nfdpathset_t** outPaths, const nfdnchar_t* defaultPath) {
+nfdresult_t NFD_PickFolderMultipleN(const nfdpathset_t** outPaths, const nfdnchar_t* defaultPath, const nfdnchar_t* windowName) {
     nfdpickfoldernargs_t args{};
     args.defaultPath = defaultPath;
+    args.windowName = windowName;
     return NFD_PickFolderMultipleN_With_Impl(NFD_INTERFACE_VERSION, outPaths, &args);
 }
 
@@ -858,7 +860,7 @@ nfdresult_t NFD_PickFolderMultipleN_With_Impl(nfdversion_t version,
     // We haven't needed to bump the interface version yet.
     (void)version;
 
-    GtkWidget* widget = gtk_file_chooser_dialog_new("Select Folders",
+    GtkWidget* widget = gtk_file_chooser_dialog_new(args->windowName,
                                                     nullptr,
                                                     GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
                                                     "_Cancel",
@@ -893,7 +895,7 @@ nfdresult_t NFD_PickFolderMultipleN_With_Impl(nfdversion_t version,
     }
 }
 
-nfdresult_t NFD_PickFolderMultipleU8(const nfdpathset_t** outPaths, const nfdu8char_t* defaultPath)
+nfdresult_t NFD_PickFolderMultipleU8(const nfdpathset_t** outPaths, const nfdu8char_t* defaultPath, const nfdu8char_t* windowName)
     __attribute__((alias("NFD_PickFolderMultipleN")));
 
 nfdresult_t NFD_PickFolderMultipleU8_With_Impl(nfdversion_t version,
