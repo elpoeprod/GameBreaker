@@ -126,7 +126,7 @@ void HSVtoRGB(float& fR, float& fG, float& fB, float& fH, float& fS, float& fV) 
     fR += fM;
     fG += fM;
     fB += fM;
-  }
+}
 
 namespace GameBreaker {
 
