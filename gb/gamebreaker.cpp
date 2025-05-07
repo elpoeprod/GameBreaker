@@ -8,6 +8,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_video.h>
 #include <dirent.h>
 
 #ifndef GB_DEFAULT_SAMPLESIZE
@@ -83,6 +84,11 @@ int init(int x, int y, int w, int h, std::string label)
     Uint16 format=MIX_DEFAULT_FORMAT;
     //Mix_QuerySpec(&hz,&format,&channels);
     Mix_OpenAudio(hz, format, channels, GB_DEFAULT_SAMPLESIZE);
+
+    //SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+    
+    //SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+
     gb_win = new GBWindow;
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
     gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, GB_INIT_WIN_FLAGS);
@@ -141,9 +147,7 @@ void update()
         switch(gb_win->ev.type) {
             case SDL_KEYDOWN: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=1; break;
             case SDL_KEYUP: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=0; break;
-            #ifdef GB_EXIT_ON_CLOSEBUTTON
             case SDL_QUIT: gb_win->running = 0; break;
-            #endif
             case SDL_MOUSEMOTION: mouse::x=gb_win->ev.motion.x; mouse::y=gb_win->ev.motion.y; break;
             case SDL_MOUSEBUTTONDOWN: {
                     mybut[gb_win->ev.button.button] = 1;
@@ -159,7 +163,9 @@ void update()
 #ifdef GB_GAME_END_ON_ESC
     if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0;
 #endif
-    /*int i=0;
+    
+    /*
+    int i=0;
     repeat(gb_objects.size()) {
         (*gb_objects[i])->hspd=math::lendir_x((*gb_objects[i])->spd,(*gb_objects[i])->direction);
         (*gb_objects[i])->vspd=math::lendir_y((*gb_objects[i])->spd,(*gb_objects[i])->direction);
@@ -173,7 +179,24 @@ void update()
             else (*gb_objects[i])->spd=0;
         }
         i++;
-    }*/
+    }
+    */
+
+    int i=0;
+    repeat(gb_objects.size()) {
+        gb_objects[i]->hspd=math::lendir_x(gb_objects[i]->spd,gb_objects[i]->direction);
+        gb_objects[i]->vspd=math::lendir_y(gb_objects[i]->spd,gb_objects[i]->direction);
+        gb_objects[i]->x+=gb_objects[i]->hspd;
+        gb_objects[i]->y+=gb_objects[i]->vspd;
+        if(gb_objects[i]->spd>0)
+            gb_objects[i]->spd-=gb_objects[i]->friction;
+        else {
+            if(gb_objects[i]->spd<0)
+                gb_objects[i]->spd+=gb_objects[i]->friction;
+            else gb_objects[i]->spd=0;
+        }
+        i++;
+    }
 
     fps_frames++;
     if (fps_lasttime < current_time - 1.0*1000) //1.0 is one second; update 1 second
