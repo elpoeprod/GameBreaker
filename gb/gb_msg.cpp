@@ -1,4 +1,5 @@
 #include "gamebreaker.hpp"
+#include <string>
 
 namespace GameBreaker {
 
