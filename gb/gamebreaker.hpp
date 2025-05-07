@@ -82,11 +82,15 @@ typedef struct GBSprite {
 } GBSprite;
 
 typedef struct GBObject {
-    double x, y;
-    double xprevious, yprevious;
-    double direction, gravity, gravity_direction,friction;
-    double spd,hspd,vspd;
-    GBSprite *spr, *mask;
+    public:
+        double x, y;
+        double xprevious, yprevious;
+        double direction, gravity, gravity_direction,friction;
+        double spd,hspd,vspd;
+        GBSprite *spr, *mask;
+
+    private:
+        int _in_path;
 } GBObject;
 
 typedef struct GBFont {
@@ -102,6 +106,17 @@ typedef struct GBWin {
     SDL_Event ev;
     int running;
 } GBWindow;
+
+struct _GBPath {
+    float x,y;
+};
+
+struct GBPath {
+    std::vector<_GBPath> path;
+    int closed;
+    int speed;
+
+};
 
 struct _gm_file {
     FILE *file;
@@ -445,6 +460,10 @@ public:
     static double clamp(double val, double minval, double maxval);
     static double point_in_rect(double px, double py, double rx1, double ry1, double rx2, double ry2);
     static int round(double x);
+};
+
+class room{public:
+    static int width,height;
 };
 
 struct __gbmap {
