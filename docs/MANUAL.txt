@@ -1,0 +1,12 @@
+GameBreaker Manual
+
+This file includes documentation to (almost) all files included in GameBreaker.
+
+Contents:
+1. GameBreaker::
+2. GameBreaker::graphics
+3. GameBreaker::window
+to be continued
+
+
+1. GameBreaker::
