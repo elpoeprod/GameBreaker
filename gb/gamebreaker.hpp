@@ -95,6 +95,7 @@ typedef struct GBObject {
 
 typedef struct GBFont {
     int size;
+    int bold, italic;
     TTF_Font* font;
 } GBFont;
 

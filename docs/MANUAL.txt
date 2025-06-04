@@ -3,10 +3,90 @@ GameBreaker Manual
 This file includes documentation to (almost) all files included in GameBreaker.
 
 Contents:
-1. GameBreaker::
-2. GameBreaker::graphics
-3. GameBreaker::window
+1. GameBreaker flags/defines
+2. GameBreaker types
+3. GameBreaker::
+4. GameBreaker::graphics
+5. GameBreaker::window
 to be continued
 
 
-1. GameBreaker::
+1. GameBreaker flags/defines
+
+    Flags:
+
+        GB_INIT_WIN_FLAGS is used to create main SDL_Renderer. Define it with SDL_RENDERER_* flags, 
+        otherwise it will be defined to SDL_RENDERER_ACCELERATED.
+
+        GB_WINPOS_CENTER centers game window. Definition of SDL_WINDOWPOS_CENTERED.
+
+        GB_DONT_USE_*:
+            SFX will not initialize ::sound functions;
+            MUSIC will not initialize ::music functions;
+            JOY will not initialize ::joy functions;
+            KEYB will not initialize ::keyboard functions;
+
+        GB_USE_SMALL_FUNCNAMES is used to make GameBreaker functions smaller.
+        GameBreaker::graphics::draw becomes draw, GameBreaker::mouse becomes mouse, etc.
+        Useful everywhere.
+
+        GB_EXIT_ON_CLOSEBUTTON is used to shutdown game on close button.
+
+        GB_USE_GM_VOLUME makes all sound/music functions take volume argument from *::set_vol
+        in range from 0 to 1. Otherwise, *::set_vol functions will have volume range from 0 to 128.
+
+    Defines:
+
+        repeat(a) is used to repeat something for a times.
+        Useful if user don't wanna type "for()" loops everytime. (TAKEN FROM GAMEMAKER)
+
+        var is a definition of auto. (TAKEN FROM GAMEMAKER)
+
+        stringify() is a definition of std::to_string(). (TAKEN FROM GAMEMAKER, ORIGIN OF 
+        FUNCTION IS string().)
+
+2. GameBreaker types
+
+    GameBreaker has many types that will be useful for creating a game.
+
+    GBObject is an object type. 
+        It has those arguments:
+            x, y - coordinates of an object;
+            spr - sprite of object;
+            mask - collision mask of object;
+            xprevious, yprevious - coordinates of an object on previous frame;
+            direction, speed, hspeed, vspeed -  direction, speed, horizontal speed and vertical speed.
+                                                if no direction and speed were set, user should
+                                                manually change vspeed and hspeed,
+                                                otherwise, GameBreaker will automatically set
+                                                hspeed to cos(direction)*speed and
+                                                vspeed to sin(direction)*speed;
+            gravity, gravity_direction, friction -  equal to their function. if gravity!=0, then
+                                                    hspeed and vspeed will be automatically
+                                                    calculated.
+                                                    friction can stop object if friction>0.
+            
+    GBSprite is a sprite type. It is used to store images.
+        It has those arguments:
+            offx, offy - offset coordinates;
+            w, h - size of an sprite, width and height;
+            frames - how many sprite does image has;
+            tex - image itself.
+        Note that this type doesn't contain cutted image into number of sprites.
+            It cuts in graphics::draw::sprite*() functions only.
+
+    GBFont is a font type. It is used to store some font.
+        It has those arguments:
+            size - size of font;
+            bold - is font bold or not;
+            italic - is font italic or not;
+            font - where font is stored.
+
+
+
+
+    
+
+
+
+
