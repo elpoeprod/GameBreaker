@@ -24,8 +24,7 @@ namespace GameBreaker {
         mus->chunk = Mix_LoadMUS(fname.c_str());
         mus->len=-1;
         if(mus->chunk==nullptr) {
-        show::error(R"(At function music::add:
-    Can't load file with name )" + fname,1);
+        show::error("At function music::add:\nCan't load file with name " + fname,1);
         }
         mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
         mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
