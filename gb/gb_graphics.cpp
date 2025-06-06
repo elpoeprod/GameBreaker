@@ -223,6 +223,8 @@ namespace GameBreaker {
 
     void graphics::draw::set_font(GBFont *fnt) {
         curfon.f=fnt;
+        curfon.bold=fnt->bold;
+        curfon.italic=fnt->italic;
     }
     void graphics::draw::set_text_align(double ha, double va) {
         _gm_halign=ha;
@@ -386,6 +388,17 @@ namespace GameBreaker {
         int myw=(spr->w / spr->frames);
         SDL_Rect rect = {myw*(frame % spr->frames),0,(int)math::clamp(w,0,myw),(int)math::clamp(h,0,spr->h)};
         SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
+        float cenx=spr->offx,ceny=spr->offy;
+        SDL_FPoint cen = { cenx,ceny };
+        SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
+    }
+
+    void graphics::draw::sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot)
+    {
+        int myw=(spr->w / spr->frames);
+        SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
+        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)w * xscale, (float)h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
