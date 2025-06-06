@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include "3rdparty/sdl2_sound/SDL_sound.h"
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
@@ -11,30 +12,6 @@
 #include <vector>
 #include <map>
 
-/*****GameBreaker Header File*****/
-/*
-    Options:
-    GB_EXIT_ON_CLOSEBUTTON  -   Ends game if "Close" button was pressed.
-    GB_USE_SMALL_FUNCNAMES  -   Makes typedefs of functions. 
-                                    Example:    from "GameBreaker::graphics::draw::rect(...)"
-                                                to "draw::rect(...)"
-    GB_USE_GM_VOLUME        -   Forces GameBreaker to use legacy GM volume, from 0 to 1
-                                If not defined, GameBreaker uses volume from 0 to 128.
-    
-
-*/
-
-
-/***
- define GB_DONT_USE_* to not use something. Available:
-    KEYB,
-    MOUSE,
-    JOY,
-    MUS,
-    SFX,
-
- ***/
-
 #ifndef GB_INIT_WIN_FLAGS
 #define GB_INIT_WIN_FLAGS SDL_RENDERER_ACCELERATED
 #endif
@@ -42,6 +19,18 @@
 #define repeat(a) if(a>0) for(int __rep_i=0;__rep_i<a;__rep_i++)
 
 #define GB_WINPOS_CENTER SDL_WINDOWPOS_CENTERED
+
+typedef struct __current {
+        int second,
+        minute,
+        hour,
+        day,
+        month,
+        year,
+        century,
+        planet,
+        millenium;
+    } __current;
 
 namespace GameBreaker {
 typedef std::string gb_str;
@@ -73,6 +62,22 @@ typedef struct GBMusic {
     std::string tag[4];
 } GBMusic;
 #endif
+
+typedef struct GB_Sound {
+    struct {
+        Sound_Sample *sample;
+        SDL_AudioSpec devformat;
+        Uint8 *decoded_ptr;
+        Uint32 decoded_bytes;
+    } data;
+    Sound_Sample *smp;
+    double vol;
+    double pos;
+    int type; // 0 or 1
+    double x,y;
+    double pan;
+    double len;
+} GB_Sound;
 
 typedef struct GBSprite {
     int offx, offy;
@@ -360,6 +365,7 @@ public:
         static void blendmode(SDL_BlendMode mode);
         static void sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot);
         static void sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot);
+        static void sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot);
         static void sprite_ext(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot, SDL_Color col);
         static gb_button_state button(int x, int y, int w, int h, GBSprite *spr, int types);
         static void text(float x, float y, GBText* text);
@@ -443,11 +449,18 @@ class ini {public:
 class d3d {
 };
 
+class date{public:
+    static __current current;
+};
+
 class gstr {public:
-    static gb_str replace(gb_str text,gb_str in, gb_str out);
-    static gb_str replace_all(gb_str text,gb_str in, gb_str out);
-    static gb_str cat(std::vector<void *>args);
-    static int count(gb_str text, gb_str n);
+    static gb_str   replace(gb_str text,gb_str in, gb_str out);
+    static gb_str   replace_all(gb_str text,gb_str in, gb_str out);
+    static gb_str   cat(std::vector<void *>args);
+    static int      count(gb_str text, gb_str n);
+    static gb_str   shorten(gb_str fname);
+    static gb_str   lowercase(gb_str str);
+    static gb_str   uppercase(gb_str str); 
 };
 
 enum ERROR {
@@ -463,6 +476,8 @@ public:
     static double clamp(double val, double minval, double maxval);
     static double point_in_rect(double px, double py, double rx1, double ry1, double rx2, double ry2);
     static int round(double x);
+    static int floor(double x);
+    static int ceil(double x);
 };
 
 class room{public:

@@ -10,6 +10,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
 #include <dirent.h>
+#include <time.h>
 
 #ifndef GB_DEFAULT_SAMPLESIZE
 #define GB_DEFAULT_SAMPLESIZE 1024
@@ -41,7 +42,7 @@ void findControllers()
 namespace GameBreaker {
 
 SDL_Color _realcol_={255,255,255,255};
-_curfont curfon;
+_curfont curfon={nullptr,0,0};
 int current_time=0;
 double master_vol = 1,
     _gm_halign=0, _gm_valign = 0;
@@ -64,6 +65,18 @@ int joy::holding(int joy, int button) { return myjoybut[joy][button] && mylastjo
 
 int mouse::x = 0;
 int mouse::y = 0;
+
+__current date::current={
+    .second=0,
+    .minute=0,
+    .hour=0,
+    .day=0,
+    .month=0,
+    .year=0,
+    .century=0,
+    .planet=0,
+    .millenium=0
+};
 
 Uint32 fps_lasttime = SDL_GetTicks();
 Uint32 fps_current;
@@ -110,6 +123,17 @@ int init(int x, int y, int w, int h, std::string label)
         }
     }
     findControllers();
+    time_t tist=time(NULL);
+    struct tm ts=*localtime(&tist);
+    date::current.second=ts.tm_sec;
+    date::current.minute=ts.tm_sec;
+    date::current.hour=ts.tm_hour;
+    date::current.day=ts.tm_mday;
+    date::current.month=ts.tm_mon;
+    date::current.year=ts.tm_year;
+    date::current.century=math::floor(ts.tm_year/365.25);
+    date::current.planet=2;
+    date::current.millenium=math::floor(ts.tm_mday);
 
     return 1;
 }
