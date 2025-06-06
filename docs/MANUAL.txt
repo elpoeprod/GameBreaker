@@ -81,6 +81,30 @@ to be continued
             bold - is font bold or not;
             italic - is font italic or not;
             font - where font is stored.
+    
+    GBSound is a sound type. It is used to store some sound.
+        It has those arguments:
+            chunk - chunk where is sound stored;
+            vol - volume;
+            pos - position;
+            type - sound type (unused);
+            x, y - coordinates of sound;
+            pan - pan of sound;
+            channel - channel where is sound stored (used only by gb for gb commands);
+
+    GBMusic is a sound type. It is used to store some sound.
+    The difference from GBSound is:
+        - GBMusic is streaming music from disk, not like GBSound, storing all the sound in a variable.
+        - GBMusic can store sound tags (MP3's ID3, FLAC's tags etc), unlike GBSound.
+    It has those arguments:
+        chunk - chunk where is music stored;
+        vol - volume;
+        pos - position;
+        type - type of sound (unused);
+        x, y - coordinates of sound;
+        pan - pan of sound;
+        len - length;
+        tag[4] - tags (Artist, Title, Album, Copyright)
 
 
 
