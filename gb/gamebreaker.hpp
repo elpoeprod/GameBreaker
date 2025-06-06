@@ -126,7 +126,8 @@ struct _gm_file {
 
 extern GBWindow* gb_win;
 
-extern GBFont *curfon;
+typedef struct _curfont{GBFont *f; int bold; int italic;} _curfont;
+extern _curfont curfon;
 
 extern std::vector<GBSound*> gb_sounds;
 extern std::vector<GBSprite*> gb_sprites;
@@ -179,7 +180,7 @@ public:
     std::string txt {};
     SDL_Surface* surf { nullptr };
     SDL_Texture* tex { nullptr };
-    GBFont *m_font{GameBreaker::curfon};
+    GBFont *m_font{GameBreaker::curfon.f};
 };
 
 extern double master_vol,
@@ -192,7 +193,8 @@ extern void shutdown();
 
 class font {
 public:
-    static GBFont* add(gb_str fname, int size, int bold, int italic);
+    static GBFont* add(gb_str fname, int size);
+    static void style(GBFont *font, int bold, int italic);
     static void destroy(GBFont* font);
     static void option(Uint32 style_flags);
 };

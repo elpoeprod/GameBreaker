@@ -41,7 +41,7 @@ void findControllers()
 namespace GameBreaker {
 
 SDL_Color _realcol_={255,255,255,255};
-GBFont *curfon;
+_curfont curfon;
 int current_time=0;
 double master_vol = 1,
     _gm_halign=0, _gm_valign = 0;

@@ -222,7 +222,7 @@ namespace GameBreaker {
     }
 
     void graphics::draw::set_font(GBFont *fnt) {
-        curfon=fnt;
+        curfon.f=fnt;
     }
     void graphics::draw::set_text_align(double ha, double va) {
         _gm_halign=ha;
