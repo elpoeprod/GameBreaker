@@ -1,5 +1,8 @@
 #include "gamebreaker.hpp"
-
+#include <SDL2/SDL_ttf.h>
+#include <cctype>
+#include <clocale>
+#include <filesystem>
 /*
 * GAMEBREAKER::STRINGS
 */
@@ -39,5 +42,34 @@ namespace GameBreaker {
             delete temp;
         }
         return mystr;
+    }
+    gb_str gstr::shorten(gb_str fname) { // shortens filename to FILENA~1.* if fname length is more than 8. otherwise return fname
+        std::filesystem::path _temp_fn=fname;
+        std::string fe=_temp_fn.extension();
+        std::string fn=_temp_fn.filename();
+        std::string ret;
+        if(fn.length()>8) {
+            for(int i=0;i<6;i++) {
+                ret+=fn[i];
+            }
+            ret+="~1";
+        }
+        return ret+fe;
+    }
+    gb_str gstr::lowercase(gb_str str) {
+        gb_str ret;
+        var i=0;repeat(str.length()) {
+            ret+=tolower(str[i]);
+            i++;
+        }
+        return ret;
+    }
+    gb_str gstr::uppercase(gb_str str) {
+        gb_str ret;
+        var i=0;repeat(str.length()) {
+            ret+=toupper(str[i]);
+            i++;
+        }
+        return ret;
     }
 }
