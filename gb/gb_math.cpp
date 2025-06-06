@@ -53,4 +53,10 @@ namespace GameBreaker {
     int math::round(double x) {
         return (int)std::round(x);
     }
+    int math::floor(double x) {
+        return (int)std::floor(x);
+    }
+    int math::ceil(double x) {
+        return (int)std::ceil(x);
+    }
 }
