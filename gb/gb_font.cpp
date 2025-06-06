@@ -14,6 +14,7 @@ namespace GameBreaker {
         TTF_SetFontHinting(fn->font,TTF_HINTING_LIGHT_SUBPIXEL);
         return fn;
     }
+    
     void font::style(GBFont *font, int bold, int italic) {
         int myform=(bold&&italic)? TTF_STYLE_BOLD|TTF_STYLE_ITALIC:bold?TTF_STYLE_BOLD:italic?TTF_STYLE_ITALIC:0;
         TTF_SetFontStyle(font->font,myform);
