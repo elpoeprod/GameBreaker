@@ -31,6 +31,7 @@ to be continued
         Useful everywhere.
 
         GB_EXIT_ON_CLOSEBUTTON is used to shutdown game on close button.
+        GB_GAME_END_ON_ESC is used to shutdown game on releasing Escape key.
 
         GB_USE_GM_VOLUME makes all sound/music functions take volume argument from *::set_vol
         in range from 0 to 1. Otherwise, *::set_vol functions will have volume range from 0 to 128.
