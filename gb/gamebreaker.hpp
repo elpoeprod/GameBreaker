@@ -1,21 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
-#if defined(__linux__)
-#define WITH_ALSA
-#elif defined(__WIN32__)
-#define WITH_SDL2
-#elif defined(__PSP__)
-#define WITH_MINIAUDIO
-#endif
-
-#include "3rdparty/soloud/include/soloud.h"
-#include "3rdparty/soloud/include/soloud_wav.h"
-#include "3rdparty/soloud/include/soloud_wavstream.h"
-#include "3rdparty/soloud/include/soloud_openmpt.h"
-//#include "3rdparty/taglib/tag.h"
-
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <math.h>
@@ -48,22 +34,14 @@ namespace GameBreaker {
 typedef std::string gb_str;
 extern int current_time;
 extern SDL_Color _realcol_;
-//extern void *__sel_obj_;
-extern SoLoud::Soloud *__mus_handle;
-
 enum GBAudioType {
     GB_2D=0,
     GB_3D
 };
-typedef struct _GB_Audio {
-    SoLoud::Openmpt mod;
-    SoLoud::Wav nonstream;
-    SoLoud::WavStream stream;
-} _GB_Audio;
 
 #ifndef GB_DONT_USE_SFX
 typedef struct GBSound {
-    _GB_Audio chunk;
+    Mix_Chunk *chunk;
     double vol;
     double pos;
     int type;
@@ -75,7 +53,7 @@ typedef struct GBSound {
 
 #ifndef GB_DONT_USE_MUSIC
 typedef struct GBMusic {
-    _GB_Audio chunk;
+    Mix_Music *chunk;
     double vol;
     double pos;
     int type;
