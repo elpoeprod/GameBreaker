@@ -8,6 +8,7 @@ namespace GameBreaker {
     GBFont* font::add(gb_str fname, int size) {
         GBFont* fn = new GBFont;
         fn->font = TTF_OpenFont(fname.c_str(), size);
+        if(fn->font==nullptr or fn->font==NULL) {show::error("At function font::add:\nFile doesn't exists: "+fname,1); return nullptr;} 
         fn->size = size;
         gb_fonts.resize(gb_fonts.size() + 1);
         gb_fonts[gb_fonts.size() - 1] = fn;
@@ -18,6 +19,10 @@ namespace GameBreaker {
     void font::style(GBFont *font, int bold, int italic) {
         int myform=(bold&&italic)? TTF_STYLE_BOLD|TTF_STYLE_ITALIC:bold?TTF_STYLE_BOLD:italic?TTF_STYLE_ITALIC:0;
         TTF_SetFontStyle(font->font,myform);
+    }
+
+    void font::style_ext(GBFont *font, int style) {
+        TTF_SetFontStyle(font->font,style);
     }
 
     void font::destroy(GBFont* font) {

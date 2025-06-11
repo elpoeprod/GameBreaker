@@ -1,9 +1,21 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include "3rdparty/sdl2_sound/SDL_sound.h"
-#include <SDL2/SDL_stdinc.h>
+
+#if defined(__linux__)
+#define WITH_ALSA
+#elif defined(__WIN32__)
+#define WITH_SDL2
+#elif defined(__PSP__)
+#define WITH_MINIAUDIO
+#endif
+
+#include "3rdparty/soloud/include/soloud.h"
+#include "3rdparty/soloud/include/soloud_wav.h"
+#include "3rdparty/soloud/include/soloud_wavstream.h"
+#include "3rdparty/soloud/include/soloud_openmpt.h"
+//#include "3rdparty/taglib/tag.h"
+
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <math.h>
@@ -37,47 +49,43 @@ typedef std::string gb_str;
 extern int current_time;
 extern SDL_Color _realcol_;
 //extern void *__sel_obj_;
+extern SoLoud::Soloud *__mus_handle;
+
+enum GBAudioType {
+    GB_2D=0,
+    GB_3D
+};
+typedef struct _GB_Audio {
+    SoLoud::Openmpt mod;
+    SoLoud::Wav nonstream;
+    SoLoud::WavStream stream;
+} _GB_Audio;
 
 #ifndef GB_DONT_USE_SFX
 typedef struct GBSound {
-    Mix_Chunk* chunk;
+    _GB_Audio chunk;
     double vol;
     double pos;
     int type;
-    double x, y;
+    double x, y,z;
     double pan;
-    int channel;
+    int handle;
 } GBSound;
 #endif
 
 #ifndef GB_DONT_USE_MUSIC
 typedef struct GBMusic {
-    Mix_Music* chunk;
+    _GB_Audio chunk;
     double vol;
     double pos;
     int type;
     double x, y;
     double pan;
     double len;
+    int handle;
     std::string tag[4];
 } GBMusic;
 #endif
-
-typedef struct GB_Sound {
-    struct {
-        Sound_Sample *sample;
-        SDL_AudioSpec devformat;
-        Uint8 *decoded_ptr;
-        Uint32 decoded_bytes;
-    } data;
-    Sound_Sample *smp;
-    double vol;
-    double pos;
-    int type; // 0 or 1
-    double x,y;
-    double pan;
-    double len;
-} GB_Sound;
 
 typedef struct GBSprite {
     int offx, offy;
@@ -133,6 +141,7 @@ extern GBWindow* gb_win;
 
 typedef struct _curfont{GBFont *f; int bold; int italic;} _curfont;
 extern _curfont curfon;
+extern GBFont *_fntDefault__;
 
 extern std::vector<GBSound*> gb_sounds;
 extern std::vector<GBSprite*> gb_sprites;
@@ -200,6 +209,7 @@ class font {
 public:
     static GBFont* add(gb_str fname, int size);
     static void style(GBFont *font, int bold, int italic);
+    static void style_ext(GBFont *font, int style); // use TTF_STYLE_* 
     static void destroy(GBFont* font);
     static void option(Uint32 style_flags);
 };
@@ -277,8 +287,8 @@ public:
     static void         set_pos(GBMusic* snd, double pos);
     static void         play(GBMusic* snd);
     static void         loop(GBMusic* snd, int loops);
-    static void         pause();
-    static void         resume();
+    static void         pause(GBMusic *snd);
+    static void         resume(GBMusic *snd);
     static void         stop(GBMusic* snd);
     static void         set_vol(GBMusic* snd, double vol);
     static int          get_wave(GBMusic* snd,int pos);

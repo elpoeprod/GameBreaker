@@ -15,6 +15,9 @@ namespace GameBreaker {
 
     void show::error(gb_str msg, int abort) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", msg.c_str(), gb_win->win);
-        if(abort) exit(0xc01001);
+        if(abort) {
+            printf("ERROR: %s\nExit code: 0xC01001\n",msg.c_str());
+            exit(0xc01001);
+        }
     }
 }

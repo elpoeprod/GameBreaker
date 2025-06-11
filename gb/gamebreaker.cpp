@@ -1,14 +1,7 @@
 #include "gamebreaker.hpp"
-#include <SDL2/SDL_audio.h>
+#include "3rdparty/soloud/include/soloud.h"
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_keyboard.h>
-#include <SDL2/SDL_messagebox.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_mouse.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_video.h>
 #include <dirent.h>
 #include <time.h>
 
@@ -81,26 +74,15 @@ __current date::current={
 Uint32 fps_lasttime = SDL_GetTicks();
 Uint32 fps_current;
 Uint32 fps_frames = 0;
+GBFont *_fntDefault__;
+SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
 
 int init(int x, int y, int w, int h, std::string label)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
-    Uint32 mix_flags = MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_OPUS | MIX_INIT_MP3;
-#ifndef __PSP__
-    mix_flags |= MIX_INIT_WAVPACK;
-#endif
-    Mix_Init(mix_flags);
     IMG_Init(IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_AVIF | IMG_INIT_JXL | IMG_INIT_TIF);
-    int hz=44100;
-    int channels=2;
-    Uint16 format=MIX_DEFAULT_FORMAT;
-    //Mix_QuerySpec(&hz,&format,&channels);
-    Mix_OpenAudio(hz, format, channels, GB_DEFAULT_SAMPLESIZE);
-
-    //SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
-    
-    //SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+    __mus_handle->init(SoLoud::Soloud::ENABLE_VISUALIZATION|SoLoud::Soloud::CLIP_ROUNDOFF);
 
     gb_win = new GBWindow;
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
@@ -133,7 +115,10 @@ int init(int x, int y, int w, int h, std::string label)
     date::current.year=ts.tm_year;
     date::current.century=math::floor(ts.tm_year/365.25);
     date::current.planet=2;
-    date::current.millenium=math::floor(ts.tm_mday);
+    date::current.millenium=math::floor(date::current.year);
+    _fntDefault__=font::add("3rdparty/sourcesans.ttf",12);
+    graphics::draw::set_font(_fntDefault__);
+    graphics::draw::color(0xFFFFFF);
 
     return 1;
 }
@@ -264,6 +249,9 @@ void shutdown()
     gb_sounds.clear();
     gb_sprites.clear();
     gb_fonts.clear();
+    IMG_Quit();
+    TTF_Quit();
+    __mus_handle->deinit();
 }
 
 

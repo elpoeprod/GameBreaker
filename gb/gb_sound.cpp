@@ -12,7 +12,7 @@ namespace GameBreaker {
     /**
     * returns new sound that was added from fname and type (unused)
     */
-    GBMusic* music::add(std::string fname, int type)
+    GBMusic* music::add(gb_str fname, int type)
     {
         GBMusic* mus = new GBMusic;
         mus->pos = 0;
@@ -21,24 +21,21 @@ namespace GameBreaker {
         mus->x = 0;
         mus->y = 0;
         mus->pan = 0;
-        mus->chunk = Mix_LoadMUS(fname.c_str());
+        mus->chunk.stream.load(fname.c_str());
         mus->len=-1;
-        if(mus->chunk==nullptr) {
-        show::error("At function music::add:\nCan't load file with name " + fname,1);
-        }
-        mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
-        mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
-        mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
-        mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
+        //mus->tag[0]=mus->chunk.
+        //mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
+        //mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
+        //mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
         curmusic = mus;
         return mus;
     }
     
     void music::get_tags(GBMusic *mus) {
-        mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
-        mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
-        mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
-        mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
+        //mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
+        //mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
+        //mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
+        //mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
     }
     
     /**
@@ -48,42 +45,44 @@ namespace GameBreaker {
     void music::set_pos(GBMusic* snd, double pos)
     {
         snd->pos = pos;
-        Mix_SetMusicPosition(snd->pos);
+        __mus_handle->seek(snd->handle,pos);
     }
     
     /**
     * play sound
     * \sa snd - sound
     **/
-    void music::play(GBMusic* snd) { Mix_PlayMusic(snd->chunk, 0); snd->len=Mix_MusicDuration(snd->chunk);}
+    void music::play(GBMusic* snd) {
+        snd->handle=__mus_handle->play(snd->chunk.stream,1*master_vol);
+    }
     /**
     * play sound looped
     * \sa snd - sound
     * \sa loops - how many times the sound should be repeated
     **/
-    void music::loop(GBMusic* snd, int loops) { Mix_PlayMusic(snd->chunk, loops); snd->len=Mix_MusicDuration(snd->chunk);}
+    void music::loop(GBMusic* snd, int loops) {
+        snd->chunk.stream.setLooping((loops>0));
+        snd->handle=__mus_handle->play(snd->chunk.stream);
+    }
     /**
     * pauses the sound
     * \sa snd - sound
     **/
-    void music::pause() { Mix_PauseMusic(); }
-    void music::resume() {Mix_ResumeMusic();}
+    void music::pause(GBMusic *snd) {__mus_handle->setPause(snd->handle,true);}
+    void music::resume(GBMusic *snd) {__mus_handle->setPause(snd->handle,false);}
     /**
     * stops the sound entirely
     * \sa snd - sound
     **/
-    void music::stop(GBMusic* snd) { Mix_HaltMusic(); }
+    void music::stop(GBMusic* snd) { __mus_handle->stop(snd->handle); }
     /**
     * sets the volume of a sound
     * \sa snd - sound
     * \sa vol - volume
     **/
     void music::set_vol(GBMusic* snd, double vol) {
-    #ifdef GB_USE_GM_VOLUME
-        Mix_VolumeMusic(vol * 128); }
-    #else
-        Mix_VolumeMusic(vol);
-    #endif
+        snd->chunk.stream.setVolume(vol);
+        snd->vol=vol;
     }
     /**
     * destroy sound if it will not be used anymore
@@ -93,7 +92,6 @@ namespace GameBreaker {
     {
         snd->x = 0;
         snd->y = 0;
-        Mix_FreeMusic(snd->chunk);
         snd->pan = 0;
         snd->pos = 0;
         snd->type = 0;
@@ -103,8 +101,7 @@ namespace GameBreaker {
     }
     
     double music::get_pos(GBMusic *mus) {
-        if(mus->chunk==nullptr) return 0;
-        return Mix_GetMusicPosition(mus->chunk);
+        return __mus_handle->getStreamPosition(mus->handle);
     }
     
     double music::get_len(GBMusic *mus) {
@@ -112,7 +109,7 @@ namespace GameBreaker {
     }
 
     void music::set_loops(int loops) {
-        return; // no function in sdl2 to set loop count after song was played
+        return; // no function in soloud to set loop count after song was played
     }
     
     /**
@@ -131,7 +128,7 @@ namespace GameBreaker {
         snd->x = 0;
         snd->y = 0;
         snd->pan = 0;
-        snd->chunk = Mix_LoadWAV(fname.c_str());
+        snd->chunk.nonstream.load(fname.c_str());
         gb_sounds.resize(gb_sounds.size() + 1);
         gb_sounds[gb_sounds.size() - 1] = snd;
         return snd;
@@ -146,13 +143,11 @@ namespace GameBreaker {
         // Mix_SetMusicPosition(snd->pos);
     }
     int sound::get_wave(GBSound* snd, int pos)
-    {
-        int h = snd->chunk->abuf[pos];
-    
-        return h;
+    {   
+        return 0;
     }
     
-    static int get_wave(GBMusic* snd,int pos) {
+    int music::get_wave(GBMusic* snd,int pos) {
         return 0;
     }
     
@@ -160,34 +155,37 @@ namespace GameBreaker {
     * play sound
     * \sa snd - sound
     **/
-    void sound::play(GBSound* snd) { snd->channel = Mix_PlayChannel(-1, snd->chunk, 0); }
+    void sound::play(GBSound* snd) { 
+        if(snd->type==GB_2D) snd->handle=__mus_handle->play(snd->chunk.nonstream,snd->vol*master_vol);
+        else __mus_handle->play3d(snd->chunk.nonstream,snd->x,snd->y,snd->z,1*master_vol);
+    }
     /**
     * play sound looped
     * \sa snd - sound
     * \sa loops - how many times the sound should be repeated
     **/
-    void sound::loop(GBSound* snd, int loops) { snd->channel = Mix_PlayChannel(-1, snd->chunk, loops); }
+    void sound::loop(GBSound* snd, int loops) { 
+        snd->chunk.nonstream.setLooping(loops>0);
+        if(snd->type==GB_2D) snd->handle=__mus_handle->play(snd->chunk.nonstream,snd->vol*master_vol);
+        else __mus_handle->play3d(snd->chunk.nonstream,snd->x,snd->y,snd->z,1*master_vol);
+    }
     /**
     * pauses the sound
     * \sa snd - sound
     **/
-    void sound::pause(GBSound* snd) { Mix_Pause(snd->channel); }
+    void sound::pause(GBSound* snd) { __mus_handle->setPause(snd->handle, true); }
     /**
     * stops the sound entirely
     * \sa snd - sound
     **/
-    void sound::stop(GBSound* snd) { Mix_HaltChannel(snd->channel); }
+    void sound::stop(GBSound* snd) { snd->chunk.nonstream.stop();}
     /**
     * sets the volume of a sound
     * \sa snd - sound
     * \sa vol - volume
     **/
     void sound::set_vol(GBSound* snd, double vol) {
-    #ifdef GB_USE_GM_VOLUME
-    Mix_Volume(snd->channel, vol * 128);
-    #else
-    Mix_Volume(snd->channel,vol);
-    #endif
+        snd->chunk.nonstream.setVolume(vol*master_vol);
     }
     /**
     * destroy sound if it will not be used anymore
@@ -197,7 +195,6 @@ namespace GameBreaker {
     {
         snd->x = 0;
         snd->y = 0;
-        Mix_FreeChunk(snd->chunk);
         snd->pan = 0;
         snd->pos = 0;
         snd->type = 0;
