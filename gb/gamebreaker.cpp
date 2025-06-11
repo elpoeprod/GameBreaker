@@ -75,14 +75,12 @@ Uint32 fps_lasttime = SDL_GetTicks();
 Uint32 fps_current;
 Uint32 fps_frames = 0;
 GBFont *_fntDefault__;
-SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
-
 int init(int x, int y, int w, int h, std::string label)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
     IMG_Init(IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_AVIF | IMG_INIT_JXL | IMG_INIT_TIF);
-    __mus_handle->init(SoLoud::Soloud::ENABLE_VISUALIZATION|SoLoud::Soloud::CLIP_ROUNDOFF);
+    Mix_Init(MIX_INIT_FLAC|MIX_INIT_MP3|MIX_INIT_OGG|MIX_INIT_MOD);
 
     gb_win = new GBWindow;
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
