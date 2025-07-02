@@ -1,5 +1,4 @@
-#include "gamebreaker.hpp"
-#include "3rdparty/inicpp/inicpp.hpp"
+#include "../include/gamebreaker.hpp"
 
 static std::vector<inicpp::IniManager *> __gb_inis;
 

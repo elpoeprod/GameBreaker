@@ -1,4 +1,4 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 
 /***************
  * GAMEBREAKER::MOUSE
@@ -16,9 +16,9 @@ namespace GameBreaker {
     int mouse::pressed(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  mybut[1] && !mylastbut[1] or
-                    mybut[2] && !mylastbut[2] or
-                    mybut[3] && !mylastbut[3];
+            return  (mybut[1] && !mylastbut[1]) or
+                    (mybut[2] && !mylastbut[2]) or
+                    (mybut[3] && !mylastbut[3]);
         }
         if(mouse_button!=mb::none)
             return mybut[mouse_button] && !mylastbut[mouse_button];
@@ -32,12 +32,12 @@ namespace GameBreaker {
     int mouse::released(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  !mybut[1] && mylastbut[1] or
-                    !mybut[2] && mylastbut[2] or
-                    !mybut[3] && mylastbut[3];
+            return  (!mybut[1] && mylastbut[1]) or
+                    (!mybut[2] && mylastbut[2]) or
+                    (!mybut[3] && mylastbut[3]);
         }
         if(mouse_button!=mb::none)
-            return !mybut[mouse_button] && mylastbut[mouse_button];
+            return (!mybut[mouse_button] && mylastbut[mouse_button]);
 
         return 0;
     }
@@ -66,9 +66,9 @@ namespace GameBreaker {
     int mouse::nothing(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  !mybut[1] && !mylastbut[1] or
-                    !mybut[2] && !mylastbut[2] or
-                    !mybut[3] && !mylastbut[3];
+            return  (!mybut[1] && !mylastbut[1]) or
+                    (!mybut[2] && !mylastbut[2]) or
+                    (!mybut[3] && !mylastbut[3]);
         }
         if(mouse_button!=mb::none)
             return !mybut[mouse_button] && !mylastbut[mouse_button];

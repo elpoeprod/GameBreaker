@@ -1,9 +1,10 @@
-#include "gamebreaker.hpp"
-#include "3rdparty/soloud/include/soloud.h"
+#include "../include/gamebreaker.hpp"
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <time.h>
+#include <algorithm>
 
 #ifndef GB_DEFAULT_SAMPLESIZE
 #define GB_DEFAULT_SAMPLESIZE 1024
@@ -40,8 +41,10 @@ int current_time=0;
 double master_vol = 1,
     _gm_halign=0, _gm_valign = 0;
 
-GBWindow* gb_win;
+GBRoom *_gb_curroom;
 
+GBWindow* gb_win;
+SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
 
 //void *__sel_obj_;
 
@@ -80,7 +83,7 @@ int init(int x, int y, int w, int h, std::string label)
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
     IMG_Init(IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_AVIF | IMG_INIT_JXL | IMG_INIT_TIF);
-    Mix_Init(MIX_INIT_FLAC|MIX_INIT_MP3|MIX_INIT_OGG|MIX_INIT_MOD);
+    __mus_handle->init();
 
     gb_win = new GBWindow;
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
@@ -114,9 +117,10 @@ int init(int x, int y, int w, int h, std::string label)
     date::current.century=math::floor(ts.tm_year/365.25);
     date::current.planet=2;
     date::current.millenium=math::floor(date::current.year);
-    _fntDefault__=font::add("3rdparty/sourcesans.ttf",12);
-    graphics::draw::set_font(_fntDefault__);
+    //_fntDefault__=font::add("../include/default.ttf",12);
+    //graphics::draw::set_font(_fntDefault__);
     graphics::draw::color(0xFFFFFF);
+    _gb_curroom=nullptr;
 
     return 1;
 }
@@ -125,7 +129,7 @@ void io::clear() {
     for (int i = 0; i < 3; i++) {
         mylastbut[i] = 0;
     }
-    for (int i = 0; i < controllers.size(); i++) {
+    for (int i = 0; i < (int)controllers.size(); i++) {
         for (int ii = 0; ii < SDL_CONTROLLER_BUTTON_MAX; ii++) {
             mylastjoybut[i][ii] = 0;
             myjoybut[i][ii] = 0;
@@ -138,11 +142,16 @@ void io::clear() {
 void update()
 {
     //findControllers();
+    // Sets blend mode to default because yeah
     SDL_SetRenderDrawBlendMode(gb_win->ren, SDL_BlendMode::SDL_BLENDMODE_BLEND);
+
+    // Mouse event
     for (int i = 1; i < 4; i++) {
         mylastbut[i] = mybut[i];
     }
-    for (int i = 0; i < controllers.size(); i++) {
+
+    // Joystick event
+    for (int i = 0; i < (int)controllers.size(); i++) {
         for (int ii = 0; ii < SDL_CONTROLLER_BUTTON_MAX; ii++) {
             mylastjoybut[i][ii] = myjoybut[i][ii];
             myjoybut[i][ii] = SDL_GameControllerGetButton(controllers[i], (SDL_GameControllerButton)ii);
@@ -150,6 +159,7 @@ void update()
     }
     mylastkey=mykey;
 
+    // Events
     while (SDL_PollEvent(&gb_win->ev) != 0) {
         switch(gb_win->ev.type) {
             case SDL_KEYDOWN: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=1; break;
@@ -165,45 +175,56 @@ void update()
         }
 
     }
-    current_time=SDL_GetTicks();
+    current_time=SDL_GetTicks(); //current time
     
 #ifdef GB_GAME_END_ON_ESC
-    if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0;
+    if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0; // if pressed then end game
 #endif
-    
-    /*
-    int i=0;
-    repeat(gb_objects.size()) {
-        (*gb_objects[i])->hspd=math::lendir_x((*gb_objects[i])->spd,(*gb_objects[i])->direction);
-        (*gb_objects[i])->vspd=math::lendir_y((*gb_objects[i])->spd,(*gb_objects[i])->direction);
-        (*gb_objects[i])->x+=(*gb_objects[i])->hspd;
-        (*gb_objects[i])->y+=(*gb_objects[i])->vspd;
-        if((*gb_objects[i])->spd>0)
-            (*gb_objects[i])->spd-=(*gb_objects[i])->friction;
-        else {
-            if((*gb_objects[i])->spd<0)
-                (*gb_objects[i])->spd+=(*gb_objects[i])->friction;
-            else (*gb_objects[i])->spd=0;
-        }
-        i++;
-    }
-    */
 
-    int i=0;
-    repeat(gb_objects.size()) {
-        gb_objects[i]->hspd=math::lendir_x(gb_objects[i]->spd,gb_objects[i]->direction);
-        gb_objects[i]->vspd=math::lendir_y(gb_objects[i]->spd,gb_objects[i]->direction);
-        gb_objects[i]->x+=gb_objects[i]->hspd;
-        gb_objects[i]->y+=gb_objects[i]->vspd;
-        if(gb_objects[i]->spd>0)
-            gb_objects[i]->spd-=gb_objects[i]->friction;
-        else {
-            if(gb_objects[i]->spd<0)
-                gb_objects[i]->spd+=gb_objects[i]->friction;
-            else gb_objects[i]->spd=0;
+    int i=0; // For ALL object count
+    int _iobj=0; // For CURRENT ROOM object count
+        repeat(_gb_curroom->objects.size()) {
+            repeat(gb_objects.size()) {
+                if(gb_objects[i]->id==_gb_curroom->objects[_iobj].obj_id) {
+                    // Speed
+                    gb_objects[i]->hspd=math::lendir_x(gb_objects[i]->spd,gb_objects[i]->direction);
+                    gb_objects[i]->vspd=math::lendir_y(gb_objects[i]->spd,gb_objects[i]->direction);
+                    // Position
+                    gb_objects[i]->x+=gb_objects[i]->hspd;
+                    gb_objects[i]->y+=gb_objects[i]->vspd;
+                    if(gb_objects[i]->spd>0)
+                        gb_objects[i]->spd-=gb_objects[i]->friction;
+                    else {
+                        if(gb_objects[i]->spd<0)
+                            gb_objects[i]->spd+=gb_objects[i]->friction;
+                        else gb_objects[i]->spd=0;
+                    }
+
+                    //Events
+                    if(gb_objects[i]->event_step_end)
+                        gb_objects[i]->event_step_end();
+                    if(gb_objects[i]->event_step)
+                        gb_objects[i]->event_step();
+                    if(gb_objects[i]->event_step_end)
+                        gb_objects[i]->event_step_end();
+                    //this fucking sucks
+                    //WARNING VERY UNREADABLE CODE
+                    /*int myvec[gb_objects.size()];
+                    for(int i=0;i<gb_objects.size();i++) {
+                        myvec[i]=gb_objects[i]->depth;
+                    }
+                    std::sort(myvec,myvec+(sizeof(myvec)/sizeof(myvec[0])),std::greater<int>());
+                    for(int i=0;i<gb_objects.size();i++) {
+                        if(gb_objects[i]->depth==myvec[i]) {*/
+                            if(gb_objects[i]->event_draw)
+                                gb_objects[i]->event_draw();
+                    /*    }
+                    }*/
+                }
+                i++;
+            }
+            _iobj++;
         }
-        i++;
-    }
 
     fps_frames++;
     if (fps_lasttime < current_time - 1.0*1000) //1.0 is one second; update 1 second
@@ -213,7 +234,20 @@ void update()
         fps_frames = 0;
     }
 }
-int running(void) { update(); return gb_win->running; }
+void run(int fps) {
+    if(_gb_curroom==nullptr) {
+        show::error("WARNING\nThe current room was "
+                    "not set and the program will now exit.\n"
+                    "Did you forgot to put `GameBreaker::room::current()` function "
+                    "before `GameBreaker::run()`?",1); 
+        exit(0x0000000); 
+        return;
+    }
+    while(gb_win->running) {
+        update(); 
+        screen::draw(fps);
+    }
+}
 
 /**
  * updates screen
@@ -230,16 +264,16 @@ void screen::end() {
 
 void shutdown()
 {
-    for (int i = 0; i < gb_objects.size(); i++) {
+    for (int i = 0; i < (int)gb_objects.size(); i++) {
         object::destroy(gb_objects[i]);
     }
-    for (int i = 0; i < gb_sprites.size(); i++) {
+    for (int i = 0; i < (int)gb_sprites.size(); i++) {
         graphics::sprite::destroy(gb_sprites[i]);
     }
-    for (int i = 0; i < gb_sounds.size(); i++) {
-        sound::destroy(gb_sounds[i]);
+    for (int i = 0; i < (int)gb_sounds.size(); i++) {
+        audio::destroy(gb_sounds[i]);
     }
-    for (int i = 0; i < gb_fonts.size(); i++) {
+    for (int i = 0; i < (int)gb_fonts.size(); i++) {
         font::destroy(gb_fonts[i]);
     }
 
@@ -249,6 +283,7 @@ void shutdown()
     gb_fonts.clear();
     IMG_Quit();
     TTF_Quit();
+    SDL_Quit();
     __mus_handle->deinit();
 }
 

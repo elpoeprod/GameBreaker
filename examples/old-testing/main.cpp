@@ -1,5 +1,5 @@
 #define GB_USE_SMALL_FUNCNAMES
-#include "../../gb/gamebreaker.hpp"
+#include "../../include/gamebreaker.hpp"
 
 namespace gb = GameBreaker;
 
@@ -7,16 +7,19 @@ int main()
 {
     gb::init(640, 480, 640, 480, "test");
     var  spr = sprite::add("elpaudio.png", 1, 0, 0);
-    var sndMusic=music::add("A.ogg",0);
+    var sndMusic=audio::add("A.ogg",gb::GB_MUSIC);
     var obj=object::add(spr,nullptr,50,50);
+    var myfont=font::add("default.ttf",12);
 
-    gb::music::loop(sndMusic,-1);
+    draw::set_font(myfont);
+
+    audio::loop(sndMusic,-1);
 
     std::vector<str> tempfilter={".ogg",".png"};
     ds_list temp=file::find::list_ext(".",tempfilter,fa::fullpath);
     show::message("test",gb::list::get_string(temp,"\n"));
 	draw::color_sdl(col::lime);
-    var text=new GBText("Hello world");
+    //var text=new GBText("Hello world");
     while (gb::running()) {
         draw::color(0xFFFFFF);
         draw::rect(0, 0, 640, 480, 0);
@@ -27,6 +30,7 @@ int main()
         draw::rect_color(200,200,120,80,col::black,col::black,col::green,col::blue,0);
         //draw::text(50,60,text);
         if(mouse::released(mb::left)&&mouse::x>500&&mouse::y>400) show::message("Test","H...");
+        if(keyboard::released(keyboard::ord((char *)"T"))) {show::message("Test","Lorem ipsum dolor sit amet");}
 
         screen::draw(60);
     }

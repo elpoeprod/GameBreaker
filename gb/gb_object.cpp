@@ -1,4 +1,4 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
 
@@ -25,9 +25,10 @@ namespace GameBreaker {
             obj->hspd=0;
             obj->vspd=0;
             obj->spr=spr;
+            obj->depth=0;
             obj->mask=mask!=nullptr?mask:spr;
-        gb_objects.resize(gb_objects.size() + 1);
-        gb_objects[gb_objects.size() - 1] = obj;
+            gb_objects.push_back(obj);
+            obj->id=gb_objects.size()-1;
         return obj;
     }
 

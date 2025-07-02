@@ -1,4 +1,4 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 
 /*
 * GAMEBREAKER::GRAPHICS
@@ -317,7 +317,7 @@ namespace GameBreaker {
     std::vector<GBText*> _gb_txt_;
 
     int __gb_find_text_in_db(gb_str text) {
-        for(int i=0;i<_gb_txt_.size();i++) {
+        for(int i=0;i<(int)_gb_txt_.size();i++) {
             if(text==_gb_txt_[i]->txt) return i;
         }
         return -1;
@@ -378,7 +378,7 @@ namespace GameBreaker {
         SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
         SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
-        SDL_FPoint cen = { 0,0 };
+        SDL_FPoint cen = { cenx,ceny};
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
     }

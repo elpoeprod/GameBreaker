@@ -1,5 +1,4 @@
-#include "gamebreaker.hpp"
-
+#include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
 
