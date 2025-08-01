@@ -23,19 +23,19 @@ int main() {
     gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,640,480,"Test");
 
     sprite0=sprite::add("elpaudio.png",1,0,0);
-    obj1=object::add(sprite0,nullptr,0,0);
-    obj2=object::add(sprite0,nullptr,0,0);
+    obj1=object::add(sprite0,nullptr);
+    obj2=object::add(sprite0,nullptr);
     obj1->event_draw=my_draw1;
     obj2->event_draw=my_draw2;
     obj1->depth=-15;
     obj2->depth=15;
     var room0=room::add(640,480);
-    room::add_instance(room0,obj1, 0,0);
-    room::add_instance(room0,obj2, 10,10);
+    room::add_instance(room0,obj1, 0,0,nullptr);
+    room::add_instance(room0,obj2, 10,10,nullptr);
 
     room::current(room0);
 
-    gb::run(60);
+    gb::run();
 
     gb::shutdown();
     return 0;
