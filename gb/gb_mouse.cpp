@@ -1,8 +1,12 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 
 /***************
  * GAMEBREAKER::MOUSE
 */
+
+int chmouse(int id, int ch1, int ch2) {
+    return (GameBreaker::mybut[id]==ch1)&&(GameBreaker::mylastbut[id]==ch2);
+}
 
 namespace GameBreaker {
 
@@ -16,12 +20,12 @@ namespace GameBreaker {
     int mouse::pressed(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  mybut[1] && !mylastbut[1] or
-                    mybut[2] && !mylastbut[2] or
-                    mybut[3] && !mylastbut[3];
+            return  chmouse(1,1,0) or
+                    chmouse(2,1,0) or
+                    chmouse(3,1,0);
         }
         if(mouse_button!=mb::none)
-            return mybut[mouse_button] && !mylastbut[mouse_button];
+            return chmouse(mouse_button,1,0);
 
         return 0;
     }
@@ -32,12 +36,12 @@ namespace GameBreaker {
     int mouse::released(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  !mybut[1] && mylastbut[1] or
-                    !mybut[2] && mylastbut[2] or
-                    !mybut[3] && mylastbut[3];
+            return  chmouse(1,0,1) or
+                    chmouse(2,0,1) or
+                    chmouse(3,0,1);
         }
         if(mouse_button!=mb::none)
-            return !mybut[mouse_button] && mylastbut[mouse_button];
+            return chmouse(mouse_button,0,1);
 
         return 0;
     }
@@ -49,9 +53,9 @@ namespace GameBreaker {
     int mouse::holding(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  mybut[1] or
-                    mybut[2] or
-                    mybut[3];
+            return  chmouse(1,1,1) or
+                    chmouse(2,1,1) or
+                    chmouse(3,1,1);
         }
         if(mouse_button!=mb::none)
             return mybut[mouse_button];
@@ -66,12 +70,12 @@ namespace GameBreaker {
     int mouse::nothing(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  !mybut[1] && !mylastbut[1] or
-                    !mybut[2] && !mylastbut[2] or
-                    !mybut[3] && !mylastbut[3];
+            return  chmouse(1,0,0) or
+                    chmouse(2,0,0) or
+                    chmouse(3,0,0); 
         }
         if(mouse_button!=mb::none)
-            return !mybut[mouse_button] && !mylastbut[mouse_button];
+            return chmouse(mouse_button,0,0);
 
         return 0;
     }

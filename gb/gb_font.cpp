@@ -1,4 +1,4 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 #include <SDL2/SDL_ttf.h>
 
 namespace GameBreaker {

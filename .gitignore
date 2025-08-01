@@ -1,2 +1,12 @@
 *.out
 .vscode/
+/build/.cmake
+*.cmake
+build/CMakeCache.txt
+/build/CMakeFiles
+/build/gb/3rdparty/nfd/CMakeFiles
+/build/gb/CMakeFiles
+/build
+main.cpp
+libgb.a
+Makefile

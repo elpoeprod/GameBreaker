@@ -1,4 +1,4 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 #include <SDL2/SDL_ttf.h>
 #include <cctype>
 #include <clocale>
@@ -11,9 +11,9 @@ namespace GameBreaker {
 
     int gstr::count(gb_str text, gb_str n) {
         int _count=0;
-        for(int __l=0;__l<text.length()-n.length()+1;__l++) {
+        for(int __l=0;__l<(int)text.length()-n.length()+1;__l++) {
             gb_str tempstr="";
-            for(int __h=0;__h<n.length();__h++) {
+            for(int __h=0;__h<(int)n.length();__h++) {
                 tempstr+=text[__l+__h];
             }
             if(tempstr==n) _count+=1;
@@ -36,7 +36,7 @@ namespace GameBreaker {
     }
     gb_str gstr::cat(std::vector<void *>args) {
         gb_str mystr="";
-        for(int __i=0;__i<args.size();__i++) {
+        for(int __i=0;__i<(int)args.size();__i++) {
             gb_str *temp=static_cast<gb_str *>(args[__i]);
             mystr+=*temp;
             delete temp;

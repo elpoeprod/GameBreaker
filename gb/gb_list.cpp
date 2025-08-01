@@ -1,4 +1,4 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
 
 
 namespace GameBreaker {
@@ -9,7 +9,7 @@ namespace GameBreaker {
     gb_str list::get_string(ds_list list, gb_str sep)
     {
         gb_str tempstr;
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < (int)list.size(); i++) {
             tempstr += list[i].data + sep;
         }
         return tempstr;
@@ -18,7 +18,7 @@ namespace GameBreaker {
         return list[pos].data;
     }
     int list::find::pos(ds_list list, gb_str str) {
-        for(int i=0;i<list.size();i++) {
+        for(int i=0;i<(int)list.size();i++) {
             if(list[i].data==str) return i;
         }
         return -1;

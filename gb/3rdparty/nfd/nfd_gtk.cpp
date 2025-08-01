@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "nfd.h"
+#include "../../../include/nfd/nfd.h"
 
 /*
 Define NFD_CASE_SENSITIVE_FILTER if you want file filters to be case-sensitive.  The default
