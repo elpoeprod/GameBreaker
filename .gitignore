@@ -7,3 +7,6 @@ build/CMakeCache.txt
 /build/gb/3rdparty/nfd/CMakeFiles
 /build/gb/CMakeFiles
 /build
+main.cpp
+libgb.a
+Makefile
