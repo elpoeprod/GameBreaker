@@ -19,8 +19,8 @@ int main() {
 
     sprCursor=sprite::add("sprites/sprCursor.png",13,6,6);
 
-    var sndHotline=audio::add("Hotline.ogg",gb::GB_MUSIC);
-    audio::loop(sndHotline,-1);
+//    var sndHotline=audio::add("Hotline.ogg",gb::GB_MUSIC);
+    //audio::loop(sndHotline,-1);
 
     rmTest=room::add(640,480);
     //ArmTest->speed=2;
