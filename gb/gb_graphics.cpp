@@ -4,6 +4,13 @@
 * GAMEBREAKER::GRAPHICS
 */
 
+SDL_FPoint GBXyfy(double x, double y) {
+    return {
+        (float)(x-GameBreaker::room_current->view[GameBreaker::room_current->view_current].x),
+        (float)(y-GameBreaker::room_current->view[GameBreaker::room_current->view_current].y),
+    };
+}
+
 int SDL_RenderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius)
 {
     int offsetx, offsety, d;
@@ -182,19 +189,24 @@ namespace GameBreaker {
     **/
     void graphics::draw::triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_1=GBXyfy(x1,y1);
+        auto _real_2=GBXyfy(x2,y2);
+        auto _real_3=GBXyfy(x3,y3);
+
         const std::vector<SDL_Vertex> verts = {
             {
-                SDL_FPoint { x1, y1 },
+                SDL_FPoint { _real_1.x, _real_1.y },
                 SDL_Color { col1.r, col1.g, col1.b, 255 },
                 SDL_FPoint { 0 },
             },
             {
-                SDL_FPoint { x2, y2 },
+                SDL_FPoint { _real_2.x, _real_2.y },
                 SDL_Color { col2.r, col2.g, col2.b, 255 },
                 SDL_FPoint { 0 },
             },
             {
-                SDL_FPoint { x3, y3 },
+                SDL_FPoint { _real_2.x, _real_3.y },
                 SDL_Color { col3.r, col3.g, col3.b, 255 },
                 SDL_FPoint { 0 },
             },
@@ -239,10 +251,12 @@ namespace GameBreaker {
     **/
     void graphics::draw::circle(int x, int y, int r, int outline)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
         if (outline)
-            SDL_RenderDrawCircle(gb_win->ren, x, y, r);
+            SDL_RenderDrawCircle(gb_win->ren, _real_.x, _real_.y, r);
         else
-            SDL_RenderFillCircle(gb_win->ren, x, y, r);
+            SDL_RenderFillCircle(gb_win->ren, _real_.x, _real_.y, r);
     }
     /**
     * draws a line
@@ -251,7 +265,10 @@ namespace GameBreaker {
     **/
     void graphics::draw::line(int x1, int y1, int x2, int y2)
     {
-        SDL_RenderDrawLine(gb_win->ren, x1, y1, x2, y2);
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_1=GBXyfy(x1,y1);
+        auto _real_2=GBXyfy(x2,y2);
+        SDL_RenderDrawLine(gb_win->ren, _real_1.x, _real_1.y, _real_2.x, _real_2.y);
     }
     /**
     * draws a point
@@ -259,7 +276,9 @@ namespace GameBreaker {
     **/
     void graphics::draw::point(int x, int y)
     {
-        SDL_RenderDrawPoint(gb_win->ren, x, y);
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+        SDL_RenderDrawPoint(gb_win->ren, _real_.x, _real_.y);
     }
     /**
     * sets a color for drawing using SDL_Color struct
@@ -308,8 +327,10 @@ namespace GameBreaker {
 
     void graphics::draw::text(float x, float y, GBText* text)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
         SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
-        SDL_FRect extrect = { x - (float)_gm_halign * text->surf->w, y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
+        SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
         SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
     }
@@ -325,6 +346,8 @@ namespace GameBreaker {
 
     void graphics::draw::text_rt(float x, float y, gb_str txt)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
         GBText *text;
         int finder=__gb_find_text_in_db(txt);
         if(finder!=-1) {
@@ -336,7 +359,7 @@ namespace GameBreaker {
             text=_gb_txt_[_gb_txt_.size()-1];
         }
         SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
-        SDL_FRect extrect = { x - (float)_gm_halign * text->surf->w, y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
+        SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
         SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
     }
@@ -372,33 +395,41 @@ namespace GameBreaker {
     * \sa xscale, yscale - image scale (spr->w*xscale, spr->h*yscale)
     * \sa rot - rotate by 0-360 degrees
     **/
-    void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot)
+    void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
         int myw=(spr->w / spr->frames);
         SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
-        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
+        SDL_FRect dstrect = { _real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny};
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
     }
 
-    void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot)
+    void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+
         int myw=(spr->w / spr->frames);
         SDL_Rect rect = {myw*(frame % spr->frames),0,(int)math::clamp(w,0,myw),(int)math::clamp(h,0,spr->h)};
-        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
+        SDL_FRect dstrect = { _real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
     }
 
-    void graphics::draw::sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot)
+    void graphics::draw::sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+
         int myw=(spr->w / spr->frames);
         SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
-        SDL_FRect dstrect = { (float)x-spr->offx*xscale, (float)y-spr->offy*yscale, (float)w * xscale, (float)h * yscale };
+        SDL_FRect dstrect = { _real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, (float)w * xscale, (float)h * yscale };
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
@@ -415,11 +446,14 @@ namespace GameBreaker {
     * \sa xscale, yscale - image scale (spr->w*xscale, spr->h*yscale)
     * \sa rot - rotate by 0-360 degrees
     **/
-    void graphics::draw::sprite_ext(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot,SDL_Color col)
+    void graphics::draw::sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot,SDL_Color col)
     {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+        var myw=(spr->w/spr->frames);
         graphics::draw::color_sdl(col);
-        SDL_Rect rect = { (spr->w / spr->frames) * (frame % spr->frames), 0, (spr->w / spr->frames) * ((frame % spr->frames) + 1), spr->h };
-        SDL_FRect dstrect = { (float)x, (float)y, ((float)spr->w / spr->frames) * xscale, (float)spr->h * yscale };
+        SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
+        SDL_FRect dstrect = { _real_.x, _real_.y, myw * xscale, (float)spr->h * yscale };
         SDL_FPoint cen = { (float)spr->offx, (float)spr->offy };
         SDL_SetTextureColorMod(spr->tex,col.r,col.g,col.b);
         SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
@@ -433,7 +467,9 @@ namespace GameBreaker {
     **/
     void graphics::draw::rect(int x, int y, int w, int h, int outline)
     {
-        SDL_Rect myrect = { x, y, w, h };
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+        SDL_Rect myrect = { (int)_real_.x,(int)_real_.y,w, h };
         if (outline == 0)
             SDL_RenderFillRect(gb_win->ren, &myrect);
         else
@@ -442,9 +478,10 @@ namespace GameBreaker {
 
     gb_button_state graphics::draw::button(int x, int y, int w, int h, GBSprite *spr, int types) {
         gb_button_state mystate={0,mb::none};
+        if(room_current->view_enabled[room_current->view_current]==0) return mystate;
         int inrect=math::point_in_rect(mouse::x,mouse::y,x,y,x+w,y+h);
         int press=mouse::holding(mb::any);
-        graphics::draw::sprite(spr,(inrect&&press)?spr->frames-1:types,x,y,w/(spr->w/spr->frames),h/(spr->h),0);
+        graphics::draw::sprite(spr,(inrect&&press)?spr->frames-1:types,x,y,(float)w/((float)spr->w/spr->frames),(float)h/(spr->h),0);
         mystate={inrect and mouse::released(mb::any),mouse::which()};
         return mystate;
     }
