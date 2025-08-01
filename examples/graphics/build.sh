@@ -1,2 +1,2 @@
 # the shittiest code you've ever seen...
-g++ main.cpp ../../gb/*.cpp ../../gb/3rdparty/nfd/*.cpp -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image -lSDL2_ttf -lm `pkg-config --cflags --libs gtk+-3.0`
+g++ main.cpp ../../gb/*.cpp ../../gb/3rdparty/nfd/*.cpp "../../include/SoLoud/libSoLoud_MA.a" -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image -lSDL2_ttf -lm `pkg-config --cflags --libs gtk+-3.0`

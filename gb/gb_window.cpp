@@ -1,5 +1,5 @@
-#include "gamebreaker.hpp"
-
+#include "../include/gamebreaker.hpp"
+#include <SDL2/SDL_video.h>
 
 namespace GameBreaker {
 
@@ -9,10 +9,14 @@ namespace GameBreaker {
         SDL_FreeSurface(temp);
     }
 
+    void window::set_title(gb_str title) {
+        SDL_SetWindowTitle(gb_win->win,title.c_str());
+
+    }
     /**
     * sets window width and height
     **/
-    void window::size(int w, int h)
+    void window::set_size(int w, int h)
     {
         SDL_SetWindowSize(gb_win->win, w, h);
         gb_win->w = w;
@@ -21,20 +25,17 @@ namespace GameBreaker {
     /**
     * sets window position (x and y)
     **/
-    void window::pos(int x, int y)
+    void window::set_pos(int x, int y)
     {
         SDL_SetWindowPosition(gb_win->win, x, y);
         gb_win->x = x;
         gb_win->y = y;
     }
-    /**
-    * returns window x
-    **/
-    int window::get_x() { return gb_win->x; }
-    /**
-    * returns window y
-    **/
-    int window::get_y() { return gb_win->y; }
+    SDL_Point get_pos() {
+        int x=0,y=0;
+        SDL_GetWindowPosition(gb_win->win, &x,&y);
+        return (SDL_Point){x,y};
+    }
     /**
     * returns window width
     **/

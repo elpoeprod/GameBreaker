@@ -1,6 +1,6 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
+#include "../include/nfd/nfd.hpp"
 #include <filesystem>
-#include "3rdparty/nfd/nfd.hpp"
 
 namespace GameBreaker {
 
@@ -27,9 +27,7 @@ namespace GameBreaker {
         ds_list list;
 
         int i_path=mask&fa::fullpath,
-            i_dir=mask&fa::dir,
-            i_hidden=mask&fa::hidden,
-            i_sysfile=mask&fa::sysfile;
+            i_dir=mask&fa::dir;
 
         struct dirent* d = nullptr;
         DIR* dir = opendir(directory.c_str());
@@ -44,15 +42,11 @@ namespace GameBreaker {
             if(temp.compare(".") != 0 && temp.compare("..") != 0) {
                 if((d->d_type==DT_REG&&!i_dir)) {
                     if(temptemp.find(filter)!=std::string::npos) {
-                        list.resize(list.size()+1);
-                        list[list.size()-1].type=d->d_type;
-                        list[list.size()-1].data=i_path ? mynewdir+d->d_name : d->d_name;
+                        list.push_back({d->d_type,i_path?mynewdir+d->d_name:d->d_name});
                     }
                 }
                 if(d->d_type==DT_DIR&&i_dir) {
-                    list.resize(list.size()+1);
-                    list[list.size()-1].type=d->d_type;
-                    list[list.size()-1].data=i_path ? mynewdir+d->d_name : d->d_name;
+                    list.push_back({d->d_type,i_path?mynewdir+d->d_name:d->d_name});
                 }
             }
         }
@@ -66,9 +60,7 @@ namespace GameBreaker {
         ds_list list;
 
         int i_path=mask&fa::fullpath,
-        i_dir=mask&fa::dir,
-        i_hidden=mask&fa::hidden,
-        i_sysfile=mask&fa::sysfile;
+        i_dir=mask&fa::dir;
 
         struct dirent* d = nullptr;
         DIR* dir = opendir(directory.c_str());
@@ -82,7 +74,7 @@ namespace GameBreaker {
             std::string temptemp=temp.extension();
             if(temp.compare(".") != 0 && temp.compare("..") != 0) {
                 if((d->d_type==DT_REG&&!i_dir)) {
-                    for(int i=0;i<filter.size();i++) {
+                    for(int i=0;i<(int)filter.size();i++) {
                         if(temptemp.find(filter[i])!=std::string::npos) {
                             list.resize(list.size()+1);
                             list[list.size()-1].type=d->d_type;
@@ -119,7 +111,7 @@ namespace GameBreaker {
     }
 
     void fs::text::write(int file,gb_str str) {
-        fprintf(gb_files[file]->file,"%s", str.c_str());
+        fprintf(gb_files[file]->file,"%s\n", str.c_str());
     }
 
     void fs::text::close(int file) {
@@ -142,7 +134,7 @@ namespace GameBreaker {
         NFD::UniquePath _mypath;
 
         nfdfilteritem_t _filter[filter.size()];
-        for(int i=0;i<filter.size();i++) {
+        for(int i=0;i<(int)filter.size();i++) {
             _filter[i]={filter[i].title.c_str(),filter[i].filter.c_str()};
         }
         nfdresult_t __res=NFD::OpenDialog(_mypath,title,_filter);

@@ -1,4 +1,17 @@
-#include "gamebreaker.hpp"
+#include "../include/gamebreaker.hpp"
+
+double modwrap(double val, double minv, double maxv) {
+    ///modwrap(val,min,max)
+    //val: value to wrap
+    //min: minimum value
+    //max: maximum value
+    //returns: wrapped value
+    //Repeats the value inside the window defined by min and max - max exclusive.
+    
+    double f=val-minv;
+    double w=maxv-minv;
+    return f-floor(f/w)*w+minv;
+}
 
 namespace GameBreaker {
     /**
@@ -25,7 +38,7 @@ namespace GameBreaker {
     **/
     double math::lendir_y(double len, int dir)
     {
-        return sin(degtorad(dir)) * len;
+        return -sin(degtorad(dir)) * len;
     }
     /**
     * clamps a value between two others
@@ -58,5 +71,20 @@ namespace GameBreaker {
     }
     int math::ceil(double x) {
         return (int)std::ceil(x);
+    }
+	
+    double math::dsin(double x) {
+    	return std::sin(degtorad(x));
+    }
+	
+    double math::dcos(double x) {
+    	return std::cos(degtorad(x));
+    }
+
+    double math::pdirection(double x1,double y1,double x2,double y2) {
+        return modwrap(atan2(-(y2-y1),x2-x1)*180/M_PI,0,360);
+    }
+    double math::pdistance(double x1, double y1, double x2, double y2) {
+        return hypot(x2-x1,y2-y1);
     }
 }
