@@ -4,8 +4,6 @@
 #include "SoLoud/soloud.h"
 #include "SoLoud/soloud_wav.h"
 #include "SoLoud/soloud_wavstream.h"
-#include "inicpp.hpp"
-#include "nfd/nfd.hpp"
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <math.h>
@@ -82,6 +80,9 @@ typedef struct GBObject {
         GBSprite *spr, *mask;
         int depth;
         int id;
+        double image_index;
+        double image_speed;
+        int inst_id;
     
     void (*event_create)();// __attribute__((weak));
     void (*event_step_begin)();// __attribute__((weak));
@@ -112,22 +113,40 @@ typedef struct GBWin {
 struct rmobj {
     int obj_id;
     int instance_id;
+    GBObject *object;
+    double x,y;
+    void (*event_create)();
 } ;
+
+typedef struct GB_CamSetup {
+    double x,y;
+    int w,h;
+    double angle;
+} GB_CamSetup;
+
+typedef struct GB_CamTarget {
+    int hspeed,vspeed;
+    int borderw,borderh;
+} GB_CamTarget;
+
+#define GB_MAX_ROOM_CAMERAS 8
 
 typedef struct GBRoom {
     std::vector<rmobj>objects;
     int id;
     int width,height;
-    int view_enabled[7];
+    int background_visible;
+    int speed;
+    SDL_Color background_color;
+    GBSprite *background_image;
+    int view_enabled[GB_MAX_ROOM_CAMERAS];
     int view_current;
-    struct {
-        int x,y,w,h;
-        double angle;
-    } view[7];
-    struct {
-        int x,y,w,h;
-    } port[7];
-} GBRoom;
+    int target_id;
+    GB_CamTarget target_setup;
+    GB_CamSetup view[GB_MAX_ROOM_CAMERAS];
+    GB_CamSetup port[GB_MAX_ROOM_CAMERAS];    // GameBreaker ignores `angle` variable in portview when rendering, so angle works
+                            // only in camview.
+} GBRoom; 
 
 extern std::vector<GBRoom *> gb_rooms;
 
@@ -159,6 +178,8 @@ extern std::vector<_gm_file *>gb_files;
 extern std::vector<GBObject*> gb_objects;
 extern std::vector<GBFont*> gb_fonts;
 extern GBAudio *curmusic;
+
+extern std::string keyboard_string;
 
 extern int mybut[4];
 extern int mylastbut[4];
@@ -210,10 +231,10 @@ public:
 extern double master_vol,
     _gm_halign, _gm_valign;
 
-extern GBRoom *_gb_curroom;
+extern GBRoom *room_current;
 
 extern int init(int x, int y, int w, int h, gb_str label);
-extern void run(int fps);
+extern void run();
 extern void update();
 extern void shutdown();
 
@@ -228,7 +249,7 @@ public:
 
 class object {
 public:
-    static GBObject* add(GBSprite* spr, GBSprite* mask, double x, double y);
+    static GBObject* add(GBSprite* spr, GBSprite* mask);
     static void destroy(GBObject* obj);
 };
 
@@ -283,15 +304,26 @@ public:
 
 class window {
 public:
-    static void size(int w, int h);
-    static void pos(int x, int y);
+    static void set_size(int w, int h);
+    static void set_pos(int x, int y);
     static int get_x();
     static int get_y();
     static int get_width();
     static int get_height();
     static void set_icon(gb_str ico);
     static SDL_Point get_size();
+    static SDL_Point get_pos();
     static SDL_Renderer* get_renderer();
+    static void set_title(gb_str title);
+};
+
+extern int display_current;
+class display {public:
+    static int get_width();
+    static int get_height();
+    static SDL_Point get_size();
+    static int mouse_x;
+    static int mouse_y;
 };
 
 #ifndef GB_DONT_USE_MUSIC
@@ -325,13 +357,25 @@ class show {public:
     static void error(gb_str msg, int abort);
 };
 
-enum mb {
+enum mb { //class mb {public:
+    //static const int 
     none    = -1,
     left    = SDL_BUTTON_LEFT,
     right   = SDL_BUTTON_MIDDLE,
     middle  = SDL_BUTTON_RIGHT,
-    any     = 0x100
+    any     = 0x100 //;
 };
+
+class vk {public:
+    static const int shift=16,
+    space=32,
+    left=37,
+    right=39,
+    up=38,
+    down=40,
+    enter=13;
+};
+
 class mouse {
 public:
     static int pressed(mb mouse_button);
@@ -372,10 +416,10 @@ public:
         static void color_hsv(double h, double s, double v);
         static SDL_Color color_get();
         static void blendmode(SDL_BlendMode mode);
-        static void sprite(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot);
-        static void sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot);
-        static void sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, int xscale, int yscale, int rot);
-        static void sprite_ext(GBSprite* spr, int frame, int x, int y, int xscale, int yscale, int rot, SDL_Color col);
+        static void sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot);
+        static void sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
+        static void sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
+        static void sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot, SDL_Color col);
         static gb_button_state button(int x, int y, int w, int h, GBSprite *spr, int types);
         static void text(float x, float y, GBText* text);
         static void text_rt(float x, float y, gb_str text);
@@ -423,7 +467,7 @@ public:
         hidden = 0x0010, // show hidden files
         dir = 0x0020, // show directories
         sysfile = 0x0040, // show system files
-        fullpath = 0x0080, // (for fs::find::list() - adds a path to a founded filename)
+        fullpath = 0x0080, // (for fs::find::list() - adds a path to found filename)
     };
     enum type {
         tfile=DT_REG,
@@ -484,34 +528,51 @@ public:
     static double degtorad(double deg);
     static double clamp(double val, double minval, double maxval);
     static double point_in_rect(double px, double py, double rx1, double ry1, double rx2, double ry2);
+    static double dsin(double x);
+    static double dcos(double x);
     static int round(double x);
     static int floor(double x);
     static int ceil(double x);
+    static double pdistance(double x1, double y1, double x2, double y2);
+    static double pdirection(double x1, double y1, double x2, double y2);
 };
 
 class room{public:
+    static int width,height;
     static GBRoom *add(int w, int h);
-    static int add_instance(GBRoom *room, GBObject *obj, int x, int y);
+    static int add_instance(GBRoom *room, GBObject *obj, double x, double y, void (*event_create)());
     static void remove_instances(GBRoom *room, GBObject *obj);
     static void remove_instance(GBRoom *room, int instance_id);
     static void current(GBRoom *room);
+    static GBObject *find_object(int inst_id);
+    static void camera_setup(GBRoom *room, int camera_id, int enabled, GB_CamSetup view, GB_CamSetup port, int target_inst_id, GB_CamTarget target);
 };
 
 struct __gbmap {
     std::string key;
     void *value;
 };
+
 }
+
+extern double view_xview[GB_MAX_ROOM_CAMERAS],view_yview[GB_MAX_ROOM_CAMERAS],view_angle[GB_MAX_ROOM_CAMERAS];
+extern int view_wview[GB_MAX_ROOM_CAMERAS],view_hview[GB_MAX_ROOM_CAMERAS];
 
 typedef GameBreaker::GBSprite GBSprite;
 typedef GameBreaker::GBAudio GBSound;
 typedef GameBreaker::GBObject GBObject;
 typedef GameBreaker::GBFont GBFont;
 typedef GameBreaker::GBText GBText;
+typedef GameBreaker::GBRoom GBRoom;
+typedef GameBreaker::GB_CamSetup GB_CamSetup;
+typedef GameBreaker::GB_CamTarget GB_CamTarget;
+//#define ord(a) GameBreaker::keyboard::ord(a) 
+//#define chr(a) GameBreaker::keyboard::chr(a) 
 
 typedef std::vector<GameBreaker::__gblist> ds_list;
 typedef std::vector<GameBreaker::__gbmap> ds_map;
 typedef GameBreaker::fs::fa fa;
+typedef GameBreaker::vk vk;
 
 typedef GameBreaker::mb mb;
 
@@ -526,6 +587,7 @@ typedef GameBreaker::graphics::draw draw;
 typedef GameBreaker::graphics::sprite sprite;
 typedef GameBreaker::audio audio;
 typedef GameBreaker::window window;
+typedef GameBreaker::display display;
 typedef GameBreaker::mouse mouse;
 typedef GameBreaker::color col;
 typedef GameBreaker::fs file;
