@@ -1,4 +1,5 @@
 #include "../include/gamebreaker.hpp"
+#include "../include/nfd/nfd.hpp"
 #include <filesystem>
 
 namespace GameBreaker {
@@ -110,7 +111,7 @@ namespace GameBreaker {
     }
 
     void fs::text::write(int file,gb_str str) {
-        fprintf(gb_files[file]->file,"%s", str.c_str());
+        fprintf(gb_files[file]->file,"%s\n", str.c_str());
     }
 
     void fs::text::close(int file) {
