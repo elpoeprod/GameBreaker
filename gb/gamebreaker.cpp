@@ -1,7 +1,16 @@
+/*
+    This file is meant to handle rendering stuff on the screen(s),
+    Find controllers, handle joystick, mouse and keyboard input,
+    And initialize/end system.
+*/
+
 #include "../include/gamebreaker.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_video.h>
 #include <dirent.h>
 #include <time.h>
 #include <algorithm>
@@ -32,6 +41,12 @@ void findControllers()
     }
 }
 
+double  view_xview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
+        view_yview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
+        view_angle[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0};
+int     view_wview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
+        view_hview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0};
+
 /**********START*********************/
 namespace GameBreaker {
 
@@ -41,7 +56,14 @@ int current_time=0;
 double master_vol = 1,
     _gm_halign=0, _gm_valign = 0;
 
-GBRoom *_gb_curroom;
+GBRoom *room_current;
+int myrealcurroom=-1;
+std::string keyboard_string="";
+
+int display_current=0;
+
+int display::mouse_x=0;
+int display::mouse_y=0;
 
 GBWindow* gb_win;
 SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
@@ -62,6 +84,9 @@ int joy::holding(int joy, int button) { return myjoybut[joy][button] && mylastjo
 int mouse::x = 0;
 int mouse::y = 0;
 
+int room::width=0;
+int room::height=0;
+
 __current date::current={
     .second=0,
     .minute=0,
@@ -78,6 +103,9 @@ Uint32 fps_lasttime = SDL_GetTicks();
 Uint32 fps_current;
 Uint32 fps_frames = 0;
 GBFont *_fntDefault__;
+
+
+
 int init(int x, int y, int w, int h, std::string label)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -115,12 +143,12 @@ int init(int x, int y, int w, int h, std::string label)
     date::current.month=ts.tm_mon;
     date::current.year=ts.tm_year;
     date::current.century=math::floor(ts.tm_year/365.25);
-    date::current.planet=2;
+    date::current.planet=3; //0 - sun
     date::current.millenium=math::floor(date::current.year);
     //_fntDefault__=font::add("../include/default.ttf",12);
     //graphics::draw::set_font(_fntDefault__);
     graphics::draw::color(0xFFFFFF);
-    _gb_curroom=nullptr;
+    room_current=nullptr;
 
     return 1;
 }
@@ -162,13 +190,30 @@ void update()
     // Events
     while (SDL_PollEvent(&gb_win->ev) != 0) {
         switch(gb_win->ev.type) {
-            case SDL_KEYDOWN: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=1; break;
+			//Keyboard
+            case SDL_KEYDOWN: 
+            	mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=1; 
+            	if(gb_win->ev.key.keysym.sym==SDLK_RETURN)
+            		keyboard_string+="\n";
+            	else 
+            		keyboard_string+=SDL_GetKeyName(gb_win->ev.key.keysym.sym);
+            	break;
+            
             case SDL_KEYUP: mykey[SDL_GetKeyName(gb_win->ev.key.keysym.sym)]=0; break;
+
+            //Exit
             case SDL_QUIT: gb_win->running = 0; break;
-            case SDL_MOUSEMOTION: mouse::x=gb_win->ev.motion.x; mouse::y=gb_win->ev.motion.y; break;
+
+			//Mouse
+            case SDL_MOUSEMOTION: 
+                mouse::x=gb_win->ev.motion.x; 
+                mouse::y=gb_win->ev.motion.y; 
+            break;
+
             case SDL_MOUSEBUTTONDOWN: {
                     mybut[gb_win->ev.button.button] = 1;
             } break;
+
             case SDL_MOUSEBUTTONUP: {
                     mybut[gb_win->ev.button.button] = 0;
             } break;
@@ -181,47 +226,102 @@ void update()
     if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0; // if pressed then end game
 #endif
 
-    int i=0; // For ALL object count
+    SDL_GetGlobalMouseState(&display::mouse_x,&display::mouse_y);
+
+    for(int i=0;i<GB_MAX_ROOM_CAMERAS;i++) {
+        room_current->view[i].x=view_xview[i];
+        room_current->view[i].y=view_yview[i];
+        room_current->view[i].w=view_wview[i];
+        room_current->view[i].h=view_hview[i];
+        room_current->view[i].angle=view_angle[i];
+    }
+
+    room::width=room_current->width;
+    room::height=room_current->height;
+
+	if(room_current->background_visible) {
+		/*if(room_current->background_image!=nullptr) {
+			graphics::draw::sprite_ext(room_current->background_image,0,0,room_current->width/room_current->background_image->w,
+			room_current->height/room_current->background_image->h,0,(room_current->background_color));
+		}*/
+		auto _col=graphics::draw::color_get();
+		graphics::draw::color_sdl(room_current->background_color);
+		int _room_borders=100;
+		graphics::draw::rect(view_xview[0]-_room_borders,view_yview[0]-_room_borders,room::width+_room_borders,room::height+_room_borders,0);
+		graphics::draw::color_sdl(_col);
+	}
+    int __i=0; // For ALL object count
     int _iobj=0; // For CURRENT ROOM object count
-        repeat(_gb_curroom->objects.size()) {
+    	//puts("1");
+        repeat(room_current->objects.size()) {
+        	//puts("2");
+        	__i=0;
             repeat(gb_objects.size()) {
-                if(gb_objects[i]->id==_gb_curroom->objects[_iobj].obj_id) {
+            	//puts("3");
+                if((gb_objects[__i]->id==room_current->objects[_iobj].obj_id)==1) {
+
+					if(gb_objects[__i]->spr!=nullptr) {
+						if(gb_objects[__i]->image_index<gb_objects[__i]->spr->frames-1) 
+							gb_objects[__i]->image_index+=gb_objects[__i]->image_speed;
+						else
+							gb_objects[__i]->image_index=0;
+					}
+                
                     // Speed
-                    gb_objects[i]->hspd=math::lendir_x(gb_objects[i]->spd,gb_objects[i]->direction);
-                    gb_objects[i]->vspd=math::lendir_y(gb_objects[i]->spd,gb_objects[i]->direction);
+                    gb_objects[__i]->hspd=math::lendir_x(gb_objects[__i]->spd,gb_objects[__i]->direction);
+                    gb_objects[__i]->vspd=math::lendir_y(gb_objects[__i]->spd,gb_objects[__i]->direction);
                     // Position
-                    gb_objects[i]->x+=gb_objects[i]->hspd;
-                    gb_objects[i]->y+=gb_objects[i]->vspd;
-                    if(gb_objects[i]->spd>0)
-                        gb_objects[i]->spd-=gb_objects[i]->friction;
+                    gb_objects[__i]->x+=gb_objects[__i]->hspd;
+                    gb_objects[__i]->y+=gb_objects[__i]->vspd;
+                    if(gb_objects[__i]->spd>0)
+                        gb_objects[__i]->spd-=gb_objects[__i]->friction;
                     else {
-                        if(gb_objects[i]->spd<0)
-                            gb_objects[i]->spd+=gb_objects[i]->friction;
-                        else gb_objects[i]->spd=0;
+                        if(gb_objects[__i]->spd<0)
+                            gb_objects[__i]->spd+=gb_objects[__i]->friction;
+                        else gb_objects[__i]->spd=0;
                     }
 
+					if(room_current->id!=myrealcurroom) {
+						myrealcurroom=room_current->id;
+						if(room_current->objects[_iobj].event_create)
+							room_current->objects[_iobj].event_create();
+					}
+					//puts("3");
                     //Events
-                    if(gb_objects[i]->event_step_end)
-                        gb_objects[i]->event_step_end();
-                    if(gb_objects[i]->event_step)
-                        gb_objects[i]->event_step();
-                    if(gb_objects[i]->event_step_end)
-                        gb_objects[i]->event_step_end();
+                    if(gb_objects[__i]->event_step_begin)
+                        gb_objects[__i]->event_step_begin();
+					//puts("3.1");
+                    if(gb_objects[__i]->event_step)
+                        gb_objects[__i]->event_step();
+                    //puts("3.2");
+                    if(gb_objects[__i]->event_step_end)
+                        gb_objects[__i]->event_step_end();
+
+					//puts("4");
                     //this fucking sucks
                     //WARNING VERY UNREADABLE CODE
-                    /*int myvec[gb_objects.size()];
-                    for(int i=0;i<gb_objects.size();i++) {
+                    auto si=gb_objects.size();
+                    int myvec[si];
+                    for(long unsigned int i=0;i<si;i++) {
                         myvec[i]=gb_objects[i]->depth;
                     }
+                    //printf("\n");
                     std::sort(myvec,myvec+(sizeof(myvec)/sizeof(myvec[0])),std::greater<int>());
-                    for(int i=0;i<gb_objects.size();i++) {
-                        if(gb_objects[i]->depth==myvec[i]) {*/
-                            if(gb_objects[i]->event_draw)
-                                gb_objects[i]->event_draw();
-                    /*    }
-                    }*/
+                    /*for(long unsigned int i=0;i<si;i++) {
+                    	printf("%i\n",myvec[i]);
+                    }
+                    printf("\n");
+                    */
+                    for(long unsigned int i=0;i<si;i++) {
+                    	for(long unsigned ii=0;ii<si;ii++) {
+	                        if(gb_objects[i]->depth==myvec[ii]&&(gb_objects[i]->id==room_current->objects[_iobj].obj_id)==1) {
+	                            if(gb_objects[i]->event_draw!=nullptr)
+	                                gb_objects[i]->event_draw();
+	                        }
+                        }
+                    }
                 }
-                i++;
+                __i++;
             }
             _iobj++;
         }
@@ -234,8 +334,8 @@ void update()
         fps_frames = 0;
     }
 }
-void run(int fps) {
-    if(_gb_curroom==nullptr) {
+void run() {
+    if(room_current==nullptr) {
         show::error("WARNING\nThe current room was "
                     "not set and the program will now exit.\n"
                     "Did you forgot to put `GameBreaker::room::current()` function "
@@ -245,7 +345,7 @@ void run(int fps) {
     }
     while(gb_win->running) {
         update(); 
-        screen::draw(fps);
+        screen::draw(room_current->speed);
     }
 }
 
@@ -254,6 +354,18 @@ void run(int fps) {
  **/
 void screen::draw(double fps)
 {
+    SDL_RenderSetScale(gb_win->ren,
+        /*(float)gb_win->w/room_current->view[room_current->view_current].w,
+        (float)gb_win->h/room_current->view[room_current->view_current].h*/
+        room_current->port[room_current->view_current].w/room_current->view[room_current->view_current].w,
+        room_current->port[room_current->view_current].h/room_current->view[room_current->view_current].h
+    );
+    //SDL_Rect rect={0,0,room_current->port[room_current->view_current].w,room_current->port[room_current->view_current].h};
+    //SDL_RenderSetViewport(gb_win->ren,&rect);
+    SDL_SetWindowSize(gb_win->win, 
+                room_current->port[room_current->view_current].w,
+                room_current->port[room_current->view_current].h);
+    
     SDL_RenderPresent(gb_win->ren);
     SDL_Delay(1000.f / fps);
 }
