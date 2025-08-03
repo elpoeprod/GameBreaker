@@ -11,9 +11,9 @@ license=(BSD-3)
 depends=(sdl2 sdl2_image sdl2_ttf sdl2_net)
 conflicts=()
 # Upstream suggests using clang, but gcc is supported on Linux: https://github.com/LIJI32/SameBoy/issues/164#issuecomment-486464194
-makedepends=(rgbds make)
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/elpoeprod/GameBreaker/archive/v${pkgver}.tar.gz")
-#md5sums=('95dab54a9ba07d4ba944107d3431913e')
+makedepends=(make)
+source=("GameBreaker-${pkgver}.tar.gz::https://github.com/elpoeprod/GameBreaker/archive/v${pkgver}.tar.gz")
+md5sums=('0442ec751aa4c227be2589bfdfd0f9a6')
 
 build(){
 	cd "${srcdir}/GameBreaker-${pkgver}"

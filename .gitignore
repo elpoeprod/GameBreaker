@@ -9,3 +9,5 @@ build/CMakeCache.txt
 /build
 *.zip
 libgb.so
+/src/GameBreaker-0.0.5
+*.gz
