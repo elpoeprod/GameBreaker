@@ -57,7 +57,7 @@ namespace GameBreaker {
 
     GBObject *room::find_object(int inst_id) {
         
-        for(int i=0;i<room_current->objects.size();i++) {
+        for(long unsigned int i=0;i<room_current->objects.size();i++) {
             auto myinst=room_current->objects[i];
             if(myinst.instance_id==inst_id) return myinst.object;
         }
@@ -65,7 +65,7 @@ namespace GameBreaker {
     }
 
     void room::camera_setup(GBRoom *room,int camera_id, int enabled, GB_CamSetup view, GB_CamSetup port,int target_inst_id, GB_CamTarget target) {
-        room->view_enabled[camera_id]=1;
+        room->view_enabled[camera_id]=enabled;
         room->view[camera_id]=view;
         
         room->port[camera_id]=port;

@@ -11,7 +11,7 @@ namespace GameBreaker {
 
     int gstr::count(gb_str text, gb_str n) {
         int _count=0;
-        for(int __l=0;__l<(int)text.length()-n.length()+1;__l++) {
+        for(long unsigned int __l=0;__l<(int)text.length()-n.length()+1;__l++) {
             gb_str tempstr="";
             for(int __h=0;__h<(int)n.length();__h++) {
                 tempstr+=text[__l+__h];
@@ -43,6 +43,7 @@ namespace GameBreaker {
         }
         return mystr;
     }
+
     gb_str gstr::shorten(gb_str fname) { // shortens filename to FILENA~1.* if fname length is more than 8. otherwise return fname
         std::filesystem::path _temp_fn=fname;
         std::string fe=_temp_fn.extension();
