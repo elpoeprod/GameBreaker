@@ -7,3 +7,5 @@ build/CMakeCache.txt
 /build/gb/3rdparty/nfd/CMakeFiles
 /build/gb/CMakeFiles
 /build
+*.zip
+libgb.so

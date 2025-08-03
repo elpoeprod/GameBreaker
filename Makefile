@@ -30,3 +30,12 @@ all:
 install:
 	cp -rf include/ /usr/local/include/gamebreaker/
 	cp $(LIB_NAME) /usr/lib/
+
+windows:
+	echo Not implemented. Linux is the only supported OS at this time.
+
+archive:
+	7z a libgb.zip include/ gb/
+
+compiled_archive:
+	7z a libgb_compiled.zip libgb.so include/
