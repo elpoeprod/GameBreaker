@@ -1,7 +1,7 @@
 # Maintainer: Hash <elpoepstudios@gmail.com>
 # Contributor: none
 
-pkgname=gb
+pkgname=gamebreaker
 pkgdesc="Simple graphics engine for C++"
 pkgver=0.0.5
 pkgrel=2
