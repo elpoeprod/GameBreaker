@@ -24,4 +24,5 @@ package(){
 
 	install -Dm755 -d "include/" "$pkgdir/usr/local/include/gb/"
 	install -Dm755 "libgb.so" "$pkgdir/usr/bin/libgb.so"
+	install -Dm755 "LICENSE" "$pkgdir/usr/share/licenses/gb/LICENSE"
 }
