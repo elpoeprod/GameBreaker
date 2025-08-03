@@ -40,6 +40,7 @@ int main() {
 	obj->event_draw=fish_draw;
 
 	room::add_instance(room1,obj,0,0,nullptr);
+	room::camera_setup(room1,0,1,(GB_CamSetup){0,0,640,480,0},(GB_CamSetup){0,0,640,480,0},-1,(GB_CamTarget){0,0,0,0});
 	room::current(room1);
 
 	gb::run();
