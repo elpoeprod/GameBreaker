@@ -1,5 +1,5 @@
-# Maintainer: Arvedui <arvedui@posteo.de>
-# Contributor: Jakub Kądziołka <kuba@kadziolka.net>
+# Maintainer: Hash <elpoepstudios@gmail.com>
+# Contributor: none
 
 pkgname=gb
 pkgdesc="Simple graphics engine for C++"
@@ -10,7 +10,6 @@ url="https://github.com/elpoeprod/GameBreaker"
 license=(BSD-3)
 depends=(sdl2 sdl2_image sdl2_ttf sdl2_net)
 conflicts=()
-# Upstream suggests using clang, but gcc is supported on Linux: https://github.com/LIJI32/SameBoy/issues/164#issuecomment-486464194
 makedepends=(make)
 source=("GameBreaker-${pkgver}.tar.gz::https://github.com/elpoeprod/GameBreaker/archive/v${pkgver}.tar.gz")
 md5sums=('0442ec751aa4c227be2589bfdfd0f9a6')
@@ -23,7 +22,6 @@ build(){
 package(){
 	cd "${srcdir}/GameBreaker-${pkgver}"
 
-	make install
-	install -D "${pkgdir}/usr/share/licenses/gb/LICENSE"
-
+	install -Dm755 -d "include/" "$pkgdir/usr/local/include/gb/"
+	install -Dm755 "libgb.so" "$pkgdir/usr/bin/libgb.so"
 }
