@@ -3,8 +3,8 @@
 
 pkgname=gamebreaker
 pkgdesc="Simple graphics engine for C++"
-pkgver=0.0.5
-pkgrel=2
+pkgver=0.0.6
+pkgrel=1
 arch=(x86_64)
 url="https://github.com/elpoeprod/GameBreaker"
 license=(BSD-3)
@@ -22,7 +22,11 @@ build(){
 package(){
 	cd "${srcdir}/GameBreaker-${pkgver}"
 
-	install -Dm755 -d "include/" "$pkgdir/usr/local/include/gb/"
-	install -Dm755 "libgb.so" "$pkgdir/usr/bin/libgb.so"
-	install -Dm755 "LICENSE" "$pkgdir/usr/share/licenses/gb/LICENSE"
+	mkdir -p "$pkgdir/usr/local/include/gamebreaker/"
+	mkdir -p "$pkgdir/usr/lib/"
+	mkdir -p "$pkgdir/usr/share/licenses/gamebreaker/LICENSE"
+	
+	cp -drf include/* "$pkgdir/usr/local/include/gamebreaker/"
+	cp "libgb.so" "$pkgdir/usr/lib/libgb.so"
+	cp "LICENSE" "$pkgdir/usr/share/licenses/gamebreaker/LICENSE"
 }

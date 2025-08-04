@@ -35,6 +35,10 @@ namespace GameBreaker {
 			obj->event_step_begin=nullptr;
 			obj->event_draw=nullptr;
 			obj->event_destroy=nullptr;
+			for(int i=0;i<GB_MAX_OBJ_ALARMS;i++) {
+				obj->alarm[i]=-1;
+				obj->event_alarm[i]=nullptr;
+			}
             
             gb_objects.push_back(obj);
             obj->id=gb_objects.size()-1;

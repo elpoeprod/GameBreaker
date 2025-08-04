@@ -71,6 +71,8 @@ typedef struct GBSprite {
     SDL_Texture* tex;
 } GBSprite;
 
+#define GB_MAX_OBJ_ALARMS 12
+
 typedef struct GBObject {
     public:
         double x, y;
@@ -83,6 +85,7 @@ typedef struct GBObject {
         double image_index;
         double image_speed;
         int inst_id;
+        int alarm[GB_MAX_OBJ_ALARMS];
     
     void (*event_create)();// __attribute__((weak));
     void (*event_step_begin)();// __attribute__((weak));
@@ -90,6 +93,7 @@ typedef struct GBObject {
     void (*event_step_end)();// __attribute__((weak));
     void (*event_destroy)();// __attribute__((weak));
     void (*event_draw)();// __attribute__((weak));
+    int (*event_alarm[GB_MAX_OBJ_ALARMS])();
 
     private:
         int _in_path;

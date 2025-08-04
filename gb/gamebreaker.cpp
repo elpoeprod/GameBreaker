@@ -286,6 +286,19 @@ void update()
 						if(room_current->objects[_iobj].event_create)
 							room_current->objects[_iobj].event_create();
 					}
+					for(int j=0;j<GB_MAX_OBJ_ALARMS;j++) {
+						if(gb_objects[__i]->alarm[j]>0) {
+							gb_objects[__i]->alarm[j]--;
+						}
+						else {
+							if(gb_objects[__i]->alarm[j]==0) {
+								if(gb_objects[__i]->event_alarm[j])
+									gb_objects[__i]->event_alarm[j]();
+								gb_objects[__i]->alarm[j]=-1;
+							}
+						}
+					}
+					
 					//puts("3");
                     //Events
                     if(gb_objects[__i]->event_step_begin)
