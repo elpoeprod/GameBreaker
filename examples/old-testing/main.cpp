@@ -76,7 +76,6 @@ int main()
     show::message("test",gb::list::get_string(temp,"\n"));
 	draw::color_sdl(col::lime);
     text=new GBText("Hello world");
-    draw::text_rt(0,0,"nigger");
     gb::run();
     gb::shutdown();
 }
