@@ -13,3 +13,4 @@ libgb.so
 *.gz
 /pkg
 *.zst
+/src
