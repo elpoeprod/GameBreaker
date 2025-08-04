@@ -12,7 +12,7 @@ depends=(sdl2 sdl2_image sdl2_ttf sdl2_net)
 conflicts=()
 makedepends=(make)
 source=("GameBreaker-${pkgver}.tar.gz::https://github.com/elpoeprod/GameBreaker/archive/v${pkgver}.tar.gz")
-md5sums=('0442ec751aa4c227be2589bfdfd0f9a6')
+md5sums=('187966a6f3832870754084d1da67863b')
 
 build(){
 	cd "${srcdir}/GameBreaker-${pkgver}"
