@@ -4,7 +4,7 @@
 pkgname=gamebreaker
 pkgdesc="Simple graphics engine for C++"
 pkgver=0.0.6
-pkgrel=1
+pkgrel=2
 arch=(x86_64)
 url="https://github.com/elpoeprod/GameBreaker"
 license=(BSD-3)

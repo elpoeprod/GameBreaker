@@ -292,9 +292,9 @@ void update()
 						}
 						else {
 							if(gb_objects[__i]->alarm[j]==0) {
+								gb_objects[__i]->alarm[j]=-1;
 								if(gb_objects[__i]->event_alarm[j])
 									gb_objects[__i]->event_alarm[j]();
-								gb_objects[__i]->alarm[j]=-1;
 							}
 						}
 					}
