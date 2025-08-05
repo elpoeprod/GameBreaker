@@ -1,1 +1,0 @@
-/usr/bin/c++  -O3 -I/usr/local/lib/ -Wl,--dependency-file=CMakeFiles/OldTesting.dir/link.d CMakeFiles/OldTesting.dir/main.cpp.o -o OldTesting  -lSDL2 -lSDL2_image libgamebreaker.a libSoLoud_MA.a

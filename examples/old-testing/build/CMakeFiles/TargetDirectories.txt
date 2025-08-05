@@ -1,3 +1,0 @@
-/home/elpoep/Documents/GitHub/GameBreaker/examples/old-testing/build/CMakeFiles/OldTesting.dir
-/home/elpoep/Documents/GitHub/GameBreaker/examples/old-testing/build/CMakeFiles/edit_cache.dir
-/home/elpoep/Documents/GitHub/GameBreaker/examples/old-testing/build/CMakeFiles/rebuild_cache.dir

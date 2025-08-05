@@ -28,9 +28,6 @@ all:
 	$(CXX_COMPILER) -g -ggdb -fpic -rdynamic -Lstatic -shared -o $(LIB_NAME) build/*.o $(CXX_ARGS_LIBS) $(CXX_ARGS_GTK) include/SoLoud/libSoLoud_MA.a #-lstatic 
 
 install:
-	echo The password is required to copy 
-	echo libgb.so and include files into 
-	echo /usr/lib/ and /usr/local/include/gamebreaker.
 	sudo cp -rf include/ /usr/local/include/gamebreaker/
 	sudo cp $(LIB_NAME) /usr/lib/
 
@@ -42,3 +39,6 @@ archive:
 
 compiled_archive:
 	7z a libgb_compiled.zip libgb.so include/
+
+compile_games:
+	find -wholename "examples/*/*.cpp" -exec g++ {} -o {}".o" -lgb -O3 \;
