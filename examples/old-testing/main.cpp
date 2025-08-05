@@ -1,5 +1,5 @@
 #define GB_USE_SMALL_FUNCNAMES
-#include "../../include/gamebreaker.hpp"
+#include <gamebreaker/gamebreaker.hpp>
 
 namespace gb = GameBreaker;
 

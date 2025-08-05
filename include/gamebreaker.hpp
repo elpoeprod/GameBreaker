@@ -371,13 +371,13 @@ enum mb { //class mb {public:
 };
 
 class vk {public:
-    static const int shift=16,
-    space=32,
-    left=37,
-    right=39,
-    up=38,
-    down=40,
-    enter=13;
+    static const int shift=SDLK_LSHIFT,
+    space=SDLK_SPACE,
+    left=SDLK_LEFT,
+    right=SDLK_RIGHT,
+    up=SDLK_UP,
+    down=SDLK_DOWN,
+    enter=SDLK_RETURN;
 };
 
 class mouse {
