@@ -106,7 +106,7 @@ GBFont *_fntDefault__;
 
 
 
-int init(int x, int y, int w, int h, std::string label)
+int init(int x, int y, std::string label)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
@@ -114,12 +114,13 @@ int init(int x, int y, int w, int h, std::string label)
     __mus_handle->init();
 
     gb_win = new GBWindow;
-    gb_win->win = SDL_CreateWindow(label.c_str(), x, y, w, h, SDL_WINDOW_SHOWN);
+    gb_win->cur_win=0;
+    gb_win->win = SDL_CreateWindow(label.c_str(), x, y, GB_DEFAULT_WINDOW_WIDTH, GB_DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, GB_INIT_WIN_FLAGS);
     gb_win->x = x;
     gb_win->y = y;
-    gb_win->w = w;
-    gb_win->h = h;
+    gb_win->w = GB_DEFAULT_WINDOW_WIDTH;
+    gb_win->h = GB_DEFAULT_WINDOW_HEIGHT;
     gb_win->running = 1;
     mouse::x = 0;
     mouse::y = 0;
@@ -144,9 +145,10 @@ int init(int x, int y, int w, int h, std::string label)
     date::current.year=ts.tm_year;
     date::current.century=math::floor(ts.tm_year/365.25);
     date::current.planet=3; //0 - sun
-    date::current.millenium=math::floor(date::current.year);
-    //_fntDefault__=font::add("../include/default.ttf",12);
-    //graphics::draw::set_font(_fntDefault__);
+    date::current.millenium=math::floor((date::current.year/1000)+1);
+    
+    _fntDefault__=font::add("default.ttf",12);
+    graphics::draw::set_font(_fntDefault__);
     graphics::draw::color(0xFFFFFF);
     room_current=nullptr;
 
@@ -225,6 +227,13 @@ void update()
 #ifdef GB_GAME_END_ON_ESC
     if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0; // if pressed then end game
 #endif
+
+	time_t tist=time(NULL);
+    struct tm ts=*localtime(&tist);
+    date::current.second=ts.tm_sec;
+    date::current.minute=ts.tm_sec;
+    date::current.hour=ts.tm_hour;
+    date::current.day=ts.tm_mday;
 
     SDL_GetGlobalMouseState(&display::mouse_x,&display::mouse_y);
 
@@ -366,18 +375,26 @@ void run() {
  * updates screen
  **/
 void screen::draw(double fps)
-{
+{	
+	int camdraw=-1;
+	for(int i=0;i<GB_MAX_ROOM_CAMERAS;i++) {
+		if(room_current->view_enabled[i]) camdraw=i;
+	}
+	if(camdraw==-1) {
+		SDL_SetWindowSize(gb_win->win,room_current->width,room_current->height);
+	} else {
     SDL_RenderSetScale(gb_win->ren,
         /*(float)gb_win->w/room_current->view[room_current->view_current].w,
         (float)gb_win->h/room_current->view[room_current->view_current].h*/
-        room_current->port[room_current->view_current].w/room_current->view[room_current->view_current].w,
-        room_current->port[room_current->view_current].h/room_current->view[room_current->view_current].h
+        room_current->port[camdraw].w/room_current->view[camdraw].w,
+        room_current->port[camdraw].h/room_current->view[camdraw].h
     );
     //SDL_Rect rect={0,0,room_current->port[room_current->view_current].w,room_current->port[room_current->view_current].h};
     //SDL_RenderSetViewport(gb_win->ren,&rect);
     SDL_SetWindowSize(gb_win->win, 
-                room_current->port[room_current->view_current].w,
-                room_current->port[room_current->view_current].h);
+                room_current->port[camdraw].w,
+                room_current->port[camdraw].h);
+	}
     
     SDL_RenderPresent(gb_win->ren);
     SDL_Delay(1000.f / fps);

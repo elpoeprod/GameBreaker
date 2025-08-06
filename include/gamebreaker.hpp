@@ -16,6 +16,22 @@
 #define GB_INIT_WIN_FLAGS SDL_RENDERER_ACCELERATED
 #endif
 
+#ifndef GB_DEFAULT_WINDOW_WIDTH
+#define GB_DEFAULT_WINDOW_WIDTH 640
+#endif
+#ifndef GB_DEFAULT_WINDOW_HEIGHT
+#define GB_DEFAULT_WINDOW_HEIGHT 480
+#endif
+
+#ifndef GB_MAX_OBJ_ALARMS
+#define GB_MAX_OBJ_ALARMS 12
+#endif
+
+#ifndef GB_MAX_ROOM_CAMERAS 
+#define GB_MAX_ROOM_CAMERAS 8
+
+#endif
+
 #define repeat(a) if(a>0) for(int __rep_i=0;__rep_i<(int)a;__rep_i++)
 
 #define GB_WINPOS_CENTER SDL_WINDOWPOS_CENTERED
@@ -69,9 +85,8 @@ typedef struct GBSprite {
     int w, h;
     int frames;
     SDL_Texture* tex;
+    int _selx,_sely,_selw,_selh;
 } GBSprite;
-
-#define GB_MAX_OBJ_ALARMS 12
 
 typedef struct GBObject {
     public:
@@ -108,8 +123,11 @@ typedef struct GBFont {
 typedef struct GBWin {
     gb_str label;
     int x, y, w, h;
-    SDL_Window* win;
-    SDL_Renderer* ren;
+    //std::vector<SDL_Window*> win;
+    //std::vector<SDL_Renderer*> ren;
+    SDL_Window *win;
+    SDL_Renderer *ren;
+    int cur_win;
     SDL_Event ev;
     int running;
 } GBWindow;
@@ -133,7 +151,6 @@ typedef struct GB_CamTarget {
     int borderw,borderh;
 } GB_CamTarget;
 
-#define GB_MAX_ROOM_CAMERAS 8
 
 typedef struct GBRoom {
     std::vector<rmobj>objects;
@@ -148,8 +165,8 @@ typedef struct GBRoom {
     int target_id;
     GB_CamTarget target_setup;
     GB_CamSetup view[GB_MAX_ROOM_CAMERAS];
-    GB_CamSetup port[GB_MAX_ROOM_CAMERAS];    // GameBreaker ignores `angle` variable in portview when rendering, so angle works
-                            // only in camview.
+    GB_CamSetup port[GB_MAX_ROOM_CAMERAS];	// GameBreaker ignores `angle` variable in portview when rendering, so angle works
+                            				// only in camview.
 } GBRoom; 
 
 extern std::vector<GBRoom *> gb_rooms;
@@ -237,7 +254,7 @@ extern double master_vol,
 
 extern GBRoom *room_current;
 
-extern int init(int x, int y, int w, int h, gb_str label);
+extern int init(int x, int y, gb_str label);
 extern void run();
 extern void update();
 extern void shutdown();
@@ -400,6 +417,7 @@ public:
     class sprite {
     public:
         static GBSprite* add(gb_str fname, int frames, int offx, int offy);
+        static GBSprite* add_ext(gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
         static int get_offset_x(GBSprite* spr);
         static int get_offset_y(GBSprite* spr);
         static void set_offset(GBSprite* spr, int x, int y);
