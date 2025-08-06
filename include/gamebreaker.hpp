@@ -362,7 +362,7 @@ public:
 
 class color {
 public:
-    static SDL_Color black, white, red, blue, green, lime,
+    static const SDL_Color black, white, red, blue, green, lime,
     gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
 };
 
