@@ -19,6 +19,13 @@
 #define GB_DEFAULT_SAMPLESIZE 1024
 #endif
 
+#ifndef GB_DEFAULT_WINDOW_WIDTH
+#define GB_DEFAULT_WINDOW_WIDTH (int)640
+#endif
+#ifndef GB_DEFAULT_WINDOW_HEIGHT
+#define GB_DEFAULT_WINDOW_HEIGHT (int)480
+#endif
+
 
 int myjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
 int mylastjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
