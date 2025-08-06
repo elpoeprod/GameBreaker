@@ -20,8 +20,10 @@ void my_draw2() {
 }
 
 int main() {
+	puts("where");
     gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"Test");
 
+	puts("is");
     sprite0=sprite::add_ext("examples/testing/elpaudio.png",1,0,0,25,5,0,0);
     obj1=object::add(sprite0,nullptr);
     obj2=object::add(sprite0,nullptr);
@@ -29,9 +31,11 @@ int main() {
     obj2->event_draw=my_draw2;
     obj1->depth=-15;
     obj2->depth=15;
+    puts("this");
     var room0=room::add(640,480);
     room::add_instance(room0,obj1, 0,0,nullptr);
     room::add_instance(room0,obj2, 10,10,nullptr);
+    puts("error?");
 	room::camera_setup(room0,0,1,(GB_CamSetup){0,0,640,480,0},(GB_CamSetup){0,0,640,480,0},-1,(GB_CamTarget){0,0,0,0});
     room::current(room0);
 
