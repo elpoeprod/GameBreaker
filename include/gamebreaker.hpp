@@ -340,7 +340,7 @@ class display {public:
     static int mouse_y;
 };
 
-#ifndef GB_DONT_USE_MUSIC
+#ifndef GB_DONT_USE_SFX
 class audio {
 public:
     static GBAudio*     add(gb_str fname, int type);
