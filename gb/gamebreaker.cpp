@@ -19,14 +19,6 @@
 #define GB_DEFAULT_SAMPLESIZE 1024
 #endif
 
-#ifndef GB_DEFAULT_WINDOW_WIDTH
-#define GB_DEFAULT_WINDOW_WIDTH (int)640
-#endif
-#ifndef GB_DEFAULT_WINDOW_HEIGHT
-#define GB_DEFAULT_WINDOW_HEIGHT (int)480
-#endif
-
-
 int myjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
 int mylastjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
 int gb_working_joystick = -1;
@@ -122,12 +114,12 @@ int init(int x, int y, std::string label)
 
     gb_win = new GBWindow;
     gb_win->cur_win=0;
-    gb_win->win = SDL_CreateWindow(label.c_str(), x, y, GB_DEFAULT_WINDOW_WIDTH, GB_DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    gb_win->win = SDL_CreateWindow(label.c_str(), x, y, 640,480, SDL_WINDOW_SHOWN);
     gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, GB_INIT_WIN_FLAGS);
     gb_win->x = x;
     gb_win->y = y;
-    gb_win->w = GB_DEFAULT_WINDOW_WIDTH;
-    gb_win->h = GB_DEFAULT_WINDOW_HEIGHT;
+    gb_win->w = 640;
+    gb_win->h = 480;
     gb_win->running = 1;
     mouse::x = 0;
     mouse::y = 0;
@@ -383,13 +375,7 @@ void run() {
  **/
 void screen::draw(double fps)
 {	
-	int camdraw=-1;
-	for(int i=0;i<GB_MAX_ROOM_CAMERAS;i++) {
-		if(room_current->view_enabled[i]) camdraw=i;
-	}
-	if(camdraw==-1) {
-		SDL_SetWindowSize(gb_win->win,room_current->width,room_current->height);
-	} else {
+	int camdraw=room_current->view_current;
     SDL_RenderSetScale(gb_win->ren,
         /*(float)gb_win->w/room_current->view[room_current->view_current].w,
         (float)gb_win->h/room_current->view[room_current->view_current].h*/
@@ -401,7 +387,6 @@ void screen::draw(double fps)
     SDL_SetWindowSize(gb_win->win, 
                 room_current->port[camdraw].w,
                 room_current->port[camdraw].h);
-	}
     
     SDL_RenderPresent(gb_win->ren);
     SDL_Delay(1000.f / fps);
