@@ -295,7 +295,7 @@ namespace GameBreaker {
         float _h=h,_s=s,_v=v;
         HSVtoRGB(r,g,b,_h,_s,_v);
         Uint8 _r=r,_g=g,_b=b;
-        SDL_Color mycol={_r,_g,_b};
+        SDL_Color mycol={_r,_g,_b,_realcol_.a};
         graphics::draw::color_sdl(mycol);
     }
 
@@ -319,6 +319,40 @@ namespace GameBreaker {
         spr->h = temp->h;
         spr->offx=offx;
         spr->offy=offy;
+        spr->_selx=0;
+        spr->_sely=0;
+        spr->_selw=temp->w;
+        spr->_selh=temp->h;
+        SDL_FreeSurface(temp);
+        gb_sprites.resize(gb_sprites.size() + 1);
+        gb_sprites[gb_sprites.size() - 1] = spr;
+        return spr;
+    }
+
+    /**
+    * adds a sprite with extended vars
+    * \sa fname - filename
+    * \sa frames - frames, should be greater than 0
+    * \sa offx, offy - offset coordinates
+    **/
+    GBSprite* graphics::sprite::add_ext(std::string fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh)
+    {
+        if (!fs::exists(fname)) {
+            show::error("At graphics::sprite::add:\nFile doesn't exist: \"" + fname + "\".",1);
+            return nullptr;
+        }
+        GBSprite* spr = new GBSprite;
+        spr->frames = (frames < 1) ? 1 : frames;
+        SDL_Surface* temp = IMG_Load(fname.c_str());
+        spr->tex = SDL_CreateTextureFromSurface(gb_win->ren, temp);
+        spr->w = temp->w;
+        spr->h = temp->h;
+        spr->offx=offx;
+        spr->offy=offy;
+        spr->_selx=grabx;
+        spr->_sely=graby;
+        spr->_selw=grabw==0?temp->w:grabw;
+        spr->_selh=grabh==0?temp->h:grabh;
         SDL_FreeSurface(temp);
         gb_sprites.resize(gb_sprites.size() + 1);
         gb_sprites[gb_sprites.size() - 1] = spr;
@@ -398,14 +432,25 @@ namespace GameBreaker {
     void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot)
     {
         if(room_current->view_enabled[room_current->view_current]==0) return;
-        auto _real_=GBXyfy(x,y);
-        int myw=(spr->w / spr->frames);
-        SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
-        SDL_FRect dstrect = { _real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
+        auto _real_=GBXyfy(x,y);      
+        int myw=((spr->_selw-spr->_selx) / spr->frames);
+        
+        SDL_Rect rect = { 
+        				spr->_selx+myw * (frame % spr->frames), spr->_sely, 
+        				myw, spr->_selh-spr->_sely 
+        				};
+        SDL_FRect dstrect = { 
+        				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
+        				(float)myw * xscale, (float)(spr->_selh-spr->_sely) * yscale 
+        				};
+        				
         float cenx=spr->offx,ceny=spr->offy;
-        SDL_FPoint cen = { cenx,ceny};
+        SDL_FPoint cen = {cenx,ceny};
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
-        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
+        int myflip=SDL_FLIP_NONE;
+        if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
+        if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
+        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, (SDL_RendererFlip)myflip);
     }
 
     void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
@@ -413,13 +458,24 @@ namespace GameBreaker {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);
 
-        int myw=(spr->w / spr->frames);
-        SDL_Rect rect = {myw*(frame % spr->frames),0,(int)math::clamp(w,0,myw),(int)math::clamp(h,0,spr->h)};
-        SDL_FRect dstrect = { _real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, (float)myw * xscale, (float)spr->h * yscale };
+        int myw=((spr->_selw-spr->_selx) / spr->frames);
+        
+        SDL_Rect rect = {
+        				spr->_selx+myw*(frame % spr->frames),spr->_sely,
+        				(int)math::clamp(w,0,myw),(int)math::clamp(h,0,spr->_selh-spr->_sely)
+        				};
+        SDL_FRect dstrect = { 
+        				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
+        				(float)myw * xscale, (float)spr->h * yscale 
+        				};
+        				
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
-        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
+        int myflip=SDL_FLIP_NONE;
+        if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
+        if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
+        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, (SDL_RendererFlip)myflip);
     }
 
     void graphics::draw::sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
@@ -427,13 +483,24 @@ namespace GameBreaker {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);
 
-        int myw=(spr->w / spr->frames);
-        SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
-        SDL_FRect dstrect = { _real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, (float)w * xscale, (float)h * yscale };
+        int myw=((spr->_selw-spr->_selx) / spr->frames);
+        
+        SDL_Rect rect = { 
+        				spr->_selx+myw * (frame % spr->frames), spr->_sely, 
+        				myw, spr->_selh-spr->_sely
+        				};
+        SDL_FRect dstrect = { 
+        				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
+        				(float)w * xscale, (float)h * yscale 
+        				};
+        				
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
-        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
+        int myflip=SDL_FLIP_NONE;
+        if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
+        if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
+        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, (SDL_RendererFlip)myflip);
     }
 
     SDL_Color graphics::draw::color_get() {return _realcol_;}
@@ -450,13 +517,24 @@ namespace GameBreaker {
     {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);
-        var myw=(spr->w/spr->frames);
+        var myw=((spr->_selw-spr->_selx)/spr->frames);
         graphics::draw::color_sdl(col);
-        SDL_Rect rect = { myw * (frame % spr->frames), 0, myw, spr->h };
-        SDL_FRect dstrect = { _real_.x, _real_.y, myw * xscale, (float)spr->h * yscale };
+        
+        SDL_Rect rect = { 
+				        spr->_selx+myw * (frame % spr->frames), spr->_sely, 
+				        myw, spr->_selh-spr->_sely 
+				        };
+        SDL_FRect dstrect = { 
+				        _real_.x, _real_.y, 
+				        myw * xscale, (float)spr->h * yscale 
+				        };
+				        
         SDL_FPoint cen = { (float)spr->offx, (float)spr->offy };
         SDL_SetTextureColorMod(spr->tex,col.r,col.g,col.b);
-        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, SDL_FLIP_NONE);
+        int myflip=SDL_FLIP_NONE;
+        if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
+        if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
+        SDL_RenderCopyExF(gb_win->ren, spr->tex, &rect, &dstrect, rot, &cen, (SDL_RendererFlip)myflip);
     }
 
     /**
