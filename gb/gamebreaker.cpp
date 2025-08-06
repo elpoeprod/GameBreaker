@@ -147,8 +147,8 @@ int init(int x, int y, std::string label)
     date::current.planet=3; //0 - sun
     date::current.millenium=math::floor((date::current.year/1000)+1);
     
-    _fntDefault__=font::add("default.ttf",12);
-    graphics::draw::set_font(_fntDefault__);
+    //_fntDefault__=font::add("default.ttf",12);
+    //graphics::draw::set_font(_fntDefault__);
     graphics::draw::color(0xFFFFFF);
     room_current=nullptr;
 

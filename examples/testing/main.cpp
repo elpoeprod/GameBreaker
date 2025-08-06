@@ -20,7 +20,7 @@ void my_draw2() {
 }
 
 int main() {
-    gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,640,480,"Test");
+    gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"Test");
 
     sprite0=sprite::add_ext("examples/testing/elpaudio.png",1,0,0,5,5,0,0);
     obj1=object::add(sprite0,nullptr);
