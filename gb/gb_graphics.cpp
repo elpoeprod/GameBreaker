@@ -435,11 +435,11 @@ namespace GameBreaker {
     {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);      
-        float myw=((float)(spr->_selw-spr->_selx) / spr->frames);
+        var myw=((spr->_selw-spr->_selx) / spr->frames);
         
         SDL_Rect rect = { 
-        				(int)(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
-        				(int)myw, spr->_selh
+        				(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
+        				myw, spr->_selh
         				};
         SDL_FRect dstrect = { 
         				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
@@ -461,10 +461,10 @@ namespace GameBreaker {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);
 
-        int myw=((spr->_selw-spr->_selx) / spr->frames);
+        var myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
         
         SDL_Rect rect = {
-        				spr->_selx+myw*(frame % spr->frames),spr->_sely,
+        				(spr->_selx+myw*(frame % spr->frames)),spr->_sely,
         				(int)math::clamp(w,0,myw),(int)math::clamp(h,0,spr->_selh-spr->_sely)
         				};
         SDL_FRect dstrect = { 
@@ -487,10 +487,10 @@ namespace GameBreaker {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);
 
-        int myw=((spr->_selw-spr->_selx) / spr->frames);
+        var myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
         
         SDL_Rect rect = { 
-        				spr->_selx+myw * (frame % spr->frames), spr->_sely, 
+        				(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
         				myw, spr->_selh-spr->_sely
         				};
         SDL_FRect dstrect = { 
