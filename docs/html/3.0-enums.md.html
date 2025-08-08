@@ -1,0 +1,90 @@
+<h1>Enums (and other definitions)</h1>
+<h2>Enums</h2>
+<h3>GBAudioType</h3>
+<p><code>GBAudioType</code> is an enum which stores audio types.</p>
+<pre><code class="language-c++">enum GBAudioType {
+    GB_2D=0,
+    GB_3D,
+    GB_MUSIC
+};
+</code></pre>
+<h3>color</h3>
+<p><code>color</code> is a class with colors in it.
+Available colors are <code>black</code>, <code>white</code>, <code>red</code>, <code>blue</code>, <code>green</code>, <code>lime</code>, <code>gray</code>, <code>lt_gray</code>,
+<code>dk_gray</code>, <code>fuchsia</code>, <code>purple</code>, <code>aqua</code>, and <code>pink</code>.</p>
+<pre><code class="language-c++">class color {
+public:
+    static const SDL_Color black, white, red, blue, green, lime,
+    gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
+};
+</code></pre>
+<h3>mb</h3>
+<p><code>mb</code> is an enum with mouse buttons in it.
+Available mouse buttons are <code>none</code>, <code>left</code>, <code>right</code>, <code>middle</code> and <code>any</code>.</p>
+<pre><code class="language-c++">enum mb { //class mb {public:
+    //static const int 
+    none    = -1,
+    left    = SDL_BUTTON_LEFT,
+    right   = SDL_BUTTON_MIDDLE,
+    middle  = SDL_BUTTON_RIGHT,
+    any     = 0x100 //;
+};
+</code></pre>
+<h3>vk</h3>
+<p><code>vk</code> is a class with some keyboard key codes in it.
+Available key codes are <code>shift</code>, <code>space</code>, <code>left</code>, <code>right</code>, <code>up</code>, <code>down</code> and <code>enter</code>.</p>
+<pre><code class="language-c++">class vk {public:
+    static const int shift=SDLK_LSHIFT,
+    space=SDLK_SPACE,
+    left=SDLK_LEFT,
+    right=SDLK_RIGHT,
+    up=SDLK_UP,
+    down=SDLK_DOWN,
+    enter=SDLK_RETURN;
+};
+</code></pre>
+<h3>fs::fmode</h3>
+<p><code>fmode</code> is an enum used for <code>fs::text::</code> functions. Stores text modes in it.
+Available text modes in it are <code>read</code>, <code>write</code> and <code>append</code>.</p>
+<pre><code class="language-c++">enum fmode {
+        read=0,
+        write=1,
+        append=2
+    };
+</code></pre>
+<h3>fs::fa</h3>
+<p><code>fa</code> is an enum used for file handling functions. Stores file attributes in it.
+Available file attributes are <code>hidden</code>, <code>dir</code>, <code>sysfile</code> and <code>fullpath</code> (used for <code>fs::find::</code> functions).</p>
+<pre><code class="language-c++">enum fa {
+        hidden = 0x0010, // show hidden files
+        dir = 0x0020, // show directories
+        sysfile = 0x0040, // show system files
+        fullpath = 0x0080, // (for fs::find::list() - adds a path to found filename)
+    };
+</code></pre>
+<h3>fs::type</h3>
+<p><code>fs::type</code> is an enum used for <code>fs::find::</code> functions. Stores file types in it.
+Available file types are <code>tfile</code> and <code>tdir</code>.</p>
+<pre><code class="language-c++">enum type {
+        tfile=DT_REG,
+        tdir=DT_DIR
+    };
+</code></pre>
+<h3>ERROR</h3>
+<p><code>ERROR</code> is an unused enum which should hold error codes in it.</p>
+<pre><code class="language-c++">enum ERROR {
+    SPRITE_FILE_DOESNT_EXIST=0x000100,
+    SPRITE_FILE_NOT_SUPPORTED=0x000101
+};
+</code></pre>
+<h2>Other definitions</h2>
+<h3>repeat()</h3>
+<p><code>repeat()</code> is a definition which allows to do a loop simpler than <code>for</code> loops (maybe).</p>
+<pre><code class="language-c++">#define repeat(a) if(a&gt;0) for (int __rep_i=0;__rep_i&lt;(int)a;__rep_i++)
+</code></pre>
+<h3>var</h3>
+<p><code>var</code> is a <code>auto</code> keyword redefinition to make it look like GameMaker one.</p>
+<h3>stringify</h3>
+<p><code>stringify()</code> is a <code>std::to_string</code> function redefinition.</p>
+<h3>str, or gb_str</h3>
+<p><code>str</code> and <code>gb_str</code> are <code>std::string</code> type redefinition.</p>

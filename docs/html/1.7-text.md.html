@@ -1,0 +1,42 @@
+<h1>GBText</h1>
+<h2>Definition</h2>
+<pre><code class="language-c++">struct GBText {
+public:
+    GBText(const std::string&amp; newText)
+    {
+        *this = newText;
+        this-&gt;txt=newText;
+    }
+
+    ~GBText()
+    {
+        if (this-&gt;surf != nullptr)
+            SDL_FreeSurface(this-&gt;surf);
+        if (this-&gt;tex != nullptr)
+            SDL_DestroyTexture(this-&gt;tex);
+    }
+
+    GBText&amp; operator=(const std::string&amp; newText)
+    {
+        this-&gt;txt = newText;
+
+        if (this-&gt;surf != nullptr)
+            SDL_FreeSurface(this-&gt;surf);
+        if (this-&gt;tex != nullptr)
+            SDL_DestroyTexture(this-&gt;tex);
+
+        this-&gt;surf = TTF_RenderUTF8_Blended(m_font-&gt;font, this-&gt;txt.c_str(), m_col);
+        this-&gt;tex = SDL_CreateTextureFromSurface(gb_win-&gt;ren, this-&gt;surf);
+        //if(this-&gt;tex==nullptr or this-&gt;surf-&gt;w==0 or this-&gt;surf-&gt;h==0) exit(0x000010);
+
+        return *this;
+    }
+
+    SDL_Color m_col {(SDL_Color){255,255,255,255}};
+    std::string txt {};
+    SDL_Surface* surf { nullptr };
+    SDL_Texture* tex { nullptr };
+    GBFont *m_font{GameBreaker::curfon.f};
+};
+</code></pre>
+<p><code>GBText</code> is a type which allows to render a constant text for use with (<code>graphics::draw::text()</code>)[4.3-graphics.md] function.</p>

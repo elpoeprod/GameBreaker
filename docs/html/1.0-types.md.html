@@ -1,0 +1,54 @@
+<h1>GameBreaker Types</h1>
+<h2>GBWin</h2>
+<p>window type. Only used in main GB window. Do not use it if only you know what you are doing!</p>
+<h2><a href="1.1-object.md">GBObject</a></h2>
+<p>object type. Used for creating thing like players, menus, etc.
+Handles:
+- coordinates (x,y) and their previous values (xprevious,yprevious);
+- sprite for drawing and mask sprite for collisions (not implemented as of current GB version);
+- speed (spd), horizontal and vertical speed (hspd,vspd) variables;
+- direction, gravity, gravity_direction and friction for physics calculation;
+- depth is used to calculate, when GameBreaker should draw your sprite;
+- image_index and image_speed used to calculate current sprite's frame;
+- instance id for room;
+- object id;
+- alarm, the default value is <code>12</code>, but this value can be increased if <a href="2.0-defines.md"><code>GB_MAX_OBJ_ALARMS</code></a> will be changed;
+- functions, like draw function (event_draw), step function (event_step) and create function (event_create).</p>
+<h2><a href="1.2-sprite.md">GBSprite</a></h2>
+<p>sprite type. Used for storing images in the program.
+Handles:
+- image itself;
+- its offset coordinates (offx,offy);
+- frames of an image;
+- image rectangle;
+- image width and height;</p>
+<h2><a href="1.3-audio.md">GBAudio</a></h2>
+<p>audio type. Used for storing audio files in a program.
+Handles:
+- audio chunk;
+- volume of the audio;
+- length and position of the audio;
+- pan of the audio;
+- type of the audio (<a href="3.0-enums.md">GBAudioType</a>)
+- 3D coordinates of an audio;</p>
+<h2><a href="1.4-font.md">GBFont</a></h2>
+<p>font type. Used for storing font in a program.
+Handles:
+- font itself;
+- font size;
+- font boldness, italic;</p>
+<h2><a href="1.5-room.md">GBRoom</a></h2>
+<p>room type. Used for drawing a program itself.
+Handles are available at the main file of GBRoom.</p>
+<h2><a href="1.6-path.md">GBPath</a></h2>
+<p>path type.
+Handles:
+- coordinates of points;
+- is path closed or not;
+- path speed;</p>
+<h2><a href="1.7-text.md">GBText</a></h2>
+<p>text type. Used for rendering text with some font for use with <a href="4.3-graphics.md">graphics::draw::text()</a> function.
+Handles:
+- text of the rendered text;
+- font used for text;
+- color used for text;</p>

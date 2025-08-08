@@ -1,0 +1,29 @@
+<h1>GBObject</h1>
+<h2>Definition:</h2>
+<pre><code class="language-c++">typedef struct GBObject {
+    public:
+        double x, y;
+        double xprevious, yprevious;
+        double direction, gravity, gravity_direction,friction;
+        double spd,hspd,vspd;
+        GBSprite *spr, *mask;
+        int depth;
+        int id;
+        double image_index;
+        double image_speed;
+        int inst_id;
+        int alarm[GB_MAX_OBJ_ALARMS];
+    
+    void (*event_create)();// __attribute__((weak));
+    void (*event_step_begin)();// __attribute__((weak));
+    void (*event_step)();// __attribute__((weak));
+    void (*event_step_end)();// __attribute__((weak));
+    void (*event_destroy)();// __attribute__((weak));
+    void (*event_draw)();// __attribute__((weak));
+    int (*event_alarm[GB_MAX_OBJ_ALARMS])();
+
+    private:
+        int _in_path;
+} GBObject;
+</code></pre>
+<p><code>GBObject</code> is an object type, used for things like player controlling, buttons, menus, etc.</p>

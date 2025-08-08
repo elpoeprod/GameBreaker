@@ -1,0 +1,19 @@
+<h3>Defines</h3>
+<p><code>GB_USE_SMALL_FUNCNAMES</code> - tells GameBreaker to use smaller function names instead of default ones.
+If <code>GB_USE_SMALL_FUNCNAMES</code> is defined, functions like <code>GameBreaker::graphics::draw::*</code> will become <code>draw::*</code>,
+same with <code>GameBreaker::audio</code>, <code>GameBreaker::screen</code>, <code>GameBreaker::graphics::sprite</code> etc.</p>
+<p><code>GB_INIT_WIN_FLAGS</code> - tells GameBreaker to initialize SDL_Renderer with flags, added in this definition.
+If <code>GB_INIT_WIN_FLAGS</code> is not defined, it will automatically become <code>SDL_RENDERER_ACCELERATED</code>.</p>
+<p><code>GB_MAX_OBJ_ALARMS</code> -  tells GameBreaker to increase/decrease number of <a href="1.1-object.md"><code>GBObject</code></a>'s alarms.
+Defined <code>12</code> as default number of alarms.</p>
+<p><code>GB_MAX_ROOM_CAMERAS</code> - tells GameBreaker to increase/decrease number of <a href="1.4-room.md"><code>GBRoom</code></a>'s cameras.
+Defined <code>8</code> as default number of cameras.</p>
+<p><code>GB_WINPOS_CENTERED</code> - calculated window position for x/y for <a href="4.1-main.md"><code>GameBreaker::init()</code></a> function.
+Redefinition of <code>SDL_WINDOWPOS_CENTERED</code>.</p>
+<p><code>GB_DONT_USE_*</code> - tells GameBreaker to not use some functions.
+You should change <code>*</code> to <code>SFX</code> to disable audio functions, <code>KEYB</code> to disable keyboard functions,
+<code>JOY</code> to disable joystick functions. More are coming soon.</p>
+<p><code>GB_DEFAULT_SAMPLE_SIZE</code> - GameBreaker default audio sample size. Increasing will make audios store more data,
+which can help remove some audio-related problems, like clicks, freezes, etc.
+Defined <code>1024</code> as default sample size</p>
+<p><code>GB_GAME_END_ON_ESC</code> - tells GameBreaker to exit the game using <code>ESCAPE</code> key. Not defined by default.</p>

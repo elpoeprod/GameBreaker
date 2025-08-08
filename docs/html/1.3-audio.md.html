@@ -1,0 +1,16 @@
+<h1>GBAudio</h1>
+<h2>Definition</h2>
+<pre><code class="language-c++">#ifndef GB_DONT_USE_SFX
+typedef struct GBAudio {
+    _GB_AudioType_ chunk;
+    double vol;
+    double pos;
+    int type;
+    double x,y,z;
+    double pan;
+    int handle;
+    double len;
+} GBAudio;
+#endif
+</code></pre>
+<p><code>GBAudio</code> is a type which allows to store audio data in a program.</p>
