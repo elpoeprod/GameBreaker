@@ -1,4 +1,5 @@
 #include "../include/gamebreaker.hpp"
+#include <SDL2/SDL_render.h>
 
 /*
 * GAMEBREAKER::GRAPHICS
@@ -299,6 +300,50 @@ namespace GameBreaker {
         graphics::draw::color_sdl(mycol);
     }
 
+
+    void graphics::draw::text(float x, float y, GBText* text)
+    {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+        SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
+        SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
+        SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+        SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
+    }
+
+    std::vector<GBText*> _gb_txt_;
+
+    int __gb_find_text_in_db(gb_str text) {
+        for(int i=0;i<(int)_gb_txt_.size();i++) {
+            if(text==_gb_txt_[i]->txt) return i;
+        }
+        return -1;
+    }
+
+    void graphics::draw::text_rt(float x, float y, gb_str txt)
+    {
+        if(room_current->view_enabled[room_current->view_current]==0) return;
+        auto _real_=GBXyfy(x,y);
+        GBText *text;
+        int finder=__gb_find_text_in_db(txt);
+        if(finder!=-1) {
+            text=_gb_txt_[finder];
+        }
+        else {
+            _gb_txt_.resize(_gb_txt_.size()+1);
+            _gb_txt_[_gb_txt_.size()-1]=new GBText(txt);
+            text=_gb_txt_[_gb_txt_.size()-1];
+        }
+        SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
+        SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
+        SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+        SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
+    }
+
+    void graphics::draw::alpha(float alpha) {
+        _realcol_.a=alpha;
+    }
+
     /**
     * adds a sprite
     * \sa fname - filename
@@ -359,49 +404,6 @@ namespace GameBreaker {
         return spr;
     }
 
-    void graphics::draw::text(float x, float y, GBText* text)
-    {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
-        auto _real_=GBXyfy(x,y);
-        SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
-        SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
-        SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
-        SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
-    }
-
-    std::vector<GBText*> _gb_txt_;
-
-    int __gb_find_text_in_db(gb_str text) {
-        for(int i=0;i<(int)_gb_txt_.size();i++) {
-            if(text==_gb_txt_[i]->txt) return i;
-        }
-        return -1;
-    }
-
-    void graphics::draw::text_rt(float x, float y, gb_str txt)
-    {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
-        auto _real_=GBXyfy(x,y);
-        GBText *text;
-        int finder=__gb_find_text_in_db(txt);
-        if(finder!=-1) {
-            text=_gb_txt_[finder];
-        }
-        else {
-            _gb_txt_.resize(_gb_txt_.size()+1);
-            _gb_txt_[_gb_txt_.size()-1]=new GBText(txt);
-            text=_gb_txt_[_gb_txt_.size()-1];
-        }
-        SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
-        SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
-        SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
-        SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
-    }
-
-    void graphics::draw::alpha(float alpha) {
-        _realcol_.a=alpha;
-    }
-
     /**
     * destroy the sprite if it will not be used anymore
     * \sa spr - sprite
@@ -433,11 +435,11 @@ namespace GameBreaker {
     {
         if(room_current->view_enabled[room_current->view_current]==0) return;
         auto _real_=GBXyfy(x,y);      
-        int myw=((spr->_selw-spr->_selx) / spr->frames);
+        float myw=((float)(spr->_selw-spr->_selx) / spr->frames);
         
         SDL_Rect rect = { 
-        				spr->_selx+myw * (frame % spr->frames), spr->_sely, 
-        				myw, spr->_selh-spr->_sely 
+        				(int)(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
+        				(int)myw, spr->_selh
         				};
         SDL_FRect dstrect = { 
         				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
@@ -447,6 +449,7 @@ namespace GameBreaker {
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = {cenx,ceny};
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+        SDL_SetTextureAlphaMod(spr->tex, _realcol_.a);
         int myflip=SDL_FLIP_NONE;
         if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
         if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
@@ -472,6 +475,7 @@ namespace GameBreaker {
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+        SDL_SetTextureAlphaMod(spr->tex, _realcol_.a);
         int myflip=SDL_FLIP_NONE;
         if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
         if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
@@ -497,6 +501,7 @@ namespace GameBreaker {
         float cenx=spr->offx,ceny=spr->offy;
         SDL_FPoint cen = { cenx,ceny };
         SDL_SetTextureColorMod(spr->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+        SDL_SetTextureAlphaMod(spr->tex, _realcol_.a);
         int myflip=SDL_FLIP_NONE;
         if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
         if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
@@ -531,6 +536,7 @@ namespace GameBreaker {
 				        
         SDL_FPoint cen = { (float)spr->offx, (float)spr->offy };
         SDL_SetTextureColorMod(spr->tex,col.r,col.g,col.b);
+        SDL_SetTextureAlphaMod(spr->tex, col.a);
         int myflip=SDL_FLIP_NONE;
         if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
         if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
