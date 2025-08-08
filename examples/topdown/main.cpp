@@ -7,7 +7,7 @@ GBSprite *sprCursor;
 GBRoom *rmTest;
 
 int main() {
-    gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,480,256,"Hotline Miami 4: GameBreaker Wanker");
+    gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"Hotline Miami 4: GameBreaker Wanker");
 
 	init_objects();
     var font1=font::add("sourcesans.ttf",14);
