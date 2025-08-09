@@ -14,4 +14,4 @@ libgb.so
 /pkg
 *.zst
 /src
-main.cpp
+./main.cpp
