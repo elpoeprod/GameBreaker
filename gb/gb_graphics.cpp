@@ -5,6 +5,8 @@
 * GAMEBREAKER::GRAPHICS
 */
 
+#define GAssert if(room_current->view_enabled[room_current->view_current]==0) return;
+
 SDL_FPoint GBXyfy(double x, double y) {
     return {
         (float)(x-GameBreaker::room_current->view[GameBreaker::room_current->view_current].x),
@@ -190,7 +192,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_1=GBXyfy(x1,y1);
         auto _real_2=GBXyfy(x2,y2);
         auto _real_3=GBXyfy(x3,y3);
@@ -252,7 +254,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::circle(int x, int y, int r, int outline)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
         if (outline)
             SDL_RenderDrawCircle(gb_win->ren, _real_.x, _real_.y, r);
@@ -266,7 +268,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::line(int x1, int y1, int x2, int y2)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_1=GBXyfy(x1,y1);
         auto _real_2=GBXyfy(x2,y2);
         SDL_RenderDrawLine(gb_win->ren, _real_1.x, _real_1.y, _real_2.x, _real_2.y);
@@ -277,7 +279,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::point(int x, int y)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
         SDL_RenderDrawPoint(gb_win->ren, _real_.x, _real_.y);
     }
@@ -303,7 +305,7 @@ namespace GameBreaker {
 
     void graphics::draw::text(float x, float y, GBText* text)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
         SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
         SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
@@ -322,7 +324,7 @@ namespace GameBreaker {
 
     void graphics::draw::text_rt(float x, float y, gb_str txt)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
         GBText *text;
         int finder=__gb_find_text_in_db(txt);
@@ -417,6 +419,7 @@ namespace GameBreaker {
         spr->w = 0;
         SDL_DestroyTexture(spr->tex);
         delete spr;
+        spr=nullptr;
     }
 
     void graphics::sprite::set_offset(GBSprite *spr, int x, int y) {
@@ -433,9 +436,9 @@ namespace GameBreaker {
     **/
     void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);      
-        var myw=((spr->_selw-spr->_selx) / spr->frames);
+        var myw=((spr->_selw) / spr->frames);
         
         SDL_Rect rect = { 
         				(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
@@ -458,10 +461,10 @@ namespace GameBreaker {
 
     void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
 
-        var myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
+        var myw=((spr->_selw) / spr->frames);
         
         SDL_Rect rect = {
         				(spr->_selx+myw*(frame % spr->frames)),spr->_sely,
@@ -484,7 +487,7 @@ namespace GameBreaker {
 
     void graphics::draw::sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
 
         var myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
@@ -520,7 +523,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot,SDL_Color col)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
         var myw=((spr->_selw-spr->_selx)/spr->frames);
         graphics::draw::color_sdl(col);
@@ -551,7 +554,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::rect(int x, int y, int w, int h, int outline)
     {
-        if(room_current->view_enabled[room_current->view_current]==0) return;
+        GAssert;
         auto _real_=GBXyfy(x,y);
         SDL_Rect myrect = { (int)_real_.x,(int)_real_.y,w, h };
         if (outline == 0)
@@ -569,6 +572,9 @@ namespace GameBreaker {
         mystate={inrect and mouse::released(mb::any),mouse::which()};
         return mystate;
     }
-    void graphics::draw::blendmode(SDL_BlendMode mode) { SDL_SetRenderDrawBlendMode(gb_win->ren, mode); }
+
+    void graphics::draw::blendmode(SDL_BlendMode mode) { 
+        SDL_SetRenderDrawBlendMode(gb_win->ren, mode); 
+    }
 
 }
