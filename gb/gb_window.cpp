@@ -50,4 +50,6 @@ namespace GameBreaker {
     **/
     SDL_Point window::get_size() { return (SDL_Point) { gb_win->w, gb_win->h }; }
 
+    SDL_Renderer* window::get_renderer() { return gb_win->ren; }
+
 }

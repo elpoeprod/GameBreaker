@@ -1,6 +1,8 @@
 #include "../include/gamebreaker.hpp"
 #include "../include/nfd/nfd.hpp"
 #include <filesystem>
+#include <iostream>
+#include <fstream>
 
 namespace GameBreaker {
 
@@ -14,7 +16,6 @@ namespace GameBreaker {
         return std::filesystem::exists(fname);
     }
 
-    SDL_Renderer* window::get_renderer() { return gb_win->ren; }
 
     /**
     * returns ds_list that contains all the files in directory found with filter and mask
@@ -100,25 +101,41 @@ namespace GameBreaker {
     }
 
 
-    int fs::text::open(gb_str fname, int mode) {
+    int fs::text::open(gb_str fname, enum fs::fmode mode) {
         _gm_file *f=new _gm_file;
-        std::string md=(mode==fs::fmode::read)?"r":(mode==fs::fmode::append)?"a":"w";
-        f->file=fopen(fname.c_str(),md.c_str());
+        f->file.a.open(fname,(std::ios_base::openmode)mode);
         f->mode=mode;
+        f->line=0;
         gb_files.resize(gb_files.size()+1);
         gb_files[gb_files.size()-1]=f;
         return gb_files.size()-1;
     }
 
     void fs::text::write(int file,gb_str str) {
-        fprintf(gb_files[file]->file,"%s\n", str.c_str());
+    	if(gb_files[file]->mode!=fs::fmode::write) {show::error("Can't write to read-only file! File ID: "+stringify(file),1); return;}
+        gb_files[file]->file.a<<str;
+    }
+    
+    gb_str fs::text::read(int file) {
+    	if(gb_files[file]->mode!=fs::fmode::read) {show::error("Can't write to read-only file! File ID: "+stringify(file),1); return undefined;}
+    	gb_str buff;
+    	getline(gb_files[file]->file.a,buff);
+    	return buff;
+    }
+
+    void fs::text::ln(int file) {
+    	if(gb_files[file]->mode==fs::fmode::write) gb_files[file]->file.a<<"\n";
+    	else {
+    		gb_str buff;
+    		if(getline(gb_files[file]->file.a,buff)) gb_files[file]->line++;
+    	}
     }
 
     void fs::text::close(int file) {
-        fclose(gb_files[file]->file);
-        gb_files[file]->file=nullptr;
+        gb_files[file]->file.a.close();
+        //gb_files[file]->file.a=nullptr;
         gb_files[file]->mode=0;
-        delete[] gb_files[file];
+        delete gb_files[file];
         gb_files.erase(gb_files.begin() + file);
     }
 

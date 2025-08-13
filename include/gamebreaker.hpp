@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iostream>
+#include <fstream>
 
 #ifndef GB_INIT_WIN_FLAGS
 #define GB_INIT_WIN_FLAGS SDL_RENDERER_ACCELERATED
@@ -175,9 +177,16 @@ struct GBPath {
 
 };
 
+struct _gm_ftype {
+	std::ofstream out;
+	std::ifstream in;
+	std::fstream a;
+};
+
 struct _gm_file {
-    FILE *file;
+    _gm_ftype file;
     int mode;
+    int line;
 };
 
 extern GBWindow* gb_win;
@@ -474,9 +483,9 @@ struct fname_list {
 class fs {
 public:
     enum fmode {
-        read=0,
-        write=1,
-        append=2
+        read=std::ios::out,
+        write=std::ios::in,
+        append=std::ios::app
     };
     enum fa {
         hidden = 0x0010, // show hidden files
@@ -495,8 +504,10 @@ public:
         static std::vector<__gblist> list_ext(gb_str directory, std::vector<std::string> filter, Uint32 mask);
     };
     class text {public:
-        static int open(gb_str fname,int mode);
+        static int open(gb_str fname,enum fs::fmode mode);
         static void write(int file,gb_str str);
+        static gb_str read(int file);
+        static void ln(int file);
         static void close(int file);
     };
     static gb_str path_parent(gb_str path);
@@ -570,6 +581,8 @@ struct __gbmap {
 
 }
 
+#define undefined "\0"
+
 extern double view_xview[GB_MAX_ROOM_CAMERAS],view_yview[GB_MAX_ROOM_CAMERAS],view_angle[GB_MAX_ROOM_CAMERAS];
 extern int view_wview[GB_MAX_ROOM_CAMERAS],view_hview[GB_MAX_ROOM_CAMERAS];
 
@@ -606,6 +619,7 @@ typedef GameBreaker::display display;
 typedef GameBreaker::mouse mouse;
 typedef GameBreaker::color col;
 typedef GameBreaker::fs file;
+typedef GameBreaker::fs::text text;
 typedef GameBreaker::screen screen;
 typedef GameBreaker::joy joystick;
 typedef GameBreaker::keyboard keyboard;
