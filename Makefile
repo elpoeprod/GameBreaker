@@ -28,8 +28,10 @@ all:
 	$(CXX_COMPILER) -g -ggdb -fpic -rdynamic -Lstatic -shared -o $(LIB_NAME) build/*.o $(CXX_ARGS_LIBS) $(CXX_ARGS_GTK) include/SoLoud/libSoLoud_MA.a #-lstatic 
 
 install:
-	sudo cp -rf include/ /usr/local/include/gamebreaker/
-	sudo cp $(LIB_NAME) /usr/lib/
+	rm -rf /usr/local/include/gamebreaker/
+	rm /usr/lib/$(LIB_NAME)
+	cp -rf include/ /usr/local/include/gamebreaker/
+	cp $(LIB_NAME) /usr/lib/
 
 windows:
 	echo Not implemented. Linux is the only supported OS at this time.
