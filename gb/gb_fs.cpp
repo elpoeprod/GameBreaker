@@ -101,26 +101,32 @@ namespace GameBreaker {
     }
 
 
-    int fs::text::open(gb_str fname, enum fs::fmode mode) {
+    int fs::text::open(gb_str fname, int mode) {
         _gm_file *f=new _gm_file;
-        f->file.a.open(fname,(std::ios_base::openmode)mode);
+        auto md=(mode==fs::fmode::read) ? std::ios::in : (mode==fs::fmode::write) ? std::ios::out|std::ios::trunc : std::ios::app;
+        f->file.a.open(fname,md);
         f->mode=mode;
         f->line=0;
-        gb_files.resize(gb_files.size()+1);
-        gb_files[gb_files.size()-1]=f;
+        f->name=fname;
+        gb_files.push_back(f);
         return gb_files.size()-1;
     }
 
     void fs::text::write(int file,gb_str str) {
-    	if(gb_files[file]->mode!=fs::fmode::write) {show::error("Can't write to read-only file! File ID: "+stringify(file),1); return;}
+    	if(gb_files[file]->mode!=(int)fs::fmode::write) {show::error("Can't write to read-only file! Filename: "+gb_files[file]->name,1); return;}
         gb_files[file]->file.a<<str;
+        return;
     }
     
     gb_str fs::text::read(int file) {
-    	if(gb_files[file]->mode!=fs::fmode::read) {show::error("Can't write to read-only file! File ID: "+stringify(file),1); return undefined;}
+    	if(gb_files[file]->mode!=(int)fs::fmode::read) {show::error("Can't read write-only file! Filename: "+gb_files[file]->name,1); return undefined;}
     	gb_str buff;
     	getline(gb_files[file]->file.a,buff);
     	return buff;
+    }
+
+    int fs::text::eof(int file) {
+    	return gb_files[file]->file.a.eof();
     }
 
     void fs::text::ln(int file) {
