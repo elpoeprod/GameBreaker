@@ -2,25 +2,23 @@
 #include <gamebreaker/gamebreaker.hpp>
 namespace gb=GameBreaker;
 
-int main() {
+int main(int argc,char **argv) {
 	gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"File write test");
-	puts("1");
-	var myfile=file::text::open("testfile.txt",file::fmode::write);
-	puts("11");
-	file::text::write(myfile,"Hello, GameBreaker text file!");
-	puts("111");
-	file::text::ln(myfile);
-	puts("1111");
-	file::text::write(myfile,"This is another line!");
-	puts("11111");
-	file::text::close(myfile);
-
-	puts("111111");
-	var newfile=file::text::open("testfile.txt",file::fmode::read);
-	puts("1111111");
-	show::message("TEST",file::text::read(newfile));
-	puts("11111111");
-	file::text::close(newfile);
-	puts("111111111");
+	std::string myargv[argc];
+	for(int i=0;i<argc;i++) {
+		myargv[i]=argv[i];
+	}
+	if(myargv[1]=="write") {
+		var myfile=file::text::open("testfile.txt",file::fmode::write);
+		file::text::write(myfile,"Hello, GameBreaker text file!\n\nTESTTEST");
+		file::text::ln(myfile);
+		file::text::write(myfile,"This is another line!");
+		file::text::close(myfile);
+	}
+	if(myargv[1]=="read") {
+		var newfile=file::text::open("testfile.txt",file::fmode::read);
+		while(!file::text::eof(newfile)) puts(file::text::read(newfile).c_str());
+		file::text::close(newfile);
+	}
 	gb::shutdown();
 }
