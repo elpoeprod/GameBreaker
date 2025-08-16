@@ -1,4 +1,6 @@
 #include "../include/gamebreaker.hpp"
+#include <SDL2/SDL_log.h>
+#include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_video.h>
 
 namespace GameBreaker {
@@ -51,5 +53,9 @@ namespace GameBreaker {
     SDL_Point window::get_size() { return (SDL_Point) { gb_win->w, gb_win->h }; }
 
     SDL_Renderer* window::get_renderer() { return gb_win->ren; }
+
+    void window::set_priority(int num) {
+        SDL_SetThreadPriority((SDL_ThreadPriority)num); // 0 - low, 3 - high like on drugs
+    }
 
 }
