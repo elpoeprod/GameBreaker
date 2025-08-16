@@ -46,6 +46,17 @@ double  view_xview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
 int     view_wview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
         view_hview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0};
 
+
+std::string __gb_weekdays[7]= {
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+};
+
 /**********START*********************/
 namespace GameBreaker {
 
@@ -63,6 +74,8 @@ int display_current=0;
 
 int display::mouse_x=0;
 int display::mouse_y=0;
+
+gb_str gb_version="0.0.14";
 
 GBWindow* gb_win;
 SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
@@ -95,7 +108,8 @@ __current date::current={
     .year=0,
     .century=0,
     .planet=0,
-    .millenium=0
+    .millenium=0,
+    .weekday=__gb_weekdays[0],
 };
 
 Uint32 fps_lasttime = SDL_GetTicks();
@@ -140,6 +154,7 @@ int init(int x, int y, std::string label)
     date::current.minute=ts.tm_sec;
     date::current.hour=ts.tm_hour;
     date::current.day=ts.tm_mday;
+    date::current.weekday=__gb_weekdays[date::current.day%7];
     date::current.month=ts.tm_mon;
     date::current.year=ts.tm_year;
     date::current.century=math::floor(ts.tm_year/365.25);
@@ -233,6 +248,8 @@ void update()
     date::current.minute=ts.tm_sec;
     date::current.hour=ts.tm_hour;
     date::current.day=ts.tm_mday;
+    date::current.weekday=__gb_weekdays[date::current.day%7];
+
 
     SDL_GetGlobalMouseState(&display::mouse_x,&display::mouse_y);
 
@@ -248,15 +265,16 @@ void update()
     room::height=room_current->height;
 
 	if(room_current->background_visible) {
-		/*if(room_current->background_image!=nullptr) {
-			graphics::draw::sprite_ext(room_current->background_image,0,0,room_current->width/room_current->background_image->w,
-			room_current->height/room_current->background_image->h,0,(room_current->background_color));
-		}*/
-		auto _col=graphics::draw::color_get();
-		graphics::draw::color_sdl(room_current->background_color);
-		int _room_borders=100;
-		graphics::draw::rect(view_xview[0]-_room_borders,view_yview[0]-_room_borders,room::width+_room_borders,room::height+_room_borders,0);
-		graphics::draw::color_sdl(_col);
+		if(room_current->background_image!=nullptr) {
+			graphics::draw::sprite_ext(room_current->background_image,0,0,0,room_current->width/room_current->background_image->w,
+			room_current->height/room_current->background_image->h,0.f,color::white);
+		} else {
+			auto _col=graphics::draw::color_get();
+			graphics::draw::color_sdl(room_current->background_color);
+			int _room_borders=100;
+			graphics::draw::rect(view_xview[0]-_room_borders,view_yview[0]-_room_borders,room::width+_room_borders,room::height+_room_borders,0);
+			graphics::draw::color_sdl(_col);
+		}
 	}
     int __i=0; // For ALL object count
     int _iobj=0; // For CURRENT ROOM object count
