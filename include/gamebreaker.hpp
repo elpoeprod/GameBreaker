@@ -4,6 +4,7 @@
 #include "SoLoud/soloud.h"
 #include "SoLoud/soloud_wav.h"
 #include "SoLoud/soloud_wavstream.h"
+#include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <math.h>
@@ -41,10 +42,14 @@ typedef struct __current {
         century,
         planet,
         millenium;
+        std::string weekday;
     } __current;
 
-namespace GameBreaker {
 typedef std::string gb_str;
+typedef double real;
+
+namespace GameBreaker {
+
 extern int current_time;
 extern SDL_Color _realcol_;
 
@@ -127,6 +132,20 @@ typedef struct GBWin {
     int running;
 } GBWindow;
 
+typedef struct GBTile {
+	GBSprite *spr;
+	int w,h;
+	int x,y;
+	int depth;
+} GBTile;
+
+
+struct rmtile {
+	int tile_id;
+	int instance_id;
+	GBTile *tile;
+};
+
 struct rmobj {
     int obj_id;
     int instance_id;
@@ -149,6 +168,7 @@ typedef struct GB_CamTarget {
 
 typedef struct GBRoom {
     std::vector<rmobj>objects;
+    std::vector<rmtile>tiles;
     int id;
     int width,height;
     int background_visible;
@@ -202,6 +222,8 @@ extern std::vector<_gm_file *>gb_files;
 extern std::vector<GBObject*> gb_objects;
 extern std::vector<GBFont*> gb_fonts;
 extern GBAudio *curmusic;
+
+extern gb_str gb_version;
 
 extern std::string keyboard_string;
 
@@ -287,6 +309,7 @@ class keyboard {public:
     static int holding(int key);
     static int ord(char *key);
     static char *chr(int ch);
+    //static int get_numlock();
 };
 #endif
 
@@ -339,6 +362,7 @@ public:
     static SDL_Point get_pos();
     static SDL_Renderer* get_renderer();
     static void set_title(gb_str title);
+    static void set_priority(int num);
 };
 
 extern int display_current;
@@ -391,13 +415,45 @@ enum mb { //class mb {public:
 };
 
 class vk {public:
-    static const int shift=SDLK_LSHIFT,
-    space=SDLK_SPACE,
-    left=SDLK_LEFT,
-    right=SDLK_RIGHT,
-    up=SDLK_UP,
-    down=SDLK_DOWN,
-    enter=SDLK_RETURN;
+    static const int 
+        shift=SDLK_LSHIFT,
+        space=SDLK_SPACE,
+        left=SDLK_LEFT,
+        right=SDLK_RIGHT,
+        up=SDLK_UP,
+        down=SDLK_DOWN,
+        enter=SDLK_RETURN,
+        backspace=SDLK_BACKSPACE,
+        escape=SDLK_ESCAPE,
+        tab=SDLK_TAB,
+        pause=SDLK_PAUSE,
+        printscreen=SDLK_PRINTSCREEN,
+        home=SDLK_HOME,
+        end=SDLK_END,
+        del=SDLK_DELETE,
+        insert=SDLK_INSERT,
+        pageup=SDLK_PAGEUP,
+        pagedown=SDLK_PAGEDOWN,
+        f1=SDLK_F1,
+        f2=SDLK_F2,
+        f3=SDLK_F3,
+        f4=SDLK_F4,
+        f5=SDLK_F5,
+        f6=SDLK_F6,
+        f7=SDLK_F7,
+        f8=SDLK_F8,
+        f9=SDLK_F9,
+        f10=SDLK_F10,
+        f11=SDLK_F11,
+        f12=SDLK_F12,
+        divide=SDLK_KP_DIVIDE,
+        multiply=SDLK_KP_MULTIPLY,
+        subtract=SDLK_KP_MINUS,
+        add=SDLK_KP_PLUS,
+        decimal=SDLK_KP_DECIMAL,
+        lshift=SDLK_LSHIFT,
+        rshift=SDLK_RSHIFT
+        ;
 };
 
 class mouse {
@@ -457,10 +513,6 @@ class screen {
 public:
     static void draw(double fps);
     static void end();
-};
-enum type {
-    real = 0,
-    str = 1
 };
 struct __gblist {
     int type;
@@ -542,6 +594,14 @@ class gstr {public:
     static gb_str   shorten(gb_str fname);
     static gb_str   lowercase(gb_str str);
     static gb_str   uppercase(gb_str str); 
+    static gb_str	char_at(gb_str str, int pos);
+    static int		ord_at(gb_str str, int pos);
+    static int      length(gb_str str); // why not use strlen(str.c_str())? because no.
+    static int      pos(gb_str substr, gb_str str);
+    static gb_str   copy(gb_str str, int pos, int len);
+    static gb_str   del(gb_str str, int pos, int len);
+    static gb_str   insert(gb_str str, gb_str substr, int pos);
+    static gb_str   duplicate(gb_str str, int count);
 };
 
 enum ERROR {
@@ -563,6 +623,12 @@ public:
     static int ceil(double x);
     static double pdistance(double x1, double y1, double x2, double y2);
     static double pdirection(double x1, double y1, double x2, double y2);
+
+
+    class motion {public:
+        static void add(GBObject *obj, real dir, real speed);
+        static void set(GBObject *obj, real dir, real speed);
+    };
 };
 
 class room{public:
@@ -599,6 +665,8 @@ typedef GameBreaker::GB_CamTarget GB_CamTarget;
 //#define ord(a) GameBreaker::keyboard::ord(a) 
 //#define chr(a) GameBreaker::keyboard::chr(a) 
 
+typedef gb_str str; //for compatibility
+
 typedef std::vector<GameBreaker::__gblist> ds_list;
 typedef std::vector<GameBreaker::__gbmap> ds_map;
 typedef GameBreaker::fs::fa fa;
@@ -606,7 +674,6 @@ typedef GameBreaker::vk vk;
 
 typedef GameBreaker::mb mb;
 
-typedef GameBreaker::gb_str str;
 #define stringify std::to_string
 
 #define var auto
