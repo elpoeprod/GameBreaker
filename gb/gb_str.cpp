@@ -65,6 +65,7 @@ namespace GameBreaker {
         }
         return ret;
     }
+
     gb_str gstr::uppercase(gb_str str) {
         gb_str ret;
         var i=0;repeat(str.length()) {
@@ -73,4 +74,54 @@ namespace GameBreaker {
         }
         return ret;
     }
+    
+	gb_str gstr::char_at(gb_str str, int pos) {
+		return ""+str.at(pos);
+	}
+
+	int gstr::ord_at(gb_str str, int pos) {
+		return (int)str.at(pos);
+	}
+
+    int gstr::length(gb_str str) {
+        return str.length(); // stupid but maybe needed
+    }
+
+    int gstr::pos(gb_str substr, gb_str str) {
+        static int pos;
+        pos+=str.find(substr,pos);
+        return pos;
+    }
+
+    gb_str gstr::copy(gb_str str, int pos, int len) {
+        if(len<1) return "";
+        gb_str mystr;
+        for(int i=0;i<len;i++) {
+            mystr+=str[pos+i];
+        }
+        return mystr;
+    }
+    gb_str gstr::del(gb_str str, int pos, int len) {
+        if(len<1) return str;
+        var mystr=gstr::copy(str,0,pos);
+        mystr+=gstr::copy(str,pos+len,str.length()-(pos+len));
+        return mystr;
+    }
+
+    gb_str gstr::insert(gb_str str, gb_str substr, int pos) {
+        if(substr=="") return str;
+        var mystr=gstr::copy(str,0,pos);
+        mystr+=substr;
+        mystr+=gstr::copy(str,pos+substr.length(),str.length()-(pos+substr.length()));
+        return mystr;
+    }
+
+    gb_str gstr::duplicate(gb_str str, int count) {
+        gb_str mystr;
+        for(int i=0;i<count;i++) {
+            mystr+=str;
+        }
+        return mystr;
+    }
+    
 }
