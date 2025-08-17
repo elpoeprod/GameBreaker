@@ -1,11 +1,12 @@
 #define GB_USE_SMALL_FUNCNAMES
-#include "../../gb/gamebreaker.hpp"
+#include <gamebreaker/gamebreaker.hpp>
 namespace gb=GameBreaker;
 
 
 int main() {
 
-    gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,320,240,"File catalog");
+    gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"File catalog");
+	
 
     ds_list myfiles;
     std::vector<str> _myfilter={"*.*"};

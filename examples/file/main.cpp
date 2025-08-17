@@ -4,6 +4,7 @@ namespace gb=GameBreaker;
 
 int main(int argc,char **argv) {
 	gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"File write test");
+	window::set_icon("../gb.png");
 	std::string myargv[argc];
 	for(int i=0;i<argc;i++) {
 		myargv[i]=argv[i];

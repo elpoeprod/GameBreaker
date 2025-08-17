@@ -34,7 +34,8 @@ void fish_draw() {
 }
 
 int main() {
-	gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,640,480,"FISH.");
+	gb::init(GB_WINPOS_CENTER,GB_WINPOS_CENTER,"FISH.");
+	window::set_icon("../gb.png");
 	room1=room::add(640,480);
 	obj=object::add(nullptr,nullptr);
 	obj->event_draw=fish_draw;
