@@ -609,8 +609,13 @@ enum ERROR {
     SPRITE_FILE_NOT_SUPPORTED=0x000101
 };
 
+extern int __gb_rand_seed;
+typedef std::vector<void *> GB_ChooseBag;
+typedef std::vector<real> GB_NumberBag;
+
 class math {
 public:
+	static double abs(double num);
     static double lendir_x(double len, int dir);
     static double lendir_y(double len, int dir);
     static double degtorad(double deg);
@@ -623,7 +628,25 @@ public:
     static int ceil(double x);
     static double pdistance(double x1, double y1, double x2, double y2);
     static double pdirection(double x1, double y1, double x2, double y2);
+    static double power(double x, int n);
+    static double sqr(double x);
+    static double sqrt(double x);
+    static double min(GB_NumberBag bag);
+    static double max(GB_NumberBag bag);
+    static int sign(double num);
 
+    static double median(GB_NumberBag bag);
+    static double mean(GB_NumberBag bag);
+    
+
+    static double random(double n);
+    static int irandom(int n);
+    static double random_range(double min, double max);
+    static int irandom_range(int min, int max);
+    static void random_set_seed(int seed);
+    static int random_get_seed();
+    static void randomize();
+	static void *choose(GB_ChooseBag bag);
 
     class motion {public:
         static void add(GBObject *obj, real dir, real speed);

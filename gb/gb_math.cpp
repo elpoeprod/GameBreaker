@@ -87,4 +87,85 @@ namespace GameBreaker {
     double math::pdistance(double x1, double y1, double x2, double y2) {
         return hypot(x2-x1,y2-y1);
     }
+
+    double math::abs(double num) {
+    	return std::abs(num);
+    }
+
+    int math::sign(double num) {
+    	return (int(num)!=0) ? num/math::abs(num) : 0;
+    } 
+
+    double math::random(double num) {
+    	return rand()%(int)num+(rand()%10000)/10000;
+    }
+	int math::irandom(int num) {
+		return rand()%num;
+	}
+	double math::random_range(double min, double max) {
+		return (((min<0) ? -(rand()%int(math::abs(min))) : rand()%int(min))||((max<0) ? -(rand()%int(math::abs(max))) : rand()%int(max)))+(rand()%10000)/10000;
+	}
+
+    int math::irandom_range(int min, int max) {
+    	return (((min<0) ? -(rand()%int(math::abs(min))) : rand()%min)||((max<0) ? -(rand()%int(math::abs(max))) : rand()%max));
+    }
+
+    void math::random_set_seed(int seed) {
+    	std::srand(seed);
+    	__gb_rand_seed=seed;
+    	return;
+    }
+    int math::random_get_seed() {
+    	return __gb_rand_seed;
+    }
+    void math::randomize() {
+    	var myrandnum=std::rand();
+    	math::random_set_seed(myrandnum);
+    	return;
+    }
+
+    void *math::choose(GB_ChooseBag bag) {
+    	return bag[std::rand()%bag.size()];
+    }
+
+    double math::power(double x, int n) {
+    	double myxnum=x;
+    	for(int i=0;i<n;i++) {
+    		myxnum*=x;
+    	}
+    	return myxnum;
+    }
+    double math::sqr(double x) {
+    	return x*x;
+    }
+    double math::sqrt(double x) {
+    	return std::sqrt(x);
+    }
+    double math::min(GB_NumberBag bag) {
+    	real mynum=bag[0];
+    	for(long unsigned int i=1;i<bag.size();i++) {
+    		mynum=std::min(mynum,bag[i]);
+    	}
+    	return mynum;
+    }
+    double math::max(GB_NumberBag bag) {
+    	real mynum=bag[0];
+    	for(long unsigned int i=1;i<bag.size();i++) {
+    		mynum=std::max(mynum,bag[1]);
+    	}
+    	return mynum;
+    }
+    double math::mean(GB_NumberBag bag) {
+    	real mynum=0;
+    	for(long unsigned int i=0;i<bag.size();i++) {
+    		mynum+=bag[i];
+    	}
+    	return mynum/bag.size();
+    }
+
+	double math::median(GB_NumberBag bag) {
+		return bag[std::round(bag.size()/2)];
+	}
+    
+	
 }

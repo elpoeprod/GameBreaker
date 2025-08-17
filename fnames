@@ -4,24 +4,24 @@ Y - rewritten
 M - needs to be fixed
 N - not implemented
 
-is_real(val)                        - N
-is_string(val)                      - N
-random(x)                           - N
-random_range(x1,x2)                 - N
-irandom(x)                          - N
-irandom_range(x1,x2)                - N
-random_set_seed(seed)               - N
-random_get_seed()                   - N
-randomize()                         - N
-choose(x1,x2,x3,...)                - N
+is_real(val)                        - N, why?
+is_string(val)                      - N, why?
+random(x)                           - Y, math::random()
+random_range(x1,x2)                 - Y, math::random_range() 
+irandom(x)                          - Y, math::irandom()
+irandom_range(x1,x2)                - Y, math::irandom_range()
+random_set_seed(seed)               - Y, math::random_set_seed()
+random_get_seed()                   - Y, math::random_get_seed()
+randomize()                         - Y, math::randomize()
+choose(x1,x2,x3,...)                - Y, math::choose(), BUT uses structs instead of x1, x2, x3...
 abs(x)                              - Y, math::abs()
 round(x)                            - Y, math::round()
 floor(x)                            - Y, math::floor()
 ceil(x)                             - Y, math::ceil()
-sign(x)                             - N
+sign(x)                             - Y, math::sign()
 frac(x)                             - N
-sqrt(x)                             - N
-sqr(x)                              - N
+sqrt(x)                             - Y, math::sqrt()
+sqr(x)                              - Y, math::sqr()
 exp(x)                              - N
 ln(x)                               - N
 log2(x)                             - N
@@ -35,13 +35,13 @@ arctan(x)                           - N
 arctan2(y,x)                        - N
 degtorad(x)                         - Y, math::degtorad()
 radtodeg(x)                         - Y, same as degtorad
-power(x,n)                          - N
+power(x,n)                          - Y, math::power()
 logn(n,x)                           - N
-min(x1,x2,x3,...)                   - N
-max(x1,x2,x3,...)                   - N
+min(x1,x2,x3,...)                   - Y, math::min(), BUT uses struct instead of x1,x2,x3,...
+max(x1,x2,x3,...)                   - Y, math::max(), BUT uses struct instead of x1,x2,x3,...
 mean(x1,x2,x3,...)                  - N
-median(x1,x2,x3,...)                - N
-clamp(val,min,max)                  - Y, math::clamp
+median(x1,x2,x3,...)                - Y, math::median()
+clamp(val,min,max)                  - Y, math::clamp()
 lerp(val1,val2,amount)              - N
 dot_product(x1,y1,x2,y2)            - N
 dot_product_3d(x1,y1,z1,x2,y2,z2)   - N

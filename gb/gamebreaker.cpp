@@ -70,6 +70,8 @@ GBRoom *room_current;
 int myrealcurroom=-1;
 std::string keyboard_string="";
 
+int __gb_rand_seed=1337;
+
 int display_current=0;
 
 int display::mouse_x=0;
@@ -165,6 +167,8 @@ int init(int x, int y, std::string label)
     //graphics::draw::set_font(_fntDefault__);
     graphics::draw::color(0xFFFFFF);
     room_current=nullptr;
+
+    std::srand(__gb_rand_seed);
 
     return 1;
 }
