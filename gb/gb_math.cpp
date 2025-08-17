@@ -167,5 +167,7 @@ namespace GameBreaker {
 		return bag[std::round(bag.size()/2)];
 	}
     
-	
+	real math::frac(real x) {
+		return x-std::floor(x);
+	}
 }

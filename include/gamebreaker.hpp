@@ -634,6 +634,7 @@ public:
     static double min(GB_NumberBag bag);
     static double max(GB_NumberBag bag);
     static int sign(double num);
+    static double frac(double x);
 
     static double median(GB_NumberBag bag);
     static double mean(GB_NumberBag bag);
