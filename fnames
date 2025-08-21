@@ -540,8 +540,8 @@ mb_middle                                   -Y, mb::middle
 mouse_check_button(button)                  -Y, mouse::holding()
 mouse_check_button_pressed(button)          -Y, mouse::pressed()
 mouse_check_button_released(button)         -Y, mouse::released()
-mouse_wheel_up()                            -N
-mouse_wheel_down()                          -N
+mouse_wheel_up()                            -Y, mouse::wheel_up()
+mouse_wheel_down()                          -Y, mouse::wheel_down()
 mouse_clear(button)                         -N
 mouse_wait()                                -N
 cursor_sprite                               -N
