@@ -15,3 +15,4 @@ libgb.so
 *.zst
 /src
 ./main.cpp
+main.cpp
