@@ -32,6 +32,8 @@
 
 #define GB_WINPOS_CENTER SDL_WINDOWPOS_CENTERED
 
+extern void _gb_find_controllers();
+
 typedef struct __current {
         int second,
         minute,
@@ -52,6 +54,14 @@ namespace GameBreaker {
 
 extern int current_time;
 extern SDL_Color _realcol_;
+
+extern int myjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
+extern int mylastjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
+extern int gb_working_joystick;
+
+extern std::vector<SDL_GameController*> controllers;
+extern int joy_count;
+
 
 extern SoLoud::Soloud *__mus_handle;
 
@@ -223,12 +233,13 @@ extern std::vector<GBObject*> gb_objects;
 extern std::vector<GBFont*> gb_fonts;
 extern GBAudio *curmusic;
 
-extern gb_str gb_version;
+extern gb_str const gb_version;
 
 extern std::string keyboard_string;
 
 extern int mybut[4];
 extern int mylastbut[4];
+extern int mywheel;
 
 extern Uint32 fps_current;
 
@@ -463,6 +474,8 @@ public:
     static int holding(mb mouse_button);
     static int nothing(mb mouse_button);
     static mb which();
+    static int wheel_up();
+    static int wheel_down();
     static int x, y;
 };
 

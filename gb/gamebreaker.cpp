@@ -19,27 +19,6 @@
 #define GB_DEFAULT_SAMPLESIZE 1024
 #endif
 
-int myjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
-int mylastjoybut[32][SDL_CONTROLLER_BUTTON_MAX];
-int gb_working_joystick = -1;
-
-std::vector<SDL_GameController*> controllers;
-int joy_count = 0;
-
-void findControllers()
-{
-    int ii = 0;
-    controllers.resize(SDL_NumJoysticks());
-    for (int i = 0; i < SDL_NumJoysticks(); i++) {
-        if (SDL_IsGameController(i)) {
-            controllers[ii] = SDL_GameControllerOpen(i);
-            gb_working_joystick = ii;
-            ii++;
-            joy_count++;
-        }
-    }
-}
-
 double  view_xview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
         view_yview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
         view_angle[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0};
@@ -77,7 +56,7 @@ int display_current=0;
 int display::mouse_x=0;
 int display::mouse_y=0;
 
-gb_str gb_version="0.0.14";
+gb_str const gb_version="0.0.15";
 
 GBWindow* gb_win;
 SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
@@ -86,14 +65,6 @@ SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
 
 //#define with(a) __sel_obj_=(void *)a;
 
-int joy::count()
-{
-    return joy_count;
-}
-int joy::working() { return gb_working_joystick; }
-int joy::pressed(int joy, int button) { return myjoybut[joy][button] && !mylastjoybut[joy][button]; }
-int joy::released(int joy, int button) { return !myjoybut[joy][button] && mylastjoybut[joy][button]; }
-int joy::holding(int joy, int button) { return myjoybut[joy][button] && mylastjoybut[joy][button]; }
 
 int mouse::x = 0;
 int mouse::y = 0;
@@ -149,7 +120,7 @@ int init(int x, int y, std::string label)
             mylastjoybut[i][ii] = 0;
         }
     }
-    findControllers();
+    _gb_find_controllers();
     time_t tist=time(NULL);
     struct tm ts=*localtime(&tist);
     date::current.second=ts.tm_sec;
@@ -191,7 +162,7 @@ void update()
 {
     //findControllers();
     // Sets blend mode to default because yeah
-    SDL_SetRenderDrawBlendMode(gb_win->ren, SDL_BlendMode::SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawBlendMode(gb_win->ren, SDL_BLENDMODE_BLEND);
 
     // Mouse event
     for (int i = 1; i < 4; i++) {
@@ -237,13 +208,13 @@ void update()
             case SDL_MOUSEBUTTONUP: {
                     mybut[gb_win->ev.button.button] = 0;
             } break;
-        }
+		}
 
-    }
-    current_time=SDL_GetTicks(); //current time
+	}
+	current_time=SDL_GetTicks(); //current time
     
 #ifdef GB_GAME_END_ON_ESC
-    if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0; // if pressed then end game
+	if(keyboard::released(SDLK_ESCAPE)) gb_win->running=0; // if pressed then end game
 #endif
 
 	time_t tist=time(NULL);

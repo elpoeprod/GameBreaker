@@ -86,4 +86,12 @@ namespace GameBreaker {
         }
         return mb::none;
     }
+
+    int mouse::wheel_up() {
+    	return gb_win->ev.wheel.y>0;
+    }
+
+    int mouse::wheel_down() {
+    	return gb_win->ev.wheel.y<0;
+    }
 }
