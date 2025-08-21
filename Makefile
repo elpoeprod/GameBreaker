@@ -24,6 +24,7 @@ all:
 	$(CXX_CMD) gb/gb_keyboard.cpp 	-o build/kbd.o
 	$(CXX_CMD) gb/gb_mouse.cpp 	-o build/mouse.o
 	$(CXX_CMD) gb/gb_ini.cpp 	-o build/ini.o
+	$(CXX_CMD) gb/gb_joystick.cpp -o build/joy.o
 	$(CXX_CMD) gb/3rdparty/nfd/nfd_gtk.cpp -o build/nfd.o $(CXX_ARGS_GTK)
 	$(CXX_COMPILER) -g -ggdb -fpic -rdynamic -Lstatic -shared -o $(LIB_NAME) build/*.o $(CXX_ARGS_LIBS) $(CXX_ARGS_GTK) include/SoLoud/libSoLoud_MA.a #-lstatic 
 
