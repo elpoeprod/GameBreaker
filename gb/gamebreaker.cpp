@@ -15,9 +15,6 @@
 #include <time.h>
 #include <algorithm>
 
-#ifndef GB_DEFAULT_SAMPLESIZE
-#define GB_DEFAULT_SAMPLESIZE 1024
-#endif
 
 double  view_xview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
         view_yview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
@@ -97,12 +94,17 @@ int init(int x, int y, std::string label)
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
     IMG_Init(IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_AVIF | IMG_INIT_JXL | IMG_INIT_TIF);
-    __mus_handle->init();
+    __mus_handle->init(
+    	SoLoud::Soloud::ENABLE_VISUALIZATION|SoLoud::Soloud::CLIP_ROUNDOFF,
+    	SoLoud::Soloud::AUTO,
+    	SoLoud::Soloud::AUTO,
+    	GB_DEFAULT_SAMPLESIZE
+    );
 
     gb_win = new GBWindow;
     gb_win->cur_win=0;
-    gb_win->win = SDL_CreateWindow(label.c_str(), x, y, 640,480, SDL_WINDOW_SHOWN);
-    gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, GB_INIT_WIN_FLAGS);
+    gb_win->win = SDL_CreateWindow(label.c_str(), x, y, 640,480, GB_INIT_WIN_FLAGS);
+    gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, GB_INIT_REN_FLAGS);
     gb_win->x = x;
     gb_win->y = y;
     gb_win->w = 640;
@@ -257,6 +259,8 @@ void update()
         repeat(room_current->objects.size()) {
         	//puts("2");
         	__i=0;
+        	std::vector<int> __drawn;
+        	int ifa=0; repeat(gb_objects.size()) {__drawn.push_back(0); ifa++;}
             repeat(gb_objects.size()) {
             	//puts("3");
                 if((gb_objects[__i]->id==room_current->objects[_iobj].obj_id)==1) {
@@ -282,10 +286,17 @@ void update()
                         else gb_objects[__i]->spd=0;
                     }
 
+                    if(gb_objects[__i]->initialized!=1) {
+                    	gb_objects[__i]->initialized=1;
+                    	if(gb_objects[__i]->event_create)
+                    		gb_objects[__i]->event_create(gb_objects[__i]);
+                    }
+
 					if(room_current->id!=myrealcurroom) {
 						myrealcurroom=room_current->id;
 						if(room_current->objects[_iobj].event_create)
 							room_current->objects[_iobj].event_create();
+						
 					}
 					for(int j=0;j<GB_MAX_OBJ_ALARMS;j++) {
 						if(gb_objects[__i]->alarm[j]>0) {
@@ -295,7 +306,7 @@ void update()
 							if(gb_objects[__i]->alarm[j]==0) {
 								gb_objects[__i]->alarm[j]=-1;
 								if(gb_objects[__i]->event_alarm[j])
-									gb_objects[__i]->event_alarm[j]();
+									gb_objects[__i]->event_alarm[j](gb_objects[__i]);
 							}
 						}
 					}
@@ -303,13 +314,13 @@ void update()
 					//puts("3");
                     //Events
                     if(gb_objects[__i]->event_step_begin)
-                        gb_objects[__i]->event_step_begin();
+                        gb_objects[__i]->event_step_begin(gb_objects[__i]);
 					//puts("3.1");
                     if(gb_objects[__i]->event_step)
-                        gb_objects[__i]->event_step();
+                        gb_objects[__i]->event_step(gb_objects[__i]);
                     //puts("3.2");
                     if(gb_objects[__i]->event_step_end)
-                        gb_objects[__i]->event_step_end();
+                        gb_objects[__i]->event_step_end(gb_objects[__i]);
 
 					//puts("4");
                     //this fucking sucks
@@ -329,8 +340,11 @@ void update()
                     for(long unsigned int i=0;i<si;i++) {
                     	for(long unsigned ii=0;ii<si;ii++) {
 	                        if(gb_objects[i]->depth==myvec[ii]&&(gb_objects[i]->id==room_current->objects[_iobj].obj_id)==1) {
-	                            if(gb_objects[i]->event_draw!=nullptr)
-	                                gb_objects[i]->event_draw();
+		                        if(__drawn[i]==0) {
+		                        	__drawn[i]=1;
+		                            if(gb_objects[i]->event_draw!=nullptr)
+		                                gb_objects[i]->event_draw(gb_objects[__i]);
+		                        }
 	                        }
                         }
                     }
