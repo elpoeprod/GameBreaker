@@ -39,6 +39,7 @@ namespace GameBreaker {
 				obj->alarm[i]=-1;
 				obj->event_alarm[i]=nullptr;
 			}
+			obj->initialized=0;
             
             gb_objects.push_back(obj);
             obj->id=gb_objects.size()-1;
@@ -58,5 +59,29 @@ namespace GameBreaker {
         obj->x=0;
         obj->y=0;
         delete obj;
+    }
+    void add_event(GBObject *obj, enum ev ev_type, void(*event)(GBObject *self)) {
+        switch(ev_type) {
+            case ev::create: 
+                obj->event_create=event;
+            break;
+            case ev::step_begin:
+                obj->event_step_begin=event;
+            break;
+            case ev::step:
+                obj->event_step=event;
+            break;
+            case ev::step_end:
+                obj->event_step_end=event;
+            break;
+            case ev::draw:
+                obj->event_draw=event;
+            break;
+            case ev::destroy:
+                obj->event_destroy=event;
+            break;
+            default: break;
+        }
+        return;
     }
 }
