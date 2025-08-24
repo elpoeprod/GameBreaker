@@ -33,6 +33,8 @@ namespace GameBreaker {
     						.event_create=event_create
     						};
         room->objects.push_back(myobj);
+        obj->x=x;
+        obj->y=y;
         obj->inst_id=room->objects[room->objects.size()-1].instance_id;
         return obj->inst_id;
     }
