@@ -5,7 +5,7 @@
 * GAMEBREAKER::GRAPHICS
 */
 
-#define GAssert if(room_current->view_enabled[room_current->view_current]==0) return;
+#define GAssert //if(room_current->view_enabled[room_current->view_current]==0) return;
 
 SDL_FPoint GBXyfy(double x, double y) {
     return {
@@ -155,34 +155,36 @@ namespace GameBreaker {
             {
                 SDL_FPoint { x, y },
                 SDL_Color { col1.r, col1.g, col1.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { x + w, y },
                 SDL_Color { col2.r, col2.g, col2.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { x + w, y + h },
                 SDL_Color { col3.r, col3.g, col3.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { x + w, y + h },
                 SDL_Color { col3.r, col3.g, col3.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { x, y + h },
                 SDL_Color { col4.r, col4.g, col4.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { x, y },
                 SDL_Color { col1.r, col1.g, col1.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
         };
+        int ooo=outline;
+        GBXyfy(ooo,ooo);
         return SDL_RenderGeometry(gb_win->ren, nullptr, verts.data(), verts.size(), nullptr, 0);
     }
     /**
@@ -201,17 +203,17 @@ namespace GameBreaker {
             {
                 SDL_FPoint { _real_1.x, _real_1.y },
                 SDL_Color { col1.r, col1.g, col1.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { _real_2.x, _real_2.y },
                 SDL_Color { col2.r, col2.g, col2.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
             {
                 SDL_FPoint { _real_2.x, _real_3.y },
                 SDL_Color { col3.r, col3.g, col3.b, 255 },
-                SDL_FPoint { 0 },
+                SDL_FPoint { 0,0 },
             },
         };
         SDL_RenderGeometry(gb_win->ren, nullptr, verts.data(), verts.size(), nullptr, 0);
@@ -222,8 +224,8 @@ namespace GameBreaker {
     **/
     void graphics::draw::color(Uint32 color)
     {
-        _realcol_=(SDL_Color){(Uint8)((color >> 8) & 0xFF), (Uint8)((color >> 4) & 0xFF), (Uint8)(color & 0xFF)};
-        SDL_SetRenderDrawColor(gb_win->ren,_realcol_.r, _realcol_.g,_realcol_.b,255);
+        _realcol_=(SDL_Color){(Uint8)((color >> 8) & 0xFF), (Uint8)((color >> 4) & 0xFF), (Uint8)(color & 0xFF),_realcol_.a};
+        SDL_SetRenderDrawColor(gb_win->ren,_realcol_.r, _realcol_.g,_realcol_.b,_realcol_.a);
     }
 
     /**
@@ -232,7 +234,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::color_rgb(Uint8 r,Uint8 g,Uint8 b)
     {
-        _realcol_=(SDL_Color){r,g,b};
+        _realcol_=(SDL_Color){r,g,b,_realcol_.a};
         SDL_SetRenderDrawColor(gb_win->ren,_realcol_.r, _realcol_.g,_realcol_.b,255);
     }
 
@@ -362,7 +364,7 @@ namespace GameBreaker {
         spr->frames = (frames < 1) ? 1 : frames;
         SDL_Surface* temp = IMG_Load(fname.c_str());
         spr->tex = SDL_CreateTextureFromSurface(gb_win->ren, temp);
-        spr->w = temp->w;
+        spr->w = temp->w/frames;
         spr->h = temp->h;
         spr->offx=offx;
         spr->offy=offy;
@@ -392,7 +394,7 @@ namespace GameBreaker {
         spr->frames = (frames < 1) ? 1 : frames;
         SDL_Surface* temp = IMG_Load(fname.c_str());
         spr->tex = SDL_CreateTextureFromSurface(gb_win->ren, temp);
-        spr->w = temp->w;
+        spr->w = temp->w/frames;
         spr->h = temp->h;
         spr->offx=offx;
         spr->offy=offy;
@@ -565,10 +567,10 @@ namespace GameBreaker {
 
     gb_button_state graphics::draw::button(int x, int y, int w, int h, GBSprite *spr, int types) {
         gb_button_state mystate={0,mb::none};
-        if(room_current->view_enabled[room_current->view_current]==0) return mystate;
+        if(room_current->view_enabled[room_current->view_current]==0) return mystate; //GAssert;
         int inrect=math::point_in_rect(mouse::x,mouse::y,x,y,x+w,y+h);
         int press=mouse::holding(mb::any);
-        graphics::draw::sprite(spr,(inrect&&press)?spr->frames-1:types,x,y,(float)w/((float)spr->w/spr->frames),(float)h/(spr->h),0);
+        graphics::draw::sprite(spr,(inrect&&press)?spr->frames-1:types,x,y,(float)w/((float)spr->w),(float)h/(spr->h),0);
         mystate={inrect and mouse::released(mb::any),mouse::which()};
         return mystate;
     }
