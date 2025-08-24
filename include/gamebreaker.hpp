@@ -15,8 +15,12 @@
 #include <iostream>
 #include <fstream>
 
+#ifndef GB_INIT_REN_FLAGS
+#define GB_INIT_REN_FLAGS SDL_RENDERER_ACCELERATED
+#endif
+
 #ifndef GB_INIT_WIN_FLAGS
-#define GB_INIT_WIN_FLAGS SDL_RENDERER_ACCELERATED
+#define GB_INIT_WIN_FLAGS SDL_WINDOW_SHOWN
 #endif
 
 #ifndef GB_MAX_OBJ_ALARMS
@@ -25,6 +29,10 @@
 
 #ifndef GB_MAX_ROOM_CAMERAS 
 #define GB_MAX_ROOM_CAMERAS 8
+
+#ifndef GB_DEFAULT_SAMPLESIZE
+#define GB_DEFAULT_SAMPLESIZE 1024
+#endif
 
 #endif
 
@@ -112,14 +120,15 @@ typedef struct GBObject {
         int inst_id;
         int alarm[GB_MAX_OBJ_ALARMS];
     
-    void (*event_create)();// __attribute__((weak));
-    void (*event_step_begin)();// __attribute__((weak));
-    void (*event_step)();// __attribute__((weak));
-    void (*event_step_end)();// __attribute__((weak));
-    void (*event_destroy)();// __attribute__((weak));
-    void (*event_draw)();// __attribute__((weak));
-    int (*event_alarm[GB_MAX_OBJ_ALARMS])();
+    void (*event_create)					(GBObject *self);// __attribute__((weak));
+    void (*event_step_begin)				(GBObject *self);// __attribute__((weak));
+    void (*event_step)						(GBObject *self);// __attribute__((weak));
+    void (*event_step_end)					(GBObject *self);// __attribute__((weak));
+    void (*event_destroy)					(GBObject *self);// __attribute__((weak));
+    void (*event_draw)						(GBObject *self);// __attribute__((weak));
+    int (*event_alarm[GB_MAX_OBJ_ALARMS])	(GBObject *self);
 
+	int initialized;
     private:
         int _in_path;
 } GBObject;
@@ -307,6 +316,7 @@ public:
 class object {
 public:
     static GBObject* add(GBSprite* spr, GBSprite* mask);
+    static void add_event(GBObject *obj, int ev_type, void(*event)(GBObject *self));
     static void destroy(GBObject* obj);
 };
 
@@ -682,6 +692,15 @@ class room{public:
 struct __gbmap {
     std::string key;
     void *value;
+};
+
+enum class ev {
+	create=0,
+	step,
+	step_begin,
+	step_end,
+	draw,
+	destroy,
 };
 
 }
