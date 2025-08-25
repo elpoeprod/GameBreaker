@@ -1,6 +1,6 @@
 /*
-SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+AY module for SoLoud audio engine
+Copyright (c) 2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -22,50 +22,48 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_QUEUE_H
-#define SOLOUD_QUEUE_H
+#ifndef AY_H
+#define AY_H
 
 #include "soloud.h"
 
-#define SOLOUD_QUEUE_MAX 32
+class ChipPlayer;
 
 namespace SoLoud
 {
-	class Queue;
-
-	class QueueInstance : public AudioSourceInstance
+    class Ay;
+	class File;
+	class AyInstance : public AudioSourceInstance
 	{
-		Queue *mParent;
 	public:
-		QueueInstance(Queue *aParent);
+		Ay *mParent;
+		ChipPlayer *mChip;
+		int mPos;
+
+		AyInstance(Ay *aParent);
+		~AyInstance();
 		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
 		virtual bool hasEnded();
-		virtual ~QueueInstance();
+		virtual result rewind();
+		virtual float getInfo(unsigned int aInfoKey);
 	};
 
-	class Queue : public AudioSource
+	class Ay : public AudioSource
 	{
 	public:
-		Queue();
-		virtual QueueInstance *createInstance();
-		// Play sound through the queue
-		result play(AudioSource &aSound);
-        // Number of audio sources queued for replay
-        unsigned int getQueueCount();
-		// Is this audio source currently playing?
-		bool isCurrentlyPlaying(AudioSource &aSound);
-		// Set params by reading them from an audio source
-		result setParamsFromAudioSource(AudioSource &aSound);
-		// Set params manually
-		result setParams(float aSamplerate, unsigned int aChannels = 2);
-		
+		bool mYm;
+		int mChipspeed;
+		int mCpuspeed;
+		int mLooppos;
+		int mLength;
+		unsigned short* mOps;
 	public:
-	    unsigned int mReadIndex, mWriteIndex, mCount;
-	    AudioSourceInstance *mSource[SOLOUD_QUEUE_MAX];
-		QueueInstance *mInstance;
-		handle mQueueHandle;
-		void findQueueHandle();
-		
+		Ay();
+		~Ay();
+		result load(const char *aFilename);
+		result loadFile(File *aFile);
+		result loadMem(const unsigned char* aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership);
+		virtual AudioSourceInstance *createInstance();
 	};
 };
 
