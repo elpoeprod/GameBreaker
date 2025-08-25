@@ -141,7 +141,7 @@ void HSVtoRGB(float& fR, float& fG, float& fB, float& fH, float& fS, float& fV) 
 namespace GameBreaker {
 
     std::vector<GBSprite*> gb_sprites;
-
+    
     /**
     * draws a colored rectangle
     * \sa x,y - coordinates where the rectanggle should be drawn
@@ -316,6 +316,7 @@ namespace GameBreaker {
     }
 
     std::vector<GBText*> _gb_txt_;
+    int __my_text_cursor=0;
 
     int __gb_find_text_in_db(gb_str text) {
         for(int i=0;i<(int)_gb_txt_.size();i++) {
@@ -324,24 +325,33 @@ namespace GameBreaker {
         return -1;
     }
 
-    void graphics::draw::text_rt(float x, float y, gb_str txt)
+    int graphics::draw::text_rt(float x, float y, gb_str txt)
     {
         GAssert;
         auto _real_=GBXyfy(x,y);
         GBText *text;
         int finder=__gb_find_text_in_db(txt);
-        if(finder!=-1) {
+        if(finder!=-1&&finder<1024) {
             text=_gb_txt_[finder];
         }
-        else {
-            _gb_txt_.resize(_gb_txt_.size()+1);
-            _gb_txt_[_gb_txt_.size()-1]=new GBText(txt);
-            text=_gb_txt_[_gb_txt_.size()-1];
+        else if(finder<0) {
+            _gb_txt_.push_back(new GBText(txt));
+            __my_text_cursor=_gb_txt_.size()-1;
+            text=_gb_txt_[__my_text_cursor];
+        } else if(finder>1023) {
+        	__my_text_cursor=0;
+        	_gb_txt_.erase(_gb_txt_.cbegin()+__my_text_cursor);
+        	_gb_txt_[__my_text_cursor]=new GBText(txt);
         }
         SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
         SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
         SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
+        return __my_text_cursor;
+    }
+
+    GBText *graphics::draw::text_get_from_db(int num) {
+        return _gb_txt_[num];
     }
 
     void graphics::draw::alpha(float alpha) {
@@ -440,7 +450,7 @@ namespace GameBreaker {
     {
         GAssert;
         auto _real_=GBXyfy(x,y);      
-        var myw=((spr->_selw) / spr->frames);
+        auto myw=((spr->_selw) / spr->frames);
         
         SDL_Rect rect = { 
         				(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
@@ -466,7 +476,7 @@ namespace GameBreaker {
         GAssert;
         auto _real_=GBXyfy(x,y);
 
-        var myw=((spr->_selw) / spr->frames);
+        auto myw=((spr->_selw) / spr->frames);
         
         SDL_Rect rect = {
         				(spr->_selx+myw*(frame % spr->frames)),spr->_sely,
@@ -492,7 +502,7 @@ namespace GameBreaker {
         GAssert;
         auto _real_=GBXyfy(x,y);
 
-        var myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
+        auto myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
         
         SDL_Rect rect = { 
         				(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
@@ -527,7 +537,7 @@ namespace GameBreaker {
     {
         GAssert;
         auto _real_=GBXyfy(x,y);
-        var myw=((spr->_selw-spr->_selx)/spr->frames);
+        auto myw=((spr->_selw-spr->_selx)/spr->frames);
         graphics::draw::color_sdl(col);
         
         SDL_Rect rect = { 
