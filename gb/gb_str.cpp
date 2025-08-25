@@ -26,9 +26,9 @@ namespace GameBreaker {
     }
     
     gb_str gstr::replace_all(gb_str text, gb_str in, gb_str out) {
-        var tempt=text;
-        var mypos=0;
-        for(var __i=0;__i<gstr::count(tempt,in);__i++) {
+        auto tempt=text;
+        auto mypos=0;
+        for(int __i=0;__i<gstr::count(tempt,in);__i++) {
             tempt=tempt.replace(tempt.find_first_of(in,mypos),in.length(),out);
             mypos+=out.length();
         }
@@ -59,7 +59,7 @@ namespace GameBreaker {
     }
     gb_str gstr::lowercase(gb_str str) {
         gb_str ret;
-        var i=0;repeat(str.length()) {
+        int i=0;repeat(str.length()) {
             ret+=tolower(str[i]);
             i++;
         }
@@ -68,7 +68,7 @@ namespace GameBreaker {
 
     gb_str gstr::uppercase(gb_str str) {
         gb_str ret;
-        var i=0;repeat(str.length()) {
+        int i=0;repeat(str.length()) {
             ret+=toupper(str[i]);
             i++;
         }
@@ -103,14 +103,14 @@ namespace GameBreaker {
     }
     gb_str gstr::del(gb_str str, int pos, int len) {
         if(len<1) return str;
-        var mystr=gstr::copy(str,0,pos);
+        gb_str mystr=gstr::copy(str,0,pos);
         mystr+=gstr::copy(str,pos+len,str.length()-(pos+len));
         return mystr;
     }
 
     gb_str gstr::insert(gb_str str, gb_str substr, int pos) {
         if(substr=="") return str;
-        var mystr=gstr::copy(str,0,pos);
+        gb_str mystr=gstr::copy(str,0,pos);
         mystr+=substr;
         mystr+=gstr::copy(str,pos+substr.length(),str.length()-(pos+substr.length()));
         return mystr;
