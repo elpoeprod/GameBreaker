@@ -70,7 +70,8 @@ namespace GameBreaker {
     **/
     void audio::loop(GBAudio* snd, int loops) {
     	snd->loops=loops;
-        snd->chunk.stream.setLooping((loops>0||loops==-1));
+        if(snd->type==GB_MUSIC) snd->chunk.stream.setLooping((loops>0||loops==-1));
+        else snd->chunk.nonstream.setLooping((loops>0||loops==-1));
         snd->handle=__mus_handle->play(snd->chunk.stream);
     }
     /**
@@ -122,5 +123,21 @@ namespace GameBreaker {
     void audio::set_loops(GBAudio *snd, int loops) {
 		snd->loops=loops;
         return;
+    }
+
+    int audio::get_wave(GBAudio *snd, int pos) {
+    	if(snd==nullptr) return 0;
+    	if(snd->type==GB_MUSIC)
+    		return __mus_handle->getWave()[pos];
+    	else 
+    		return __mus_handle->getWave()[pos];
+    }
+
+    int audio::get_fft(GBAudio *snd, int pos) {
+    	if(snd==nullptr) return 0;
+    	if(snd->type==GB_MUSIC)
+    		return __mus_handle->calcFFT()[pos];
+    	else
+    		return __mus_handle->calcFFT()[pos];
     }
 }

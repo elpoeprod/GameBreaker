@@ -4,7 +4,7 @@
 #include "SoLoud/soloud.h"
 #include "SoLoud/soloud_wav.h"
 #include "SoLoud/soloud_wavstream.h"
-#include <SDL2/SDL_keycode.h>
+#include "SoLoud/soloud_openmpt.h"
 #include <SDL2/SDL_ttf.h>
 #include <dirent.h>
 #include <math.h>
@@ -85,7 +85,7 @@ enum GBAudioType {
 typedef struct _GB_AudioType_{
     SoLoud::Wav nonstream;
     SoLoud::WavStream stream;
-    //SoLoud::Openmpt mod;
+    SoLoud::Openmpt mod;
 } _GB_AudioType_;
 
 #ifndef GB_DONT_USE_SFX
@@ -419,6 +419,7 @@ public:
     static void         stop(GBAudio* snd);
     static void         set_vol(GBAudio* snd, double vol);
     static int          get_wave(GBAudio* snd, int pos);
+    static int          get_fft(GBAudio* snd, int pos);
     static void         destroy(GBAudio* snd);
     static void         get_tags(GBAudio *snd);
     static double       get_pos(GBAudio *snd);
@@ -449,56 +450,56 @@ enum mb { //class mb {public:
 
 class vk {public:
     static const int 
-        shift=SDLK_LSHIFT,
-        space=SDLK_SPACE,
-        left=SDLK_LEFT,
-        right=SDLK_RIGHT,
-        up=SDLK_UP,
-        down=SDLK_DOWN,
-        enter=SDLK_RETURN,
-        backspace=SDLK_BACKSPACE,
-        escape=SDLK_ESCAPE,
-        tab=SDLK_TAB,
-        pause=SDLK_PAUSE,
+        shift=		SDLK_LSHIFT,
+        space=		SDLK_SPACE,
+        left=		SDLK_LEFT,
+        right=		SDLK_RIGHT,
+        up=			SDLK_UP,
+        down=		SDLK_DOWN,
+        enter=		SDLK_RETURN,
+        backspace=	SDLK_BACKSPACE,
+        escape=		SDLK_ESCAPE,
+        tab=		SDLK_TAB,
+        pause=		SDLK_PAUSE,
         printscreen=SDLK_PRINTSCREEN,
-        home=SDLK_HOME,
-        end=SDLK_END,
-        del=SDLK_DELETE,
-        insert=SDLK_INSERT,
-        pageup=SDLK_PAGEUP,
-        pagedown=SDLK_PAGEDOWN,
-        f1=SDLK_F1,
-        f2=SDLK_F2,
-        f3=SDLK_F3,
-        f4=SDLK_F4,
-        f5=SDLK_F5,
-        f6=SDLK_F6,
-        f7=SDLK_F7,
-        f8=SDLK_F8,
-        f9=SDLK_F9,
-        f10=SDLK_F10,
-        f11=SDLK_F11,
-        f12=SDLK_F12,
-        divide=SDLK_KP_DIVIDE,
-        multiply=SDLK_KP_MULTIPLY,
-        subtract=SDLK_KP_MINUS,
-        add=SDLK_KP_PLUS,
-        decimal=SDLK_KP_DECIMAL,
-        lshift=SDLK_LSHIFT,
-        rshift=SDLK_RSHIFT
+        home=		SDLK_HOME,
+        end=		SDLK_END,
+        del=		SDLK_DELETE,
+        insert=		SDLK_INSERT,
+        pageup=		SDLK_PAGEUP,
+        pagedown=	SDLK_PAGEDOWN,
+        f1=			SDLK_F1,
+        f2=			SDLK_F2,
+        f3=			SDLK_F3,
+        f4=			SDLK_F4,
+        f5=			SDLK_F5,
+        f6=			SDLK_F6,
+        f7=			SDLK_F7,
+        f8=			SDLK_F8,
+        f9=			SDLK_F9,
+        f10=		SDLK_F10,
+        f11=		SDLK_F11,
+        f12=		SDLK_F12,
+        divide=		SDLK_KP_DIVIDE,
+        multiply=	SDLK_KP_MULTIPLY,
+        subtract=	SDLK_KP_MINUS,
+        add=		SDLK_KP_PLUS,
+        decimal=	SDLK_KP_DECIMAL,
+        lshift=		SDLK_LSHIFT,
+        rshift=		SDLK_RSHIFT
         ;
 };
 
 class mouse {
 public:
-    static int pressed(mb mouse_button);
-    static int released(mb mouse_button);
-    static int holding(mb mouse_button);
-    static int nothing(mb mouse_button);
-    static mb which();
-    static int wheel_up();
-    static int wheel_down();
-    static int x, y;
+    static int 	pressed(mb mouse_button);
+    static int 	released(mb mouse_button);
+    static int 	holding(mb mouse_button);
+    static int 	nothing(mb mouse_button);
+    static mb 	which();
+    static int 	wheel_up();
+    static int 	wheel_down();
+    static int 	x, y;
 };
 
 struct gb_button_state {
@@ -510,12 +511,14 @@ class graphics {
 public:
     class sprite {
     public:
-        static GBSprite* add(gb_str fname, int frames, int offx, int offy);
-        static GBSprite* add_ext(gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
-        static int get_offset_x(GBSprite* spr);
-        static int get_offset_y(GBSprite* spr);
-        static void set_offset(GBSprite* spr, int x, int y);
-        static void destroy(GBSprite* spr);
+        static GBSprite* 	add(gb_str fname, int frames, int offx, int offy);
+        static GBSprite* 	add_ext(gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
+        static void 		replace(GBSprite *spr, gb_str fname, int frames, int offx, int offy);
+        static void 		replace_ext(GBSprite *spr, gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
+        static int 			get_offset_x(GBSprite* spr);
+        static int 			get_offset_y(GBSprite* spr);
+        static void 		set_offset(GBSprite* spr, int x, int y);
+        static void 		destroy(GBSprite* spr);
     };
     class draw {
     public:
@@ -603,6 +606,7 @@ public:
     };
     static gb_str 	path_parent(gb_str path);
     static gb_str 	path(gb_str fname);
+    static gb_str	fname(gb_str fname);
     static gb_str 	get_fname(std::vector<fname_list> filter, gb_str title);
     static gb_str 	get_folder(gb_str title);
     static void 	create_folder(gb_str path);
@@ -747,10 +751,11 @@ typedef GameBreaker::GB_CamTarget GB_CamTarget;
 
 typedef gb_str str; //for compatibility
 
-typedef std::vector<GameBreaker::__gblist> ds_list;
-typedef std::vector<GameBreaker::__gbmap> ds_map;
-typedef GameBreaker::fs::fa fa;
-typedef GameBreaker::vk vk;
+typedef std::vector<GameBreaker::__gblist> 		ds_list;
+typedef std::vector<GameBreaker::__gbmap> 		ds_map;
+typedef GameBreaker::fs::fa 					fa;
+typedef GameBreaker::vk 						vk;
+typedef GameBreaker::gb_button_state 			gb_button_state;
 
 typedef GameBreaker::mb mb;
 
@@ -760,27 +765,29 @@ typedef GameBreaker::mb mb;
 
 /* functions */
 #ifdef GB_USE_SMALL_FUNCNAMES
-typedef GameBreaker::graphics::draw draw;
-typedef GameBreaker::graphics::sprite sprite;
-typedef GameBreaker::audio audio;
-typedef GameBreaker::window window;
-typedef GameBreaker::display display;
-typedef GameBreaker::mouse mouse;
-typedef GameBreaker::color col;
-typedef GameBreaker::fs file;
-typedef GameBreaker::fs::text text;
-typedef GameBreaker::screen screen;
-typedef GameBreaker::joy joystick;
-typedef GameBreaker::keyboard keyboard;
-typedef GameBreaker::math math;
-typedef GameBreaker::object object;
-typedef GameBreaker::font font;
-typedef GameBreaker::io io;
-typedef GameBreaker::gstr gstr;
-typedef std::vector<GameBreaker::fname_list> fname_list;
-typedef GameBreaker::gb_button_state gb_button_state;
-typedef GameBreaker::show show;
-typedef GameBreaker::room room;
+typedef GameBreaker::graphics::draw 			draw;
+typedef GameBreaker::graphics::sprite 			sprite;
+typedef GameBreaker::audio 						audio;
+typedef GameBreaker::window 					window;
+typedef GameBreaker::display 					display;
+typedef GameBreaker::mouse 						mouse;
+typedef GameBreaker::color 						col;
+typedef GameBreaker::fs 						file;
+typedef GameBreaker::fs::text 					text;
+typedef GameBreaker::screen 					screen;
+typedef GameBreaker::joy 						joystick;
+typedef GameBreaker::keyboard 					keyboard;
+typedef GameBreaker::math 						math;
+typedef GameBreaker::object 					object;
+typedef GameBreaker::font 						font;
+typedef GameBreaker::io 						io;
+typedef GameBreaker::gstr 						gstr;
+typedef std::vector<GameBreaker::fname_list> 	fname_list;
+typedef GameBreaker::show 						show;
+typedef GameBreaker::room 						room;
+typedef GameBreaker::ini 						ini;
+typedef GameBreaker::surface					surface;
+typedef GameBreaker::math::motion				motion;
 #endif	// GB_USE_SMALL_FUNCNAMES
 
 //#endif // _GB_HPP_
