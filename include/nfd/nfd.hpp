@@ -378,9 +378,15 @@ inline nfdresult_t GetPath(const UniquePathSet& uniquePathSet,
     }
     return res;
 }
+
 #endif
 }  // namespace PathSet
 
 }  // namespace NFD
+
+extern int NFD_PopOverMenu_Create();
+extern int NFD_PopOverMenu_AddItem(int menu, std::string item);
+extern void NFD_PopOverMenu_Show(int menu);
+extern void NFD_PopOverMenu_Destroy(int menu);
 
 #endif
