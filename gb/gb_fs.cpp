@@ -179,5 +179,10 @@ namespace GameBreaker {
 
         return "";
     }
+
+    void fs::create_folder(gb_str path) {
+		std::filesystem::create_directory(path);
+    	return;
+    }
     
 }

@@ -587,10 +587,11 @@ public:
         static int eof(int file);
         static void close(int file);
     };
-    static gb_str path_parent(gb_str path);
-    static gb_str path(gb_str fname);
-    static gb_str get_fname(std::vector<fname_list> filter, gb_str title);
-    static gb_str get_folder(gb_str title);
+    static gb_str 	path_parent(gb_str path);
+    static gb_str 	path(gb_str fname);
+    static gb_str 	get_fname(std::vector<fname_list> filter, gb_str title);
+    static gb_str 	get_folder(gb_str title);
+    static void 	create_folder(gb_str path);
 };
 
 class ini {public:
