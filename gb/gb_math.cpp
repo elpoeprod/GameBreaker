@@ -119,7 +119,7 @@ namespace GameBreaker {
     	return __gb_rand_seed;
     }
     void math::randomize() {
-    	var myrandnum=std::rand();
+    	auto myrandnum=std::rand();
     	math::random_set_seed(myrandnum);
     	return;
     }
