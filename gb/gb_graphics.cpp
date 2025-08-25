@@ -383,8 +383,7 @@ namespace GameBreaker {
         spr->_selw=temp->w;
         spr->_selh=temp->h;
         SDL_FreeSurface(temp);
-        gb_sprites.resize(gb_sprites.size() + 1);
-        gb_sprites[gb_sprites.size() - 1] = spr;
+        gb_sprites.push_back(spr);
         return spr;
     }
 
@@ -397,7 +396,7 @@ namespace GameBreaker {
     GBSprite* graphics::sprite::add_ext(std::string fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh)
     {
         if (!fs::exists(fname)) {
-            show::error("At graphics::sprite::add:\nFile doesn't exist: \"" + fname + "\".",1);
+            show::error("At graphics::sprite::add_ext:\nFile doesn't exist: \"" + fname + "\".",1);
             return nullptr;
         }
         GBSprite* spr = new GBSprite;
@@ -413,10 +412,67 @@ namespace GameBreaker {
         spr->_selw=grabw==0?temp->w:grabw;
         spr->_selh=grabh==0?temp->h:grabh;
         SDL_FreeSurface(temp);
-        gb_sprites.resize(gb_sprites.size() + 1);
-        gb_sprites[gb_sprites.size() - 1] = spr;
+        gb_sprites.push_back(spr);
         return spr;
     }
+
+    /**
+        * adds a sprite
+        * \sa fname - filename
+        * \sa frames - frames, should be greater than 0
+        * \sa offx, offy - offset coordinates
+        **/
+        void graphics::sprite::replace(GBSprite *spr, std::string fname, int frames, int offx, int offy)
+        {
+            if (!fs::exists(fname)) {
+                show::error("At graphics::sprite::replace:\nFile doesn't exist: \"" + fname + "\".",1);
+                return;
+            }
+			if(spr==nullptr) {graphics::sprite::add(fname,frames,offx,offy);return;}
+            spr->frames = (frames < 1) ? 1 : frames;
+            SDL_Surface* temp = IMG_Load(fname.c_str());
+            if(spr!=nullptr) SDL_DestroyTexture(spr->tex);
+            spr->tex = SDL_CreateTextureFromSurface(gb_win->ren, temp);
+            spr->w = temp->w/frames;
+            spr->h = temp->h;
+            spr->offx=offx;
+            spr->offy=offy;
+            spr->_selx=0;
+            spr->_sely=0;
+            spr->_selw=temp->w;
+            spr->_selh=temp->h;
+            SDL_FreeSurface(temp);
+            return;
+        }
+    
+        /**
+        * adds a sprite with extended vars
+        * \sa fname - filename
+        * \sa frames - frames, should be greater than 0
+        * \sa offx, offy - offset coordinates
+        **/
+        void graphics::sprite::replace_ext(GBSprite *spr, std::string fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh)
+        {
+            if (!fs::exists(fname)) {
+                show::error("At graphics::sprite::replace_ext:\nFile doesn't exist: \"" + fname + "\".",1);
+                return;
+            }
+            if(spr==nullptr) {graphics::sprite::add_ext(fname,frames,offx,offy,grabx,graby,grabw,grabh);return;}
+            spr->frames = (frames < 1) ? 1 : frames;
+            SDL_Surface* temp = IMG_Load(fname.c_str());
+            if(spr!=nullptr) SDL_DestroyTexture(spr->tex);
+            spr->tex = SDL_CreateTextureFromSurface(gb_win->ren, temp);
+            spr->w = temp->w/frames;
+            spr->h = temp->h;
+            spr->offx=offx;
+            spr->offy=offy;
+            spr->_selx=grabx;
+            spr->_sely=graby;
+            spr->_selw=grabw==0?temp->w:grabw;
+            spr->_selh=grabh==0?temp->h:grabh;
+            SDL_FreeSurface(temp);
+            return;
+        }
 
     /**
     * destroy the sprite if it will not be used anymore
@@ -424,6 +480,7 @@ namespace GameBreaker {
     **/
     void graphics::sprite::destroy(GBSprite* spr)
     {
+    	if(spr==nullptr) return;
         spr->frames = 0;
         spr->h = 0;
         spr->offx = 0;
@@ -435,6 +492,7 @@ namespace GameBreaker {
     }
 
     void graphics::sprite::set_offset(GBSprite *spr, int x, int y) {
+    	if(spr==nullptr) return;
         spr->offx=x;
         spr->offy=y;
     }
@@ -448,6 +506,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot)
     {
+    	if(spr==nullptr) return;
         GAssert;
         auto _real_=GBXyfy(x,y);      
         auto myw=((spr->_selw) / spr->frames);
@@ -473,6 +532,7 @@ namespace GameBreaker {
 
     void graphics::draw::sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
     {
+    	if(spr==nullptr) return;
         GAssert;
         auto _real_=GBXyfy(x,y);
 
@@ -499,6 +559,7 @@ namespace GameBreaker {
 
     void graphics::draw::sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot)
     {
+    	if(spr==nullptr) return;
         GAssert;
         auto _real_=GBXyfy(x,y);
 
@@ -535,6 +596,7 @@ namespace GameBreaker {
     **/
     void graphics::draw::sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot,SDL_Color col)
     {
+    	if(spr==nullptr) return;
         GAssert;
         auto _real_=GBXyfy(x,y);
         auto myw=((spr->_selw-spr->_selx)/spr->frames);
