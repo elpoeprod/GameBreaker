@@ -1,4 +1,6 @@
 #include "../include/gamebreaker.hpp"
+#include <taglib/tag.h>
+#include <taglib/fileref.h>
 
 /*******************
  * GAMEBREAKER::SOUND
@@ -8,7 +10,7 @@
 
 namespace GameBreaker {
     GBAudio* curmusic;
-    std::vector<GBSound*> gb_sounds;
+    std::vector<GBAudio*> gb_sounds;
 
     /**
     * returns new sound that was added from fname and type
@@ -22,22 +24,26 @@ namespace GameBreaker {
         mus->x = 0;
         mus->y = 0;
         mus->pan = 0;
+        mus->fname=fname;
+
+        mus->loops=0;
         if(type==GB_MUSIC) mus->chunk.stream.load(fname.c_str());
         else mus->chunk.nonstream.load(fname.c_str());
         mus->len=-1;
-        //mus->tag[0]=mus->chunk.
-        //mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
-        //mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
-        //mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
         curmusic = mus;
         return mus;
     }
     
     void audio::get_tags(GBAudio *mus) {
-        //mus->tag[0]=Mix_GetMusicArtistTag(mus->chunk);
-        //mus->tag[1]=Mix_GetMusicTitle(mus->chunk);
-        //mus->tag[2]=Mix_GetMusicAlbumTag(mus->chunk);
-        //mus->tag[3]=Mix_GetMusicCopyrightTag(mus->chunk);
+    	
+    	TagLib::FileRef f(mus->fname.c_str());
+        mus->tag["artist"]=	f.tag()->artist().to8Bit();
+        mus->tag["album"]=	f.tag()->album().to8Bit();
+        mus->tag["title"]=	f.tag()->title().to8Bit();
+        mus->tag["year"]=	stringify(f.tag()->year());
+        mus->tag["genre"]=	f.tag()->genre().to8Bit();
+        mus->tag["track"]=	stringify(f.tag()->track());
+        
     }
     
     /**
@@ -63,7 +69,8 @@ namespace GameBreaker {
     * \sa loops - how many times the sound should be repeated
     **/
     void audio::loop(GBAudio* snd, int loops) {
-        snd->chunk.stream.setLooping((loops>0));
+    	snd->loops=loops;
+        snd->chunk.stream.setLooping((loops>0||loops==-1));
         snd->handle=__mus_handle->play(snd->chunk.stream);
     }
     /**
@@ -85,6 +92,7 @@ namespace GameBreaker {
     void audio::set_vol(GBAudio* snd, double vol) {
         snd->chunk.stream.setVolume(vol);
         snd->vol=vol;
+        return;
     }
     /**
     * destroy sound if it will not be used anymore
@@ -100,6 +108,7 @@ namespace GameBreaker {
         snd->vol = 0;
         delete snd;
         snd=nullptr;
+        return;
     }
     
     double audio::get_pos(GBAudio *mus) {
@@ -110,7 +119,8 @@ namespace GameBreaker {
         return mus->len;
     }
 
-    void audio::set_loops(int loops) {
-        return; // no function in soloud to set loop count after song was played
+    void audio::set_loops(GBAudio *snd, int loops) {
+		snd->loops=loops;
+        return;
     }
 }
