@@ -15,6 +15,9 @@
 #include <iostream>
 #include <fstream>
 
+//#ifndef _GB_HPP_
+//#define _GB_HPP_
+
 #ifndef GB_INIT_REN_FLAGS
 #define GB_INIT_REN_FLAGS SDL_RENDERER_ACCELERATED
 #endif
@@ -95,6 +98,9 @@ typedef struct GBAudio {
     double pan;
     int handle;
     double len;
+    int loops;
+    std::string fname;
+    std::map<gb_str,gb_str> tag;
 } GBAudio;
 #endif
 
@@ -151,6 +157,13 @@ typedef struct GBWin {
     int running;
 } GBWindow;
 
+typedef struct GBSurface {
+	int w,h;
+	SDL_Texture *surf; //very strange, but it's the only way...
+} GBSurface;
+
+extern std::vector<GBSurface *>gb_surfs;
+
 typedef struct GBTile {
 	GBSprite *spr;
 	int w,h;
@@ -183,7 +196,6 @@ typedef struct GB_CamTarget {
     int hspeed,vspeed;
     int borderw,borderh;
 } GB_CamTarget;
-
 
 typedef struct GBRoom {
     std::vector<rmobj>objects;
@@ -406,12 +418,12 @@ public:
     static void         resume(GBAudio *snd);
     static void         stop(GBAudio* snd);
     static void         set_vol(GBAudio* snd, double vol);
-    static int          get_wave(GBAudio* snd,int pos);
+    static int          get_wave(GBAudio* snd, int pos);
     static void         destroy(GBAudio* snd);
     static void         get_tags(GBAudio *snd);
     static double       get_pos(GBAudio *snd);
     static double       get_len(GBAudio *snd);
-    static void         set_loops(int loops);
+    static void         set_loops(GBAudio *snd, int loops);
 };
 #endif
 
@@ -507,28 +519,30 @@ public:
     };
     class draw {
     public:
-        static void rect(int x, int y, int w, int h, int outline);
-        static int rect_color(float x, float y, float w, float h, SDL_Color col1, SDL_Color col2, SDL_Color col3, SDL_Color col4, int outline);
-        static void triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3);
-        static void circle(int x, int y, int r, int outline);
-        static void line(int x1, int y1, int x2, int y2);
-        static void point(int x, int y);
-        static void alpha(float alpha);
-        static void color(Uint32 color);
-        static void color_rgb(Uint8 r,Uint8 g,Uint8 b);
-        static void color_sdl(SDL_Color color);
-        static void color_hsv(double h, double s, double v);
-        static SDL_Color color_get();
-        static void blendmode(SDL_BlendMode mode);
-        static void sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot);
-        static void sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
-        static void sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
-        static void sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot, SDL_Color col);
-        static gb_button_state button(int x, int y, int w, int h, GBSprite *spr, int types);
-        static void text(float x, float y, GBText* text);
-        static void text_rt(float x, float y, gb_str text);
-        static void set_font(GBFont *fnt);
-        static void set_text_align(double halign, double valign);
+        static void 			rect(int x, int y, int w, int h, int outline); 																					// draws rectangle
+        static int 				rect_color(float x, float y, float w, float h, SDL_Color col1, SDL_Color col2, SDL_Color col3, SDL_Color col4, int outline);	// draws colored rectangle
+        static void 			triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3);			// draws colored triangle
+        static void 			circle(int x, int y, int r, int outline);																						// draws circle
+        static void 			line(int x1, int y1, int x2, int y2);																							// draws line
+        static void 			point(int x, int y);																											// draws point
+        static void 			alpha(float alpha);
+        static void 			color(Uint32 color);
+        static void 			color_rgb(Uint8 r,Uint8 g,Uint8 b);
+        static void 			color_sdl(SDL_Color color);
+        static void 			color_hsv(double h, double s, double v);
+        static SDL_Color	 	color_get();
+        static void 			blendmode(SDL_BlendMode mode);
+        static void 			sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot);
+        static void 			sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
+        static void 			sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
+        static void 			sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot, SDL_Color col);
+        static gb_button_state 	button(int x, int y, int w, int h, GBSprite *spr, int types);
+        static void 			text(float x, float y, GBText* text);
+        static int	 			text_rt(float x, float y, gb_str text);
+        static GBText 		   *text_get_from_db(int num);
+        static void 			set_font(GBFont *fnt);
+        static void 			set_text_align(double halign, double valign);
+        static void 			surface(GBSurface *surf, int x, int y, float scale, float yscale, float rot, SDL_Color col);
     };
     
 };
@@ -704,6 +718,14 @@ enum class ev {
 	destroy,
 };
 
+extern int __gb_uses_surface;
+
+class surface{public:
+	static GBSurface *add(int w, int h);
+	static void target_set(GBSurface *surf);
+	static void target_reset();
+};
+
 }
 
 #define undefined "\0"
@@ -713,6 +735,7 @@ extern int view_wview[GB_MAX_ROOM_CAMERAS],view_hview[GB_MAX_ROOM_CAMERAS];
 
 typedef GameBreaker::GBSprite GBSprite;
 typedef GameBreaker::GBAudio GBSound;
+typedef GameBreaker::GBSurface GBSurface;
 typedef GameBreaker::GBObject GBObject;
 typedef GameBreaker::GBFont GBFont;
 typedef GameBreaker::GBText GBText;
@@ -758,4 +781,6 @@ typedef std::vector<GameBreaker::fname_list> fname_list;
 typedef GameBreaker::gb_button_state gb_button_state;
 typedef GameBreaker::show show;
 typedef GameBreaker::room room;
-#endif
+#endif	// GB_USE_SMALL_FUNCNAMES
+
+//#endif // _GB_HPP_
