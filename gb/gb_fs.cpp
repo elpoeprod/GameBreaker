@@ -145,6 +145,11 @@ namespace GameBreaker {
         gb_files.erase(gb_files.begin() + file);
     }
 
+    gb_str fs::fname(gb_str fname) {
+    	auto mypos=fname.find_last_of("/\\");
+    	return gstr::copy(fname,mypos,fname.length()-mypos);
+    }
+
     gb_str fs::path_parent(gb_str path) {
         std::filesystem::path mypath=path;
         return mypath.parent_path();
