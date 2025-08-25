@@ -87,6 +87,7 @@ Uint32 fps_current;
 Uint32 fps_frames = 0;
 GBFont *_fntDefault__;
 
+SDL_Renderer *current_render;
 
 
 int init(int x, int y, std::string label)
@@ -110,6 +111,9 @@ int init(int x, int y, std::string label)
     gb_win->w = 640;
     gb_win->h = 480;
     gb_win->running = 1;
+
+	current_render=gb_win->ren;
+    
     mouse::x = 0;
     mouse::y = 0;
     for (int i = 0; i < 3; i++) {
@@ -362,6 +366,7 @@ void update()
         fps_frames = 0;
     }
 }
+
 void run() {
     if(room_current==nullptr) {
         show::error("WARNING\nThe current room was "
