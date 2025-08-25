@@ -4,7 +4,7 @@ namespace GameBreaker {
     std::vector<GBRoom *>gb_rooms;
     
     GBRoom *room::add(int width, int height) {
-    var rm=new GBRoom;
+    auto rm=new GBRoom;
         rm->width=width;
         rm->height=height;
         rm->speed=60;
@@ -40,7 +40,7 @@ namespace GameBreaker {
     }
 
     void room::remove_instance(GBRoom *room, int instance_id) {
-        var i=0; repeat(room->objects.size()) {
+        int i=0; repeat(room->objects.size()) {
             if(instance_id==room->objects[i].instance_id)
                 room->objects.erase(room->objects.cbegin()+i);
             i++;
