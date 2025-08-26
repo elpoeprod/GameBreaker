@@ -53,7 +53,7 @@ int display_current=0;
 int display::mouse_x=0;
 int display::mouse_y=0;
 
-gb_str const gb_version="0.0.15";
+gb_str const gb_version="0.0.17";
 
 GBWindow* gb_win;
 SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
