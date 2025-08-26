@@ -82,7 +82,7 @@ namespace GameBreaker {
 
     mb mouse::which() {
         for(int i=0;i<4;i++) {
-            if(mybut[i]) // or mylastbut[i]) 
+            if(mybut[i] or mylastbut[i]) 
             	return (mb)i;
         }
         return mb::none;
