@@ -418,8 +418,8 @@ public:
     static void         resume(GBAudio *snd);
     static void         stop(GBAudio* snd);
     static void         set_vol(GBAudio* snd, double vol);
-    static int          get_wave(GBAudio* snd, int pos);
-    static int          get_fft(GBAudio* snd, int pos);
+    static float        get_wave(GBAudio* snd, int pos);
+    static float        get_fft(GBAudio* snd, int pos);
     static void         destroy(GBAudio* snd);
     static void         get_tags(GBAudio *snd);
     static double       get_pos(GBAudio *snd);
@@ -526,7 +526,7 @@ public:
         static int 				rect_color(float x, float y, float w, float h, SDL_Color col1, SDL_Color col2, SDL_Color col3, SDL_Color col4, int outline);	// draws colored rectangle
         static void 			triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3);			// draws colored triangle
         static void 			circle(int x, int y, int r, int outline);																						// draws circle
-        static void 			line(int x1, int y1, int x2, int y2);																							// draws line
+        static void 			line(float x1, float y1, float x2, float y2);																					// draws line
         static void 			point(int x, int y);																											// draws point
         static void 			alpha(float alpha);
         static void 			color(Uint32 color);
@@ -728,6 +728,7 @@ class surface{public:
 	static GBSurface *add(int w, int h);
 	static void target_set(GBSurface *surf);
 	static void target_reset();
+	static void clone(GBSurface *src, GBSurface *dst, int x, int y);
 };
 
 }
