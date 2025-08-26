@@ -125,19 +125,20 @@ namespace GameBreaker {
         return;
     }
 
-    int audio::get_wave(GBAudio *snd, int pos) {
-    	if(snd==nullptr) return 0;
+    float audio::get_wave(GBAudio *snd, int pos) {
+    	if(snd==nullptr) return 0.f;
     	if(snd->type==GB_MUSIC)
-    		return __mus_handle->getWave()[pos];
+    		return __mus_handle->getWave()[pos];//*4;//*(256*((pos+2)/128));
     	else 
-    		return __mus_handle->getWave()[pos];
+    		return __mus_handle->getWave()[pos];//*4;//*(256*((pos+2)/128));
     }
 
-    int audio::get_fft(GBAudio *snd, int pos) {
-    	if(snd==nullptr) return 0;
+    float audio::get_fft(GBAudio *snd, int pos) {
+    	if(snd==nullptr) return 0.f;
+    	if(pos==0) return __mus_handle->calcFFT()[pos]/4;
     	if(snd->type==GB_MUSIC)
-    		return __mus_handle->calcFFT()[pos];
+    		return __mus_handle->calcFFT()[pos]*4;//*(256*((pos+2)/128));
     	else
-    		return __mus_handle->calcFFT()[pos];
+    		return __mus_handle->calcFFT()[pos]*4;//*(256*((pos+2)/128));
     }
 }
