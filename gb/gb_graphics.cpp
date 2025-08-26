@@ -268,12 +268,12 @@ namespace GameBreaker {
     * \sa x1,y1 - first point
     * \sa x2,y2 - second point
     **/
-    void graphics::draw::line(int x1, int y1, int x2, int y2)
+    void graphics::draw::line(float x1, float y1, float x2, float y2)
     {
         GAssert;
         auto _real_1=GBXyfy(x1,y1);
         auto _real_2=GBXyfy(x2,y2);
-        SDL_RenderDrawLine(gb_win->ren, _real_1.x, _real_1.y, _real_2.x, _real_2.y);
+        SDL_RenderDrawLineF(gb_win->ren, _real_1.x, _real_1.y, _real_2.x, _real_2.y);
     }
     /**
     * draws a point
@@ -355,7 +355,8 @@ namespace GameBreaker {
     }
 
     void graphics::draw::alpha(float alpha) {
-        _realcol_.a=alpha;
+        _realcol_.a=alpha*255;
+		return;
     }
 
     /**
@@ -639,7 +640,7 @@ namespace GameBreaker {
 
     gb_button_state graphics::draw::button(int x, int y, int w, int h, GBSprite *spr, int types) {
         gb_button_state mystate={0,mb::none};
-        if(room_current->view_enabled[room_current->view_current]==0) return mystate; //GAssert;
+        //if(room_current->view_enabled[room_current->view_current]==0) return mystate; //GAssert;
         int inrect=math::point_in_rect(mouse::x,mouse::y,x,y,x+w,y+h);
         int press=mouse::holding(mb::any);
         graphics::draw::sprite(spr,(inrect&&press)?spr->frames-1:types,x,y,(float)w/((float)spr->w),(float)h/(spr->h),0);
