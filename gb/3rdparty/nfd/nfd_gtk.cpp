@@ -985,35 +985,3 @@ nfdresult_t NFD_PathSet_EnumNextN(nfdpathsetenum_t* enumerator, nfdnchar_t** out
 nfdresult_t NFD_PathSet_EnumNextU8(nfdpathsetenum_t* enumerator, nfdu8char_t** outPath)
     __attribute__((alias("NFD_PathSet_EnumNextN")));
 
-#include <vector>
-std::vector<GtkWidget *> PopOverLabel[128];
-
-std::vector<GtkWidget *> PopOverMb;
-
-std::vector<GtkWidget *> PopOverMenu;
-
-int NFD_PopOverMenu_Create() {
-    PopOverMb.push_back(gtk_menu_button_new());
-    PopOverMenu.push_back(gtk_popover_new(PopOverMb[PopOverMb.size()-1]));
-    return PopOverMenu.size()-1;
-}
-
-int NFD_PopOverMenu_AddItem(int menu, std::string item) {
-    PopOverLabel[menu].push_back(gtk_label_new(item.c_str()));
-    return PopOverLabel[menu].size()-1;
-}
-
-void NFD_PopOverMenu_Show(int menu) {
-    for(long unsigned int i=0;i<PopOverLabel[menu].size();i++) {
-        gtk_container_add((GtkContainer *)PopOverMenu[menu],PopOverLabel[menu][i]);
-    }
-    g_object_set(PopOverMb[menu],"margin",150,NULL);
-    gtk_menu_button_set_popover((GtkMenuButton *)PopOverMb[menu],PopOverMenu[menu]);
-    gtk_widget_show_all(PopOverMenu[menu]);
-}
-
-void NFD_PopOverMenu_Destroy(int menu) {
-    PopOverMb.erase(PopOverMb.cbegin()+menu);
-    PopOverMenu.erase(PopOverMenu.cbegin()+menu);
-    PopOverLabel[menu].erase(PopOverLabel[menu].cbegin()+menu);
-}
