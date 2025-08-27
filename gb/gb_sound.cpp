@@ -7,6 +7,8 @@
  *
 */
 
+#define SAssert if(snd==nullptr) return;
+#define SAssertn if(snd==nullptr) return (int)NULL;
 
 namespace GameBreaker {
     GBAudio* curmusic;
@@ -27,22 +29,30 @@ namespace GameBreaker {
         mus->fname=fname;
 
         mus->loops=0;
-        if(type==GB_MUSIC) mus->chunk.stream.load(fname.c_str());
-        else mus->chunk.nonstream.load(fname.c_str());
-        mus->len=-1;
+        if(type==GB_MUSIC) {
+        mus->chunk.stream.load(fname.c_str());
+        	mus->handle=__mus_handle->play(mus->chunk.stream,1*master_vol,0,1);
+        	mus->len=mus->chunk.stream.getLength();
+        }
+        else {
+        	mus->chunk.nonstream.load(fname.c_str());
+        	mus->handle=__mus_handle->play(mus->chunk.nonstream,1*master_vol,0,1);
+        	mus->len=mus->chunk.nonstream.getLength();
+        }       
+		
         curmusic = mus;
         return mus;
     }
     
-    void audio::get_tags(GBAudio *mus) {
-    	
-    	TagLib::FileRef f(mus->fname.c_str());
-        mus->tag["artist"]=	f.tag()->artist().to8Bit();
-        mus->tag["album"]=	f.tag()->album().to8Bit();
-        mus->tag["title"]=	f.tag()->title().to8Bit();
-        mus->tag["year"]=	stringify(f.tag()->year());
-        mus->tag["genre"]=	f.tag()->genre().to8Bit();
-        mus->tag["track"]=	stringify(f.tag()->track());
+    void audio::get_tags(GBAudio *snd) {
+    	SAssert;
+    	TagLib::FileRef f(snd->fname.c_str());
+        snd->tag["artist"]=	f.tag()->artist().to8Bit();
+        snd->tag["album"]=	f.tag()->album().to8Bit();
+        snd->tag["title"]=	f.tag()->title().to8Bit();
+        snd->tag["year"]=	stringify(f.tag()->year());
+        snd->tag["genre"]=	f.tag()->genre().to8Bit();
+        snd->tag["track"]=	stringify(f.tag()->track());
         
     }
     
@@ -52,8 +62,12 @@ namespace GameBreaker {
     
     void audio::set_pos(GBAudio* snd, double pos)
     {
+    	SAssert;
         snd->pos = pos;
+        __mus_handle->setPause(snd->handle,true);
         __mus_handle->seek(snd->handle,pos);
+        __mus_handle->setPause(snd->handle,false);
+        return;
     }
     
     /**
@@ -61,7 +75,13 @@ namespace GameBreaker {
     * \sa snd - sound
     **/
     void audio::play(GBAudio* snd) {
-        snd->handle=__mus_handle->play(snd->chunk.stream,1*master_vol);
+    	SAssert;
+    	/*
+        if(snd->type==GB_MUSIC) snd->handle=__mus_handle->play(snd->chunk.stream,1*master_vol);
+        else snd->handle=__mus_handle->play(snd->chunk.nonstream,1*master_vol);
+        */
+        __mus_handle->setPause(snd->handle,false);
+        return;
     }
     /**
     * play sound looped
@@ -69,6 +89,7 @@ namespace GameBreaker {
     * \sa loops - how many times the sound should be repeated
     **/
     void audio::loop(GBAudio* snd, int loops) {
+    	SAssert;
     	snd->loops=loops;
         if(snd->type==GB_MUSIC) snd->chunk.stream.setLooping((loops>0||loops==-1));
         else snd->chunk.nonstream.setLooping((loops>0||loops==-1));
@@ -78,22 +99,38 @@ namespace GameBreaker {
     * pauses the sound
     * \sa snd - sound
     **/
-    void audio::pause(GBAudio *snd) {__mus_handle->setPause(snd->handle,true);}
-    void audio::resume(GBAudio *snd) {__mus_handle->setPause(snd->handle,false);}
+    void audio::pause(GBAudio *snd) {
+    	SAssert;
+    	__mus_handle->setPause(snd->handle,true);
+    }
+    
+    void audio::resume(GBAudio *snd) {
+    	SAssert;
+    	__mus_handle->setPause(snd->handle,false);
+    }
     /**
     * stops the sound entirely
     * \sa snd - sound
     **/
-    void audio::stop(GBAudio* snd) { __mus_handle->stop(snd->handle); }
+    void audio::stop(GBAudio* snd) { 
+    	SAssert;
+    	__mus_handle->stop(snd->handle); 
+    }
     /**
     * sets the volume of a sound
     * \sa snd - sound
     * \sa vol - volume
     **/
     void audio::set_vol(GBAudio* snd, double vol) {
-        snd->chunk.stream.setVolume(vol);
+    	SAssert;
+        __mus_handle->setVolume(snd->handle,vol);
         snd->vol=vol;
         return;
+    }
+
+    double audio::get_vol(GBAudio *snd) {
+    	SAssertn;
+    	return __mus_handle->getVolume(snd->handle);
     }
     /**
     * destroy sound if it will not be used anymore
@@ -101,6 +138,7 @@ namespace GameBreaker {
     **/
     void audio::destroy(GBAudio* snd)
     {
+    	SAssert;
         snd->x = 0;
         snd->y = 0;
         snd->pan = 0;
@@ -112,15 +150,18 @@ namespace GameBreaker {
         return;
     }
     
-    double audio::get_pos(GBAudio *mus) {
-        return __mus_handle->getStreamPosition(mus->handle);
+    double audio::get_pos(GBAudio *snd) {
+    	SAssertn;
+        return __mus_handle->getStreamTime(snd->handle);
     }
     
-    double audio::get_len(GBAudio *mus) {
-        return mus->len;
+    double audio::get_len(GBAudio *snd) {
+    	SAssertn;
+        return snd->len;
     }
 
     void audio::set_loops(GBAudio *snd, int loops) {
+    	SAssert;
 		snd->loops=loops;
         return;
     }
