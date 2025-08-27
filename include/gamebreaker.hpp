@@ -45,6 +45,8 @@
 
 extern void _gb_find_controllers();
 
+extern SDL_Texture *__gb_empty_1x1__;
+
 typedef struct __current {
         int second,
         minute,
@@ -418,6 +420,7 @@ public:
     static void         resume(GBAudio *snd);
     static void         stop(GBAudio* snd);
     static void         set_vol(GBAudio* snd, double vol);
+    static double		get_vol(GBAudio* snd);
     static float        get_wave(GBAudio* snd, int pos);
     static float        get_fft(GBAudio* snd, int pos);
     static void         destroy(GBAudio* snd);
@@ -434,18 +437,27 @@ public:
     gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
 };
 
+typedef struct GBPOMItem {
+	gb_str title;
+	int id;
+	void (*func)();
+} GBPOMItem;
+
+typedef std::vector<GBPOMItem> GBPOMItems;
+
 class show {public:
     static void message(gb_str title, gb_str msg);
     static void error(gb_str msg, int abort);
+    static int popover_menu(GBPOMItems items);
 };
 
 enum mb { //class mb {public:
     //static const int 
-    none    = -1,
-    left    = SDL_BUTTON_LEFT,
-    right   = SDL_BUTTON_MIDDLE,
-    middle  = SDL_BUTTON_RIGHT,
-    any     = 0x100 //;
+    none	= -1,
+    left	= SDL_BUTTON_LEFT,
+    middle	= SDL_BUTTON_MIDDLE,
+    right	= SDL_BUTTON_RIGHT,
+    any		= 0x100 //;
 };
 
 class vk {public:
