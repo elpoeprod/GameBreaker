@@ -16,7 +16,7 @@ all:
 	$(CXX_CMD) gb/gb_graphics.cpp 	-o build/graphics.o
 	$(CXX_CMD) gb/gb_object.cpp 	-o build/object.o
 	$(CXX_CMD) gb/gb_room.cpp 	-o build/room.o
-	$(CXX_CMD) gb/gb_msg.cpp 	-o build/msg.o
+	$(CXX_CMD) gb/gb_msg.cpp 	-o build/msg.o $(CXX_ARGS_GTK)
 	$(CXX_CMD) gb/gb_fs.cpp 	-o build/fs.o $(CXX_ARGS_GTK)
 	$(CXX_CMD) gb/gb_font.cpp 	-o build/font.o
 	$(CXX_CMD) gb/gamebreaker.cpp 	-o build/main.o $(CXX_ARGS_SOLOUD) $(CXX_ARGS_TAGLIB) $(CXX_ARGS_OPENMPT)
