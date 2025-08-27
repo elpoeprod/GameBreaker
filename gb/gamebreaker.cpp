@@ -33,6 +33,8 @@ std::string __gb_weekdays[7]= {
     "Sunday",
 };
 
+SDL_Texture *__gb_empty_1x1__;
+
 /**********START*********************/
 namespace GameBreaker {
 
@@ -112,6 +114,14 @@ int init(int x, int y, std::string label)
     gb_win->h = 480;
     gb_win->running = 1;
 
+	__gb_empty_1x1__=SDL_CreateTexture(gb_win->ren,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,1,1);
+
+	SDL_SetRenderTarget(gb_win->ren,__gb_empty_1x1__);
+	SDL_SetRenderDrawColor(gb_win->ren,255,255,255,255);
+	SDL_Rect __myrect={0,0,1,1};
+	SDL_RenderFillRect(gb_win->ren,&__myrect);
+	SDL_SetRenderTarget(gb_win->ren,nullptr);
+		
 	current_render=gb_win->ren;
     
     mouse::x = 0;

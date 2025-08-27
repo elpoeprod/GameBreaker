@@ -518,7 +518,7 @@ namespace GameBreaker {
         				};
         SDL_FRect dstrect = { 
         				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
-        				(float)myw * xscale, (float)(spr->_selh-spr->_sely) * yscale 
+        				(float)myw * xscale, (float)(spr->_selh) * yscale 
         				};
         				
         float cenx=spr->offx,ceny=spr->offy;
@@ -545,7 +545,7 @@ namespace GameBreaker {
         				};
         SDL_FRect dstrect = { 
         				_real_.x-spr->offx*xscale, _real_.y-spr->offy*yscale, 
-        				(float)myw * xscale, (float)spr->h * yscale 
+        				(float)math::clamp(w,0,myw) * xscale, (float)math::clamp(h,0,spr->_selh) * yscale 
         				};
         				
         float cenx=spr->offx,ceny=spr->offy;
@@ -564,7 +564,7 @@ namespace GameBreaker {
         GAssert;
         auto _real_=GBXyfy(x,y);
 
-        auto myw=((spr->_selw/*-spr->_selx*/) / spr->frames);
+        auto myw=((spr->_selw) / spr->frames);
         
         SDL_Rect rect = { 
         				(spr->_selx+myw * (frame % spr->frames)), spr->_sely, 
@@ -609,7 +609,7 @@ namespace GameBreaker {
 				        };
         SDL_FRect dstrect = { 
 				        _real_.x, _real_.y, 
-				        myw * xscale, (float)spr->h * yscale 
+				        myw * xscale, (float)spr->_selh * yscale 
 				        };
 				        
         SDL_FPoint cen = { (float)spr->offx, (float)spr->offy };
@@ -632,9 +632,12 @@ namespace GameBreaker {
         GAssert;
         auto _real_=GBXyfy(x,y);
         SDL_Rect myrect = { (int)_real_.x,(int)_real_.y,w, h };
-        if (outline == 0)
-            SDL_RenderFillRect(gb_win->ren, &myrect);
-        else
+        if (outline == 0) {
+            //SDL_RenderFillRect(gb_win->ren, &myrect);
+            SDL_SetTextureColorMod(__gb_empty_1x1__,_realcol_.r,_realcol_.g,_realcol_.b);
+            SDL_SetTextureAlphaMod(__gb_empty_1x1__, _realcol_.a);
+            SDL_RenderCopy(gb_win->ren,__gb_empty_1x1__,nullptr,&myrect);
+        } else
             SDL_RenderDrawRect(gb_win->ren, &myrect);
     }
 
