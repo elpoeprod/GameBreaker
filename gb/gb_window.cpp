@@ -80,4 +80,22 @@ namespace GameBreaker {
         SDL_SetThreadPriority((SDL_ThreadPriority)num); // 0 - low, 3 - high like on drugs
     }
 
+    int window::get_ontop() {
+    	return SDL_GetWindowFlags(gb_win->win)&SDL_WINDOW_ALWAYS_ON_TOP;
+    }
+
+    void window::set_ontop(int enable) {
+		SDL_SetWindowAlwaysOnTop(gb_win->win,enable>0.5?SDL_TRUE:SDL_FALSE);
+    	return;
+    }
+
+    void window::show_borders(int enable) {
+		SDL_SetWindowBordered(gb_win->win,enable>0.5?SDL_TRUE:SDL_FALSE);
+    	return;
+    }
+    void window::grab(int enable) {
+		SDL_SetWindowGrab(gb_win->win,enable>0.5?SDL_TRUE:SDL_FALSE);
+    	return;
+    }
+
 }
