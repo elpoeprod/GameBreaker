@@ -386,18 +386,22 @@ public:
 
 class window {
 public:
-    static void set_size(int w, int h);
-    static void set_pos(int x, int y);
-    static int get_x();
-    static int get_y();
-    static int get_width();
-    static int get_height();
-    static void set_icon(gb_str ico);
-    static SDL_Point get_size();
-    static SDL_Point get_pos();
-    static SDL_Renderer* get_renderer();
-    static void set_title(gb_str title);
-    static void set_priority(int num);
+    static void 			set_size(int w, int h);
+    static void 			set_pos(int x, int y);
+    static int 				get_x();
+    static int 				get_y();
+    static int 				get_width();
+    static int				get_height();
+    static void 			set_icon(gb_str ico);
+    static SDL_Point	 	get_size();
+    static SDL_Point	 	get_pos();
+    static SDL_Renderer* 	get_renderer();
+    static void 			set_title(gb_str title);
+    static void 			set_priority(int num);
+    static int 				get_ontop();
+    static void 			set_ontop(int enable);
+    static void				show_borders(int enable);
+    static void				grab(int enable);
 };
 
 extern int display_current;
@@ -435,6 +439,8 @@ class color {
 public:
     static const SDL_Color black, white, red, blue, green, lime,
     gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
+    static SDL_Color merge(SDL_Color col1, SDL_Color col2, double amount);
+    static SDL_Color mix(SDL_Color col1, SDL_Color col2);
 };
 
 typedef struct GBPOMItem {
@@ -692,13 +698,14 @@ public:
 
     static double median(GB_NumberBag bag);
     static double mean(GB_NumberBag bag);
-    
+    static double lerp(double a, double b, double num);
 
     static double random(double n);
     static int irandom(int n);
     static double random_range(double min, double max);
     static int irandom_range(int min, int max);
     static void random_set_seed(int seed);
+    static int irandom_fresh(int oldval, int minval, int maxval);
     static int random_get_seed();
     static void randomize();
 	static void *choose(GB_ChooseBag bag);
