@@ -89,7 +89,7 @@ namespace GameBreaker {
     }
 
     int mouse::wheel_up() {
-    	return gb_win->ev.wheel.y>0;
+    	return gb_win->ev.wheel.y>0&&gb_win->ev.wheel.y<2;
     }
 
     int mouse::wheel_down() {
