@@ -146,7 +146,7 @@ namespace GameBreaker {
     }
 
     gb_str fs::fname(gb_str fname) {
-    	auto mypos=fname.find_last_of("/\\");
+    	auto mypos=fname.find_last_of("/\\")+1;
     	return gstr::copy(fname,mypos,fname.length()-mypos);
     }
 
