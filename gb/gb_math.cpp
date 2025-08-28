@@ -170,4 +170,13 @@ namespace GameBreaker {
 	real math::frac(real x) {
 		return x-std::floor(x);
 	}
+
+	int math::irandom_fresh(int oldval, int minval, int maxval) {
+		return modwrap(oldval+1+math::irandom(maxval-minval-1),minval,maxval+1);
+	}
+
+	double math::lerp(double a, double b, double amount) {
+		return a*(1-amount)+b*amount;
+	}
+
 }
