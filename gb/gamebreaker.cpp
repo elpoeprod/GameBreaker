@@ -443,21 +443,6 @@ void shutdown()
     __mus_handle->deinit();
 }
 
-
-const SDL_Color color::black = { 0, 0, 0, 255 },
-          color::white = { 255, 255, 255, 255 },
-          color::red = { 255, 0, 0, 255 },
-          color::blue = { 0, 0, 255, 255 },
-          color::green = { 0, 200, 0, 255 },
-          color::lime = { 0, 255, 50, 255 },
-          color::gray = { 128, 128, 128, 255 },
-          color::lt_gray = { 192, 192, 192, 255 },
-          color::dk_gray = { 80, 80, 80, 255 },
-          color::fuchsia = { 200, 50, 200, 255 },
-          color::purple = { 100, 16, 192, 255 },
-          color::aqua = { 50, 255, 255, 255 },
-          color::pink = { 255, 128, 128, 255 };
-
 }
 
 
