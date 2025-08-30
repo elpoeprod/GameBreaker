@@ -1,18 +1,5 @@
 #include "../include/gamebreaker.hpp"
 
-double modwrap(double val, double minv, double maxv) {
-    ///modwrap(val,min,max)
-    //val: value to wrap
-    //min: minimum value
-    //max: maximum value
-    //returns: wrapped value
-    //Repeats the value inside the window defined by min and max - max exclusive.
-    
-    double f=val-minv;
-    double w=maxv-minv;
-    return f-floor(f/w)*w+minv;
-}
-
 namespace GameBreaker {
     /**
     * convert degrees to radians or opposite
@@ -82,7 +69,7 @@ namespace GameBreaker {
     }
 
     double math::pdirection(double x1,double y1,double x2,double y2) {
-        return modwrap(atan2(-(y2-y1),x2-x1)*180/M_PI,0,360);
+        return math::modwrap(atan2(-(y2-y1),x2-x1)*180/M_PI,0,360);
     }
     double math::pdistance(double x1, double y1, double x2, double y2) {
         return hypot(x2-x1,y2-y1);
@@ -172,11 +159,29 @@ namespace GameBreaker {
 	}
 
 	int math::irandom_fresh(int oldval, int minval, int maxval) {
-		return modwrap(oldval+1+math::irandom(maxval-minval-1),minval,maxval+1);
+		return math::modwrap(oldval+1+math::irandom(maxval-minval-1),minval,maxval+1);
 	}
 
-	double math::lerp(double a, double b, double amount) {
+	double math::lerp(real a, real b, real amount) {
 		return a*(1-amount)+b*amount;
+	}
+
+	double math::modwrap(real val, real minval, real maxval) {
+		double f=val-minval;
+	    double w=maxval-minval;
+	    return f-floor(f/w)*w+minval;
+	}
+
+	real math::gauss(real range) {
+		var __i=0.f;
+		repeat (12) __i+=math::random(1);
+		return ((__i-6)/6+0.5)*range;
+	}
+
+	real math::gauss_range(real min, real max) {
+		var __i=0.f;
+		repeat (12) __i+=math::random(1);
+		return ((__i-6)/6+0.5)*(max-min)+min;
 	}
 
 }
