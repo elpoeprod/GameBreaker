@@ -19,7 +19,7 @@ round(x)                            - Y, math::round()
 floor(x)                            - Y, math::floor()
 ceil(x)                             - Y, math::ceil()
 sign(x)                             - Y, math::sign()
-frac(x)                             - N
+frac(x)                             - Y, math::frac()
 sqrt(x)                             - Y, math::sqrt()
 sqr(x)                              - Y, math::sqr()
 exp(x)                              - N
@@ -42,7 +42,7 @@ max(x1,x2,x3,...)                   - Y, math::max(), BUT uses struct instead of
 mean(x1,x2,x3,...)                  - N
 median(x1,x2,x3,...)                - Y, math::median()
 clamp(val,min,max)                  - Y, math::clamp()
-lerp(val1,val2,amount)              - N
+lerp(val1,val2,amount)              - Y, math::lerp()
 dot_product(x1,y1,x2,y2)            - N
 dot_product_3d(x1,y1,z1,x2,y2,z2)   - N
 point_distance_3d(x1,y1,z1,x2,y2,z2)- N
@@ -222,9 +222,9 @@ object_index                    - Y, GBObject->inst_id or obj_id
 id                              - Y, GBObject->id
 solid                           - Y, GBObject->solid
 persistent                      - N
-mask_index                      - Y, GBObject->mask iirc
+mask_index                      - Y, GBObject->mask
 instance_count*                 
-instance_id*
+instance_id*					- Y, GBObject->inst_id
 instance_find(obj,n)
 instance_exists(obj)
 instance_number(obj)
@@ -232,7 +232,7 @@ instance_position(x,y,obj)
 instance_nearest(x,y,obj)
 instance_furthest(x,y,obj)
 instance_place(x,y,obj)
-instance_create(x,y,obj)
+instance_create(x,y,obj)		- Y, room::add_instance()
 instance_copy(performevent)
 instance_change(obj,performevents)
 instance_destroy()
@@ -288,7 +288,7 @@ room_goto_next()            - N
 room_previous(numb)         - N
 room_next(numb)             - N
 room_restart()              - N
-game_end()                  - Y, `screen::end();`
+game_end()                  - Y, screen::end()
 game_restart()              - N
 game_load(filename)         - N
 game_save(filename)         - N
@@ -426,7 +426,7 @@ error_occurred                                      - N
 error_last                                          - N
 show_debug_message(str)                             - Y, puts() or printf()
 debug_mode                                          - N
-variable_global_exists(name)                        N
+variable_global_exists(name)                        - N
 variable_global_get(name)
 variable_global_array_get(name,ind) 
 variable_global_array2_get(name,ind1,ind2)
@@ -485,11 +485,11 @@ vk_down#                        - Y
 vk_home#                        - Y
 vk_end#                         - Y
 vk_delete#                      - Y
-vk_insert#
-vk_pageup#
-vk_pagedown#
-vk_f1#
-vk_f2#
+vk_insert#						- Y
+vk_pageup#						- Y
+vk_pagedown#					- Y
+vk_f1#							- Y
+vk_f2#							- Y
 vk_f3#
 vk_f4#
 vk_f5#
@@ -522,7 +522,7 @@ vk_rshift#              -Y
 vk_rcontrol#            -N
 vk_ralt#                -N
 keyboard_clear(key)     -N
-io_clear()              -Y, io::clear
+io_clear()              -Y, io::clear()
 io_handle()
 keyboard_wait()
 
@@ -548,20 +548,20 @@ cursor_sprite                               -N
 
 // section 4.3
 
-joystick_exists(id)
-joystick_direction(id)
-joystick_name(id)
-joystick_axes(id)
-joystick_buttons(id)
-joystick_has_pov(id)
-joystick_check_button(id,button)
-joystick_xpos(id)
-joystick_ypos(id)
-joystick_zpos(id)
-joystick_rpos(id)
-joystick_upos(id)
-joystick_vpos(id)
-joystick_pov(id)
+joystick_exists(id)							-Y, joy::working()
+joystick_direction(id)						-N
+joystick_name(id)							-N
+joystick_axes(id)							-N
+joystick_buttons(id)						-N
+joystick_has_pov(id)						-N
+joystick_check_button(id,button)			-Y, joy::released()/pressed()/holding()
+joystick_xpos(id)							-N
+joystick_ypos(id)							-N
+joystick_zpos(id)							-N
+joystick_rpos(id)							-N
+joystick_upos(id)							-N
+joystick_vpos(id)							-N
+joystick_pov(id)							-N
 
 
 //////////////
@@ -570,38 +570,38 @@ joystick_pov(id)
 
 // section 5.1
 
-visible 
-sprite_index 
-sprite_width* 
-sprite_height* 
-sprite_xoffset* 
-sprite_yoffset* 
-image_number* 
-image_index 
-image_speed 
-depth 
-image_xscale 
-image_yscale 
-image_angle 
-image_alpha 
-image_blend 
-bbox_left* 
-bbox_right* 
-bbox_top* 
-bbox_bottom* 
+visible 									-N
+sprite_index 								-Y, GBObject->spr
+sprite_width* 								-Y, GBObject->spr->w
+sprite_height* 								-Y, GBObject->spr->w
+sprite_xoffset* 							-Y, GBObject->spr->offx
+sprite_yoffset* 							-Y, GBObject->spr->offy
+image_number* 								-Y, GBObject->spr->frames
+image_index 								-Y, GBObject->image_index
+image_speed 								-Y, GBObject->image_speed
+depth 										-Y, GBObject->depth
+image_xscale 								-N
+image_yscale 								-N
+image_angle 								-N
+image_alpha 								-N
+image_blend 								-N
+bbox_left* 									-N
+bbox_right* 								-N
+bbox_top* 									-N
+bbox_bottom* 								-N
 
 // section 5.2
 
-background_color 
-background_showcolor 
-background_visible[0..7] 
-background_foreground[0..7] 
-background_index[0..7] 
-background_x[0..7] 
-background_y[0...7] 
-background_width[0...7]* 
-background_height[0...7]* 
-background_htiled[0..7] 
+background_color 							-Y, GBRoom->background_color
+background_showcolor 						-Y, GBRoom->background_visible
+background_visible[0..7] 					-Y, GBRoom->background_visible
+background_foreground[0..7] 				-N
+background_index[0..7] 						-N
+background_x[0..7] 							-N
+background_y[0...7] 						-N
+background_width[0...7]* 					-N
+background_height[0...7]* 					-N
+background_htiled[0..7] 					-N
 background_vtiled[0..7] 
 background_xscale[0..7] 
 background_yscale[0..7] 
@@ -612,194 +612,194 @@ background_alpha[0..7]
 
 // section 5.3
 
-draw_self()
-YoYo_GetDevice()
-YoYo_GetPlatform()
-YoYo_EnableAlphaBlend(enable)
-draw_sprite(sprite,subimg,x,y)
-draw_sprite_pos(sprite,subimg,x1,y1,x2,y2,x3,y3,x4,y4,alpha)
-draw_sprite_ext(sprite,subimg,x,y,xscale,yscale,rot,color,alpha)
-draw_sprite_stretched(sprite,subimg,x,y,w,h)
-draw_sprite_stretched_ext(sprite,subimg,x,y,w,h,color,alpha) 
-draw_sprite_tiled(sprite,subimg,x,y) 
-draw_sprite_tiled_ext(sprite,subimg,x,y,xscale,yscale,color,alpha) 
-draw_sprite_part(sprite,subimg,left,top,width,height,x,y) 
-draw_sprite_part_ext(sprite,subimg,left,top,width,height,x,y,xscale,yscale,color,alpha) 
-draw_sprite_general(sprite,subimg,left,top,width,height,x,y,xscale,yscale,rot,c1,c2,c3,c4,alpha)
-draw_background(back,x,y)
-draw_background_ext(back,x,y,xscale,yscale,rot,color,alpha) 
-draw_background_stretched(back,x,y,w,h)
-draw_background_stretched_ext(back,x,y,w,h,color,alpha) 
-draw_background_tiled(back,x,y) 
-draw_background_tiled_ext(back,x,y,xscale,yscale,color,alpha) 
-draw_background_part(back,left,top,width,height,x,y) 
-draw_background_part_ext(back,left,top,width,height,x,y,xscale,yscale,color,alpha) 
-draw_background_general(back,left,top,width,height,x,y,xscale,yscale,rot,c1,c2,c3,c4,alpha) 
+draw_self()																							-N
+YoYo_GetDevice()																					-N
+YoYo_GetPlatform()																					-N
+YoYo_EnableAlphaBlend(enable)																		-N
+draw_sprite(sprite,subimg,x,y)																		-Y, graphics::draw::sprite()
+draw_sprite_pos(sprite,subimg,x1,y1,x2,y2,x3,y3,x4,y4,alpha)										-N
+draw_sprite_ext(sprite,subimg,x,y,xscale,yscale,rot,color,alpha)									-Y, graphics::draw::sprite_ext()
+draw_sprite_stretched(sprite,subimg,x,y,w,h)														-Y, graphics::draw::sprite_stretched()
+draw_sprite_stretched_ext(sprite,subimg,x,y,w,h,color,alpha) 										-N
+draw_sprite_tiled(sprite,subimg,x,y) 																-N
+draw_sprite_tiled_ext(sprite,subimg,x,y,xscale,yscale,color,alpha) 									-N
+draw_sprite_part(sprite,subimg,left,top,width,height,x,y) 											-Y, graphics::draw::sprite_part()
+draw_sprite_part_ext(sprite,subimg,left,top,width,height,x,y,xscale,yscale,color,alpha) 			-N
+draw_sprite_general(sprite,subimg,left,top,width,height,x,y,xscale,yscale,rot,c1,c2,c3,c4,alpha)	-N
+draw_background(back,x,y)																			-N
+draw_background_ext(back,x,y,xscale,yscale,rot,color,alpha) 										-N
+draw_background_stretched(back,x,y,w,h)																-N
+draw_background_stretched_ext(back,x,y,w,h,color,alpha) 											-N
+draw_background_tiled(back,x,y) 																	-N
+draw_background_tiled_ext(back,x,y,xscale,yscale,color,alpha) 										-N
+draw_background_part(back,left,top,width,height,x,y) 												-N
+draw_background_part_ext(back,left,top,width,height,x,y,xscale,yscale,color,alpha) 					-N
+draw_background_general(back,left,top,width,height,x,y,xscale,yscale,rot,c1,c2,c3,c4,alpha) 		-N
 
 // section 5.4
 
-draw_clear(col) 
-draw_clear_alpha(col,alpha) 
-draw_point(x,y) 
-draw_line(x1,y1,x2,y2) 
-draw_line_width(x1,y1,x2,y2,w) 
-draw_rectangle(x1,y1,x2,y2,outline) 
-draw_roundrect(x1,y1,x2,y2,outline) 
-draw_triangle(x1,y1,x2,y2,x3,y3,outline) 
-draw_circle(x,y,r,outline) 
-draw_ellipse(x1,y1,x2,y2,outline) 
-draw_set_circle_precision(precision)
-draw_arrow(x1,y1,x2,y2,size) 
-draw_button(x1,y1,x2,y2,up) 
-draw_path(path,x,y,absolute) 
-draw_healthbar(x1,y1,x2,y2,amount,backcol,mincol,maxcol,direction,showback,showborder) 
-draw_getpixel(x,y)
-draw_set_color(col) 
-draw_set_alpha(alpha) 
-draw_get_color() 
-draw_get_alpha() 
-c_aqua#
-c_black#
-c_blue#
-c_dkgray#
-c_fuchsia#
-c_gray#
-c_green#
-c_lime#
-c_ltgray#
-c_maroon#
-c_navy#
-c_olive#
-c_purple#
-c_red#
-c_silver#
-c_teal#
-c_white#
-c_yellow#
-c_orange#
-make_color_rgb(red,green,blue) 
-make_color_hsv(hue,saturation,value) 
-color_get_red(col) 
-color_get_green(col) 
-color_get_blue(col) 
-color_get_hue(col) 
-color_get_saturation(col) 
-color_get_value(col) 
-merge_color(col1,col2,amount) 
-screen_save(fname) 
-screen_save_part(fname,x,y,w,h) 
+draw_clear(col) 							-N
+draw_clear_alpha(col,alpha) 				-N
+draw_point(x,y) 							-Y, graphics::draw::point()
+draw_line(x1,y1,x2,y2) 						-Y, graphics::draw::line()
+draw_line_width(x1,y1,x2,y2,w) 				-N
+draw_rectangle(x1,y1,x2,y2,outline) 		-Y, graphics::draw::rect()
+draw_roundrect(x1,y1,x2,y2,outline) 		-N
+draw_triangle(x1,y1,x2,y2,x3,y3,outline) 	-Y, graphics::draw::triangle()
+draw_circle(x,y,r,outline) 					-Y, graphics::draw::circle()
+draw_ellipse(x1,y1,x2,y2,outline) 			-N
+draw_set_circle_precision(precision)		-N
+draw_arrow(x1,y1,x2,y2,size) 				-N
+draw_button(x1,y1,x2,y2,up) 				-Y, graphics::draw::button()
+draw_path(path,x,y,absolute) 				-N
+draw_healthbar(x1,y1,x2,y2,amount,backcol,mincol,maxcol,direction,showback,showborder) -N
+draw_getpixel(x,y)							-N
+draw_set_color(col) 						-Y, graphics::draw::color()/color_sdl()/color_hsv()/color_rgb()
+draw_set_alpha(alpha) 						-Y, graphics::draw::alpha()
+draw_get_color() 							-Y, graphics::draw::color_get()
+draw_get_alpha() 							-N
+c_aqua#										-Y, color::aqua
+c_black#									-Y, color::black
+c_blue#										-Y, color::blue
+c_dkgray#									-Y, color::dk_gray
+c_fuchsia#									-Y, color::fuchsia
+c_gray#										-Y, color::gray
+c_green#									-Y, color::green
+c_lime#										-Y, color::lime
+c_ltgray#									-Y, color::lt_gray
+c_maroon#									-N
+c_navy#										-N
+c_olive#									-N
+c_purple#									-Y, color::purple
+c_red#										-Y, color::red
+c_silver#									-N
+c_teal#										-N
+c_white#									-Y, color::white
+c_yellow#									-N
+c_orange#									-N
+make_color_rgb(red,green,blue) 				-Y, (SDL_Color){r,g,b,a};
+make_color_hsv(hue,saturation,value) 		-N
+color_get_red(col) 							-Y, color.r
+color_get_green(col) 						-Y, color.g
+color_get_blue(col) 						-Y, color.b
+color_get_hue(col) 							-N
+color_get_saturation(col) 					-N
+color_get_value(col) 						-N
+merge_color(col1,col2,amount) 				-Y, color::merge()/merge_corrected()
+screen_save(fname) 							-N
+screen_save_part(fname,x,y,w,h) 			-N
 
 // section 5.5
 
-draw_set_font(font)
-draw_set_halign(halign)
-fa_left#
-fa_center#
-fa_right#
-draw_set_valign(valign) 
-fa_top#
-fa_middle#
-fa_bottom#
-draw_text(x,y,string)
-draw_text_ext(x,y,string,sep,w)
-string_width(string)
-string_height(string)
-string_width_ext(string,sep,w)
-string_height_ext(string,sep,w)
-draw_text_transformed(x,y,string,xscale,yscale,angle)
-draw_text_ext_transformed(x,y,string,sep,w,xscale,yscale,angle)
-draw_text_color(x,y,string,c1,c2,c3,c4,alpha)
-draw_text_ext_color(x,y,string,sep,w,c1,c2,c3,c4,alpha)
-draw_text_transformed_color(x,y,string,xscale,yscale,angle,c1,c2,c3,c4,alpha)
-draw_text_ext_transformed_color(x,y,string,sep,w,xscale,yscale,angle,c1,c2,c3,c4,alpha)
+draw_set_font(font)							-Y, graphics::draw::set_font()
+draw_set_halign(halign)						-Y, graphics::draw::set_text_align()
+fa_left#									-Y, 0
+fa_center#									-Y, 0.5
+fa_right#									-Y, 1
+draw_set_valign(valign) 					-Y, same as draw_set_haling
+fa_top#										-Y, 0
+fa_middle#									-Y, 0.5
+fa_bottom#									-Y, 1
+draw_text(x,y,string)						-Y, graphics::draw::text()/text_rt()
+draw_text_ext(x,y,string,sep,w)				-N
+string_width(string)						-Y, GBText->surf->w
+string_height(string)						-Y, GBText->surf->w
+string_width_ext(string,sep,w)				-N
+string_height_ext(string,sep,w)				-N
+draw_text_transformed(x,y,string,xscale,yscale,angle)			-N
+draw_text_ext_transformed(x,y,string,sep,w,xscale,yscale,angle)	-N
+draw_text_color(x,y,string,c1,c2,c3,c4,alpha)					-N
+draw_text_ext_color(x,y,string,sep,w,c1,c2,c3,c4,alpha)			-N
+draw_text_transformed_color(x,y,string,xscale,yscale,angle,c1,c2,c3,c4,alpha)			-N
+draw_text_ext_transformed_color(x,y,string,sep,w,xscale,yscale,angle,c1,c2,c3,c4,alpha)	-N
 
 // section 5.6
 
-draw_point_color(x,y,col1)
-draw_line_color(x1,y1,x2,y2,col1,col2)
-draw_line_width_color(x1,y1,x2,y2,w,col1,col2)
-draw_rectangle_color(x1,y1,x2,y2,col1,col2,col3,col4,outline)
-draw_roundrect_color(x1,y1,x2,y2,col1,col2,outline)
-draw_triangle_color(x1,y1,x2,y2,x3,y3,col1,col2,col3,outline)
-draw_circle_color(x,y,r,col1,col2,outline)
-draw_ellipse_color(x1,y1,x2,y2,col1,col2,outline)
-pr_pointlist#
-pr_linelist#
-pr_linestrip#
-pr_trianglelist#
-pr_trianglestrip#
-pr_trianglefan#
-draw_primitive_begin(kind)
-draw_vertex(x,y)
-draw_vertex_color(x,y,col,alpha)
-draw_primitive_end()
-sprite_get_texture(spr,subimg)
-background_get_texture(back)
-texture_preload(texid)
-texture_set_priority(texid,prio)
-texture_get_width(texid)
-texture_get_height(texid)
-draw_primitive_begin_texture(kind,texid)
-draw_vertex_texture(x,y,xtex,ytex)
-draw_vertex_texture_color(x,y,xtex,ytex,col,alpha)
-texture_set_interpolation(linear)
-texture_set_blending(blend)
-texture_set_repeat(repeat)
-draw_set_blend_mode(mode)
-draw_set_blend_mode_ext(src,dest)
-bm_normal#
-bm_add#
-bm_max#
-bm_subtract#
-bm_zero#
-bm_one#
-bm_src_color#
-bm_inv_src_color#
-bm_src_alpha#
-bm_inv_src_alpha#
-bm_dest_alpha#
-bm_inv_dest_alpha#
-bm_dest_color#
-bm_inv_dest_color#
-bm_src_alpha_sat#
+draw_point_color(x,y,col1)											-N
+draw_line_color(x1,y1,x2,y2,col1,col2)								-N
+draw_line_width_color(x1,y1,x2,y2,w,col1,col2)						-N
+draw_rectangle_color(x1,y1,x2,y2,col1,col2,col3,col4,outline)		-Y, graphics::draw::rect_color()
+draw_roundrect_color(x1,y1,x2,y2,col1,col2,outline)					-N
+draw_triangle_color(x1,y1,x2,y2,x3,y3,col1,col2,col3,outline)		-N
+draw_circle_color(x,y,r,col1,col2,outline)							-N
+draw_ellipse_color(x1,y1,x2,y2,col1,col2,outline)					-N
+pr_pointlist#						-N
+pr_linelist#						-N
+pr_linestrip#						-N
+pr_trianglelist#					-N
+pr_trianglestrip#					-N
+pr_trianglefan#						-N
+draw_primitive_begin(kind)			-N
+draw_vertex(x,y)					-N
+draw_vertex_color(x,y,col,alpha)	-N
+draw_primitive_end()				-N
+sprite_get_texture(spr,subimg)		-Y, GBSprite->tex
+background_get_texture(back)		-N
+texture_preload(texid)				-N
+texture_set_priority(texid,prio)	-N
+texture_get_width(texid)			-N
+texture_get_height(texid)			-N
+draw_primitive_begin_texture(kind,texid)			-N
+draw_vertex_texture(x,y,xtex,ytex)					-N
+draw_vertex_texture_color(x,y,xtex,ytex,col,alpha)	-N
+texture_set_interpolation(linear)					-N
+texture_set_blending(blend)							-N
+texture_set_repeat(repeat)							-N
+draw_set_blend_mode(mode)							-Y, graphics::draw::blendmode()
+draw_set_blend_mode_ext(src,dest)					-N
+bm_normal#				-N
+bm_add#					-N
+bm_max#					-N
+bm_subtract#			-N
+bm_zero#				-N
+bm_one#					-N
+bm_src_color#			-N
+bm_inv_src_color#		-N
+bm_src_alpha#			-N
+bm_inv_src_alpha#		-N
+bm_dest_alpha#			-N
+bm_inv_dest_alpha#		-N
+bm_dest_color#			-N
+bm_inv_dest_color#		-N
+bm_src_alpha_sat#		-N
 
 // section 5.7_1
 
-surface_create(w,h)
-surface_free(id)
-surface_exists(id)
-surface_get_width(id)
-surface_get_height(id)
-surface_get_texture(id)
-surface_set_target(id)
-surface_reset_target()
-draw_surface(id,x,y)
-draw_surface_stretched(id,x,y,w,h)
-draw_surface_tiled(id,x,y)
-draw_surface_part(id,left,top,width,height,x,y)
-draw_surface_ext(id,x,y,xscale,yscale,rot,color,alpha)
-draw_surface_stretched_ext(id,x,y,w,h,color,alpha)
-draw_surface_tiled_ext(id,x,y,xscale,yscale,color,alpha)
-draw_surface_part_ext(id,left,top,width,height,x,y,xscale,yscale,color,alpha)
-draw_surface_general(id,left,top,width,height,x,y,xscale,yscale,rot,c1,c2,c3,c4,alpha)
-surface_getpixel(id,x,y)
-surface_save(id,fname) 
-surface_save_part(id,fname,x,y,w,h) 
-surface_copy(destination,x,y,source)
-surface_copy_part(destination,x,y,source,xs,ys,ws,hs)
+surface_create(w,h)				-Y, surface::add()
+surface_free(id)				-N
+surface_exists(id)				-N
+surface_get_width(id)			-Y, GBSurface->w
+surface_get_height(id)			-Y, GBSurface->h
+surface_get_texture(id)			-Y, GBSurface->surf
+surface_set_target(id)			-Y, surface::target_set()
+surface_reset_target()			-Y, surface::target_reset()
+draw_surface(id,x,y)			-Y, graphics::draw::surface()
+draw_surface_stretched(id,x,y,w,h)						-N
+draw_surface_tiled(id,x,y)								-N
+draw_surface_part(id,left,top,width,height,x,y)			-N
+draw_surface_ext(id,x,y,xscale,yscale,rot,color,alpha)	-N
+draw_surface_stretched_ext(id,x,y,w,h,color,alpha)		-N
+draw_surface_tiled_ext(id,x,y,xscale,yscale,color,alpha)-N
+draw_surface_part_ext(id,left,top,width,height,x,y,xscale,yscale,color,alpha)			-N
+draw_surface_general(id,left,top,width,height,x,y,xscale,yscale,rot,c1,c2,c3,c4,alpha)	-N
+surface_getpixel(id,x,y)							-N
+surface_save(id,fname) 								-N
+surface_save_part(id,fname,x,y,w,h) 				-N
+surface_copy(destination,x,y,source)				-Y, surface::clone()
+surface_copy_part(destination,x,y,source,xs,ys,ws,hs)-N
 
 // section 5.7
 
-tile_add(background,left,top,width,height,x,y,depth) 
-tile_delete(id) 
-tile_exists(id) 
-tile_get_x(id) 
-tile_get_y(id) 
-tile_get_left(id) 
-tile_get_top(id) 
-tile_get_width(id) 
-tile_get_height(id) 
-tile_get_depth(id) 
+tile_add(background,left,top,width,height,x,y,depth) 		-N
+tile_delete(id) 											-N
+tile_exists(id) 			-N
+tile_get_x(id) 				-N
+tile_get_y(id) 				-N
+tile_get_left(id) 			-N
+tile_get_top(id) 			-N
+tile_get_width(id) 			-N
+tile_get_height(id) 		-N
+tile_get_depth(id) 			-N
 tile_get_visible(id) 
 tile_get_xscale(id) 
 tile_get_yscale(id) 
@@ -822,78 +822,80 @@ tile_layer_find(depth,x,y)
 tile_layer_delete_at(depth,x,y) 
 tile_layer_depth(depth,newdepth) 
 
+EVERYTHING ABOUT TILES IS N!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1111111
+
 // section 5.8
 
-display_get_width()
-display_get_height()
-display_get_colordepth()
-display_get_frequency()
-display_set_size(w,h)
-display_set_colordepth(coldepth)
-display_set_frequency(frequency)
-display_set_all(w,h,frequency,coldepth)
-display_test_all(w,h,frequency,coldepth)
-display_reset(aa_level)
-display_mouse_get_x()
-display_mouse_get_y()
-display_mouse_set(x,y)
+display_get_width()							-Y, display::get_width(), or use 
+display_get_height()						-Y, display::get_height()		display::get_size()
+display_get_colordepth()					-N
+display_get_frequency()						-N
+display_set_size(w,h)						-N
+display_set_colordepth(coldepth)			-N
+display_set_frequency(frequency)			-N
+display_set_all(w,h,frequency,coldepth)		-N
+display_test_all(w,h,frequency,coldepth)	-N
+display_reset(aa_level)						-N
+display_mouse_get_x()						-Y, display::mouse_x
+display_mouse_get_y()						-Y, display::mouse_y
+display_mouse_set(x,y)						-N
 
 // section 5.9
 
-window_set_visible(visible)
-window_get_visible()
-window_set_fullscreen(full)
-window_get_fullscreen()
-window_set_showborder(show)
-window_get_showborder()
-window_set_showicons(show)
-window_get_showicons()
-window_set_stayontop(stay)
-window_get_stayontop()
-window_set_sizeable(sizeable)
-window_get_sizeable()
-window_set_caption(caption)
-window_get_caption()
-window_set_cursor(curs)
-cr_default#
-cr_none#
-cr_arrow#
-cr_cross#
-cr_beam#
-cr_size_nesw#
-cr_size_ns#
-cr_size_nwse#
-cr_size_we#
-cr_uparrow#
-cr_hourglass#
-cr_drag#
-cr_nodrop#
-cr_hsplit#
-cr_vsplit#
-cr_multidrag#
-cr_sqlwait#
-cr_no#
-cr_appstart#
-cr_help#
-cr_handpoint#
-cr_size_all#
-window_get_cursor()
-window_set_color(color)
-window_get_color()
-window_set_region_scale(scale,adaptwindow)
-window_get_region_scale()
-window_set_position(x,y)
-window_set_size(w,h)
-window_set_rectangle(x,y,w,h)
-window_center()
-window_default()
-window_get_x()
-window_get_y()
-window_get_width()
-window_get_height()
-window_mouse_get_x()
-window_mouse_get_y()
-window_mouse_set(x,y)
+window_set_visible(visible)					-N
+window_get_visible()						-N
+window_set_fullscreen(full)					-N
+window_get_fullscreen()						-N
+window_set_showborder(show)					-Y, window::show_borders()
+window_get_showborder()						-N
+window_set_showicons(show)					-N
+window_get_showicons()						-N
+window_set_stayontop(stay)					-Y, window::set_ontop()
+window_get_stayontop()						-Y, window::get_ontop()
+window_set_sizeable(sizeable)				-N
+window_get_sizeable()						-N
+window_set_caption(caption)					-Y, window::set_title()
+window_get_caption()						-N
+window_set_cursor(curs)						-N
+cr_default#				-N
+cr_none#				-N
+cr_arrow#				-N
+cr_cross#				-N
+cr_beam#				-N
+cr_size_nesw#			-N
+cr_size_ns#				-N
+cr_size_nwse#			-N
+cr_size_we#				-N
+cr_uparrow#				-N
+cr_hourglass#			-N
+cr_drag#				-N
+cr_nodrop#				-N
+cr_hsplit#				-N
+cr_vsplit#				-N
+cr_multidrag#			-N
+cr_sqlwait#				-N
+cr_no#					-N
+cr_appstart#			-N
+cr_help#				-N
+cr_handpoint#			-N
+cr_size_all#			-N
+window_get_cursor()				-N
+window_set_color(color)			-N
+window_get_color()				-N
+window_set_region_scale(scale,adaptwindow)	-N
+window_get_region_scale()					-N
+window_set_position(x,y)					-Y, window::set_pos()
+window_set_size(w,h)						-Y, window::set_size()
+window_set_rectangle(x,y,w,h)				-N
+window_center()								-N
+window_default()							-N
+window_get_x()								-Y, window::get_x(), or use
+window_get_y()								-Y, window::get_y()			window::get_pos()
+window_get_width()							-Y, window::get_width(), or use
+window_get_height()							-Y, window::get_height()		window::get_size()
+window_mouse_get_x()						-Y, mouse::x
+window_mouse_get_y()						-Y, mouse::y
+window_mouse_set(x,y)						-N
 
 // section 5.10
 
