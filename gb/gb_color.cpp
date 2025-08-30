@@ -24,4 +24,17 @@ namespace GameBreaker {
 		return {Uint8(math::lerp(col1.r,col2.r,amount)),Uint8(math::lerp(col1.g,col2.g,amount)),Uint8(math::lerp(col1.b,col2.b,amount)),Uint8(math::lerp(col1.a,col2.a,amount))};
 	}
 
+	SDL_Color color::merge_corrected(SDL_Color col1, SDL_Color col2, double amount) {
+		return {
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.r),math::sqr(col2.r),amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.g),math::sqr(col2.g),amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.b),math::sqr(col2.b),amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.a),math::sqr(col2.a),amount)))
+			};
+	}
+
+	real color::get_luminance(SDL_Color col) {
+		return (col.r*0.2126+col.g*0.7152+col.b*0.0722);
+	}
+
 }
