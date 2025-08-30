@@ -75,9 +75,9 @@ extern int gb_working_joystick;
 extern std::vector<SDL_GameController*> controllers;
 extern int joy_count;
 
-
 extern SoLoud::Soloud *__mus_handle;
 
+#ifndef GB_DONT_USE_SFX
 enum GBAudioType {
     GB_2D=0,
     GB_3D,
@@ -90,7 +90,6 @@ typedef struct _GB_AudioType_{
     SoLoud::Openmpt mod;
 } _GB_AudioType_;
 
-#ifndef GB_DONT_USE_SFX
 typedef struct GBAudio {
     _GB_AudioType_ chunk;
     double vol;
@@ -313,25 +312,25 @@ extern double master_vol,
 
 extern GBRoom *room_current;
 
-extern int init(int x, int y, gb_str label);
-extern void run();
-extern void update();
+extern int 	init 	(int x, int y, gb_str label);
+extern void run 	();
+extern void update 	();
 extern void shutdown();
 
 class font {
 public:
-    static GBFont* add(gb_str fname, int size);
-    static void style(GBFont *font, int bold, int italic);
-    static void style_ext(GBFont *font, int style); // use TTF_STYLE_* 
-    static void destroy(GBFont* font);
-    static void option(Uint32 style_flags);
+    static GBFont* 	add 		(gb_str fname, int size);
+    static void 	style 		(GBFont *font, int bold, int italic);
+    static void 	style_ext 	(GBFont *font, int style); // use TTF_STYLE_* 
+    static void 	destroy		(GBFont* font);
+    static void 	option		(Uint32 style_flags);
 };
 
 class object {
 public:
-    static GBObject* add(GBSprite* spr, GBSprite* mask);
-    static void add_event(GBObject *obj, int ev_type, void(*event)(GBObject *self));
-    static void destroy(GBObject* obj);
+    static GBObject* 	add 		(GBSprite* spr, GBSprite* mask);
+    static void 		add_event	(GBObject *obj, int ev_type, void(*event)(GBObject *self));
+    static void 		destroy		(GBObject* obj);
 };
 
 class io {public:
@@ -339,11 +338,11 @@ class io {public:
 };
 #ifndef GB_DONT_USE_KEYB
 class keyboard {public:
-    static int pressed(int key);
-    static int released(int key);
-    static int holding(int key);
-    static int ord(char *key);
-    static char *chr(int ch);
+    static int 		pressed		(int key);
+    static int 		released	(int key);
+    static int 		holding		(int key);
+    static int 		ord			(char *key);
+    static char*	chr			(int ch);
     //static int get_numlock();
 };
 #endif
@@ -351,11 +350,11 @@ class keyboard {public:
 #ifndef GB_DONT_USE_JOY
 class joy {
 public:
-    static int count();
-    static int working();
-    static int pressed(int joy, int button);
-    static int released(int joy, int button);
-    static int holding(int joy, int button);
+    static int count	();
+    static int working	();
+    static int pressed	(int joy, int button);
+    static int released	(int joy, int button);
+    static int holding	(int joy, int button);
     enum button {
         invalid = -1,
         cross,
@@ -386,52 +385,52 @@ public:
 
 class window {
 public:
-    static void 			set_size(int w, int h);
-    static void 			set_pos(int x, int y);
-    static int 				get_x();
-    static int 				get_y();
-    static int 				get_width();
-    static int				get_height();
-    static void 			set_icon(gb_str ico);
-    static SDL_Point	 	get_size();
-    static SDL_Point	 	get_pos();
-    static SDL_Renderer* 	get_renderer();
-    static void 			set_title(gb_str title);
-    static void 			set_priority(int num);
-    static int 				get_ontop();
-    static void 			set_ontop(int enable);
-    static void				show_borders(int enable);
-    static void				grab(int enable);
+    static void 			set_size 		(int w, int h);
+    static void 			set_pos 		(int x, int y);
+    static int 				get_x 			();
+    static int 				get_y 			();
+    static int 				get_width 		();
+    static int				get_height 		();
+    static void 			set_icon 		(gb_str ico);
+    static SDL_Point	 	get_size 		();
+    static SDL_Point	 	get_pos 		();
+    static SDL_Renderer* 	get_renderer	();
+    static void 			set_title 		(gb_str title);
+    static void 			set_priority	(int num);
+    static int 				get_ontop		();
+    static void 			set_ontop		(int enable);
+    static void				show_borders	(int enable);
+    static void				grab 			(int enable);
 };
 
 extern int display_current;
 class display {public:
-    static int get_width();
-    static int get_height();
-    static SDL_Point get_size();
-    static int mouse_x;
-    static int mouse_y;
+    static int 			get_width	();
+    static int 			get_height	();
+    static SDL_Point 	get_size	();
+    static int 			mouse_x;
+    static int 			mouse_y;
 };
 
 #ifndef GB_DONT_USE_SFX
 class audio {
 public:
-    static GBAudio*     add(gb_str fname, int type);
-    static void         set_pos(GBAudio* snd, double pos);
-    static void         play(GBAudio* snd);
-    static void         loop(GBAudio* snd, int loops);
-    static void         pause(GBAudio *snd);
-    static void         resume(GBAudio *snd);
-    static void         stop(GBAudio* snd);
-    static void         set_vol(GBAudio* snd, double vol);
-    static double		get_vol(GBAudio* snd);
-    static float        get_wave(GBAudio* snd, int pos);
-    static float        get_fft(GBAudio* snd, int pos);
-    static void         destroy(GBAudio* snd);
-    static void         get_tags(GBAudio *snd);
-    static double       get_pos(GBAudio *snd);
-    static double       get_len(GBAudio *snd);
-    static void         set_loops(GBAudio *snd, int loops);
+    static GBAudio*     add 		(gb_str fname, int type);
+    static void         set_pos 	(GBAudio* snd, double pos);
+    static void         play 		(GBAudio* snd);
+    static void         loop 		(GBAudio* snd, int loops);
+    static void         pause 		(GBAudio *snd);
+    static void         resume 		(GBAudio *snd);
+    static void         stop 		(GBAudio* snd);
+    static void         set_vol 	(GBAudio* snd, double vol);
+    static double		get_vol 	(GBAudio* snd);
+    static float        get_wave 	(GBAudio* snd, int pos);
+    static float        get_fft 	(GBAudio* snd, int pos);
+    static void         destroy 	(GBAudio* snd);
+    static void         get_tags 	(GBAudio *snd);
+    static double       get_pos 	(GBAudio *snd);
+    static double       get_len 	(GBAudio *snd);
+    static void         set_loops 	(GBAudio *snd, int loops);
 };
 #endif
 
@@ -439,8 +438,10 @@ class color {
 public:
     static const SDL_Color black, white, red, blue, green, lime,
     gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
-    static SDL_Color merge(SDL_Color col1, SDL_Color col2, double amount);
-    static SDL_Color mix(SDL_Color col1, SDL_Color col2);
+    static SDL_Color 	merge 			(SDL_Color col1, SDL_Color col2, double amount);
+    static SDL_Color 	mix 			(SDL_Color col1, SDL_Color col2);
+    static double 		get_luminance	(SDL_Color col);
+    static SDL_Color 	merge_corrected	(SDL_Color col1, SDL_Color col2, double amount);
 };
 
 typedef struct GBPOMItem {
@@ -457,7 +458,7 @@ class show {public:
     static int popover_menu(GBPOMItems items);
 };
 
-enum mb { //class mb {public:
+enum mb {//public:
     //static const int 
     none	= -1,
     left	= SDL_BUTTON_LEFT,
@@ -510,13 +511,13 @@ class vk {public:
 
 class mouse {
 public:
-    static int 	pressed(mb mouse_button);
-    static int 	released(mb mouse_button);
-    static int 	holding(mb mouse_button);
-    static int 	nothing(mb mouse_button);
-    static mb 	which();
-    static int 	wheel_up();
-    static int 	wheel_down();
+    static int 	pressed		(mb mouse_button);
+    static int 	released	(mb mouse_button);
+    static int 	holding		(mb mouse_button);
+    static int 	nothing		(mb mouse_button);
+    static mb 	which		();
+    static int 	wheel_up	();
+    static int 	wheel_down	();
     static int 	x, y;
 };
 
@@ -529,41 +530,41 @@ class graphics {
 public:
     class sprite {
     public:
-        static GBSprite* 	add(gb_str fname, int frames, int offx, int offy);
-        static GBSprite* 	add_ext(gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
-        static void 		replace(GBSprite *spr, gb_str fname, int frames, int offx, int offy);
-        static void 		replace_ext(GBSprite *spr, gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
+        static GBSprite* 	add 		(gb_str fname, int frames, int offx, int offy);
+        static GBSprite* 	add_ext 	(gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
+        static void 		replace 	(GBSprite *spr, gb_str fname, int frames, int offx, int offy);
+        static void 		replace_ext	(GBSprite *spr, gb_str fname, int frames, int offx, int offy, int grabx, int graby, int grabw, int grabh);
         static int 			get_offset_x(GBSprite* spr);
         static int 			get_offset_y(GBSprite* spr);
-        static void 		set_offset(GBSprite* spr, int x, int y);
-        static void 		destroy(GBSprite* spr);
+        static void 		set_offset	(GBSprite* spr, int x, int y);
+        static void 		destroy		(GBSprite* spr);
     };
     class draw {
     public:
-        static void 			rect(int x, int y, int w, int h, int outline); 																					// draws rectangle
-        static int 				rect_color(float x, float y, float w, float h, SDL_Color col1, SDL_Color col2, SDL_Color col3, SDL_Color col4, int outline);	// draws colored rectangle
-        static void 			triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3);			// draws colored triangle
-        static void 			circle(int x, int y, int r, int outline);																						// draws circle
-        static void 			line(float x1, float y1, float x2, float y2);																					// draws line
-        static void 			point(int x, int y);																											// draws point
-        static void 			alpha(float alpha);
-        static void 			color(Uint32 color);
-        static void 			color_rgb(Uint8 r,Uint8 g,Uint8 b);
-        static void 			color_sdl(SDL_Color color);
-        static void 			color_hsv(double h, double s, double v);
-        static SDL_Color	 	color_get();
-        static void 			blendmode(SDL_BlendMode mode);
-        static void 			sprite(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot);
-        static void 			sprite_part(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
-        static void 			sprite_stretched(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
-        static void 			sprite_ext(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot, SDL_Color col);
-        static gb_button_state 	button(int x, int y, int w, int h, GBSprite *spr, int types);
-        static void 			text(float x, float y, GBText* text);
-        static int	 			text_rt(float x, float y, gb_str text);
-        static GBText 		   *text_get_from_db(int num);
-        static void 			set_font(GBFont *fnt);
-        static void 			set_text_align(double halign, double valign);
-        static void 			surface(GBSurface *surf, int x, int y, float scale, float yscale, float rot, SDL_Color col);
+        static void 			rect 				(int x, int y, int w, int h, int outline); 																					// draws rectangle
+        static int 				rect_color			(float x, float y, float w, float h, SDL_Color col1, SDL_Color col2, SDL_Color col3, SDL_Color col4, int outline);	// draws colored rectangle
+        static void 			triangle			(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color col1, SDL_Color col2, SDL_Color col3);			// draws colored triangle
+        static void 			circle				(int x, int y, int r, int outline);																						// draws circle
+        static void 			line				(float x1, float y1, float x2, float y2);																					// draws line
+        static void 			point				(int x, int y);																											// draws point
+        static void 			alpha				(float alpha);
+        static void 			color 				(Uint32 color);
+        static void 			color_rgb 			(Uint8 r,Uint8 g,Uint8 b);
+        static void 			color_sdl 			(SDL_Color color);
+        static void 			color_hsv 			(double h, double s, double v);
+        static SDL_Color	 	color_get 			();
+        static void 			blendmode 			(SDL_BlendMode mode);
+        static void 			sprite 				(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot);
+        static void 			sprite_part 		(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
+        static void 			sprite_stretched 	(GBSprite* spr, int frame, int x, int y, int w, int h, float xscale, float yscale, float rot);
+        static void 			sprite_ext 			(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot, SDL_Color col);
+        static gb_button_state 	button 				(int x, int y, int w, int h, GBSprite *spr, int types);
+        static void 			text 				(float x, float y, GBText* text);
+        static int	 			text_rt 			(float x, float y, gb_str text);
+        static GBText 		   *text_get_from_db 	(int num);
+        static void 			set_font 			(GBFont *fnt);
+        static void 			set_text_align 		(double halign, double valign);
+        static void 			surface 			(GBSurface *surf, int x, int y, float scale, float yscale, float rot, SDL_Color col);
     };
     
 };
@@ -581,8 +582,8 @@ class list {
 public:
     static gb_str get_string(std::vector<__gblist> list, gb_str sep);
     class find {public:
-        static int pos(std::vector<__gblist> list, gb_str value);
-        static gb_str value(std::vector<__gblist>,int pos);
+        static int 		pos		(std::vector<__gblist> list, gb_str value);
+        static gb_str 	value	(std::vector<__gblist>,int pos);
     };
 };
 
@@ -611,32 +612,32 @@ public:
     static int exists(gb_str fname);
     class find {
     public:
-        static std::vector<__gblist> list(gb_str directory, gb_str filter, Uint32 mask);
-        static std::vector<__gblist> list_ext(gb_str directory, std::vector<std::string> filter, Uint32 mask);
+        static std::vector<__gblist> list 		(gb_str directory, gb_str filter, Uint32 mask);
+        static std::vector<__gblist> list_ext	(gb_str directory, std::vector<std::string> filter, Uint32 mask);
     };
     class text {public:
-        static int open(gb_str fname,int mode);
-        static void write(int file,gb_str str);
-        static gb_str read(int file);
-        static void ln(int file);
-        static int eof(int file);
-        static void close(int file);
+        static int 		open	(gb_str fname,int mode);
+        static void 	write 	(int file,gb_str str);
+        static gb_str 	read 	(int file);
+        static void 	ln		(int file);
+        static int 		eof		(int file);
+        static void 	close 	(int file);
     };
-    static gb_str 	path_parent(gb_str path);
-    static gb_str 	path(gb_str fname);
-    static gb_str	fname(gb_str fname);
-    static gb_str 	get_fname(std::vector<fname_list> filter, gb_str title);
-    static gb_str 	get_folder(gb_str title);
-    static void 	create_folder(gb_str path);
+    static gb_str 	path_parent		(gb_str path);
+    static gb_str 	path			(gb_str fname);
+    static gb_str	fname			(gb_str fname);
+    static gb_str 	get_fname		(std::vector<fname_list> filter, gb_str title);
+    static gb_str 	get_folder		(gb_str title);
+    static void 	create_folder	(gb_str path);
 };
 
 class ini {public:
-    static int      open(gb_str fname);
-    static int      read_int(int file, gb_str section, gb_str keyName, int defKey);
-    static gb_str   read_str(int file, gb_str section, gb_str keyName, gb_str defKey);
-    static void     write_int(int file, gb_str section, gb_str key, int num);
-    static void     write_str(int file, gb_str section, gb_str key, gb_str num);
-    static void     close(int file);
+    static int      open		(gb_str fname);
+    static int      read_int	(int file, gb_str section, gb_str keyName, int defKey);
+    static gb_str   read_str	(int file, gb_str section, gb_str keyName, gb_str defKey);
+    static void     write_int	(int file, gb_str section, gb_str key, int num);
+    static void     write_str	(int file, gb_str section, gb_str key, gb_str num);
+    static void     close		(int file);
 };
 
 class d3d {
@@ -647,21 +648,21 @@ class date{public:
 };
 
 class gstr {public:
-    static gb_str   replace(gb_str text,gb_str in, gb_str out);
-    static gb_str   replace_all(gb_str text,gb_str in, gb_str out);
-    static gb_str   cat(std::vector<void *>args);
-    static int      count(gb_str text, gb_str n);
-    static gb_str   shorten(gb_str fname);
-    static gb_str   lowercase(gb_str str);
-    static gb_str   uppercase(gb_str str); 
-    static gb_str	char_at(gb_str str, int pos);
-    static int		ord_at(gb_str str, int pos);
-    static int      length(gb_str str); // why not use strlen(str.c_str())? because no.
-    static int      pos(gb_str substr, gb_str str);
-    static gb_str   copy(gb_str str, int pos, int len);
-    static gb_str   del(gb_str str, int pos, int len);
-    static gb_str   insert(gb_str str, gb_str substr, int pos);
-    static gb_str   duplicate(gb_str str, int count);
+    static gb_str   replace 		(gb_str text,gb_str in, gb_str out);
+    static gb_str   replace_all		(gb_str text,gb_str in, gb_str out);
+    static gb_str   cat				(std::vector<void *>args);
+    static int      count			(gb_str text, gb_str n);
+    static gb_str   shorten			(gb_str fname);
+    static gb_str   lowercase		(gb_str str);
+    static gb_str   uppercase		(gb_str str); 
+    static gb_str	char_at			(gb_str str, int pos);
+    static int		ord_at			(gb_str str, int pos);
+    static int      length			(gb_str str); // why not use strlen(str.c_str()) or str.length()? because no.
+    static int      pos				(gb_str substr, gb_str str);
+    static gb_str   copy			(gb_str str, int pos, int len);
+    static gb_str   del				(gb_str str, int pos, int len);
+    static gb_str   insert			(gb_str str, gb_str substr, int pos);
+    static gb_str   duplicate		(gb_str str, int count);
 };
 
 enum ERROR {
@@ -675,40 +676,43 @@ typedef std::vector<real> GB_NumberBag;
 
 class math {
 public:
-	static double abs(double num);
-    static double lendir_x(double len, int dir);
-    static double lendir_y(double len, int dir);
-    static double degtorad(double deg);
-    static double clamp(double val, double minval, double maxval);
-    static double point_in_rect(double px, double py, double rx1, double ry1, double rx2, double ry2);
-    static double dsin(double x);
-    static double dcos(double x);
-    static int round(double x);
-    static int floor(double x);
-    static int ceil(double x);
-    static double pdistance(double x1, double y1, double x2, double y2);
-    static double pdirection(double x1, double y1, double x2, double y2);
-    static double power(double x, int n);
-    static double sqr(double x);
-    static double sqrt(double x);
-    static double min(GB_NumberBag bag);
-    static double max(GB_NumberBag bag);
-    static int sign(double num);
-    static double frac(double x);
+	static double 	abs				(double num);
+    static double 	lendir_x		(double len, int dir);
+    static double 	lendir_y		(double len, int dir);
+    static double 	degtorad		(double deg);
+    static double 	clamp			(double val, double minval, double maxval);
+    static double 	point_in_rect	(double px, double py, double rx1, double ry1, double rx2, double ry2);
+    static double 	dsin			(double x);
+    static double 	dcos			(double x);
+    static int 		round			(double x);
+    static int 		floor			(double x);
+    static int 		ceil			(double x);
+    static double 	pdistance		(double x1, double y1, double x2, double y2);
+    static double 	pdirection		(double x1, double y1, double x2, double y2);
+    static double 	power			(double x, int n);
+    static double 	sqr				(double x);
+    static double 	sqrt			(double x);
+    static double 	min 			(GB_NumberBag bag);
+    static double 	max 			(GB_NumberBag bag);
+    static int 		sign			(double num);
+    static double 	frac			(double x);
 
-    static double median(GB_NumberBag bag);
-    static double mean(GB_NumberBag bag);
-    static double lerp(double a, double b, double num);
+    static double 	median			(GB_NumberBag bag);
+    static double 	mean			(GB_NumberBag bag);
+    static double 	lerp			(double a, double b, double num);
 
-    static double random(double n);
-    static int irandom(int n);
-    static double random_range(double min, double max);
-    static int irandom_range(int min, int max);
-    static void random_set_seed(int seed);
-    static int irandom_fresh(int oldval, int minval, int maxval);
-    static int random_get_seed();
-    static void randomize();
-	static void *choose(GB_ChooseBag bag);
+    static double 	random 			(double n);
+    static int 		irandom 		(int n);
+    static double 	random_range	(double min, double max);
+    static int 		irandom_range	(int min, int max);
+    static void 	random_set_seed	(int seed);
+    static int 		irandom_fresh	(int oldval, int minval, int maxval);
+    static int 		random_get_seed	();
+    static void 	randomize		();
+	static void *	choose			(GB_ChooseBag bag);
+	static double 	gauss 			(double range);
+	static double	gauss_range		(double min, double max);
+	static double 	modwrap			(double val, double minval, double maxval);
 
     class motion {public:
         static void add(GBObject *obj, real dir, real speed);
