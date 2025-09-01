@@ -57,6 +57,7 @@ namespace GameBreaker {
         }
         return ret+fe;
     }
+    
     gb_str gstr::lowercase(gb_str str) {
         gb_str ret;
         int i=0;repeat(str.length()) {
@@ -123,5 +124,15 @@ namespace GameBreaker {
         }
         return mystr;
     }
+    
+    gb_str gstr::format(int num, int tot, int dec) {
+    	gb_str mynumstr=stringify(num);
+    	return gstr::duplicate("0",tot-mynumstr.length()-1)+mynumstr+((dec>0) ? "."+gstr::duplicate("0",dec) : "");
+    }
+
+   	gb_str gstr::pad(int num, int padding) {
+   		str nnnnum=stringify(num);
+   		return gstr::duplicate("-",num<0)+gstr::duplicate("0",padding-nnnnum.length())+gstr::format(math::abs(num),padding,0);
+   	}
     
 }
