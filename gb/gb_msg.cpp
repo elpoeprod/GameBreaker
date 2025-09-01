@@ -21,23 +21,18 @@ namespace GameBreaker {
         }
     }
 
-    int show::popover_menu(GBPOMItems items) {
+    int show::popover_menu(gb_str file) {
     	gtk_init(nullptr,nullptr);
 		int clicked=-1;
-		GtkWidget *button=gtk_button_new_with_label("none");
-		GtkWidget* popover = gtk_popover_new(button);
-	    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+		GtkBuilder *builder=gtk_builder_new();
+		gtk_builder_add_from_file(builder,file.c_str(),NULL);
+		
+		GtkWidget *mymenu=GTK_WIDGET(gtk_builder_get_object(builder,"popover"));
+		g_signal_connect(mymenu,"destroy",G_CALLBACK(gtk_main_quit),NULL);
+		gtk_builder_connect_signals(builder, NULL);
 
-	    for(long unsigned int _i=0;_i<items.size();_i++) {
-	    // Add items to the popover
-		    GtkWidget* item = gtk_button_new_with_label("Item 1");
-		    g_signal_connect(item, "clicked", G_CALLBACK(items[_i].func), NULL);
-		    gtk_box_pack_start(GTK_BOX(box), item, TRUE, TRUE, 0);
-	    }
-	    gtk_container_add(GTK_CONTAINER(popover), box);
-	    gtk_widget_show_all(popover);
-	    gtk_widget_show(popover);
-    	//gtk_main();
+		gtk_widget_show_all(mymenu);
+		gtk_main();
     	return clicked;
     }
 }
