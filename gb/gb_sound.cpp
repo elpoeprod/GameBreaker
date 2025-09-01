@@ -64,9 +64,9 @@ namespace GameBreaker {
     {
     	SAssert;
         snd->pos = pos;
-        __mus_handle->setPause(snd->handle,true);
-        __mus_handle->seek(snd->handle,pos);
-        __mus_handle->setPause(snd->handle,false);
+        //__mus_handle->setPause(snd->handle,true);
+        __mus_handle->seek(snd->handle,static_cast<float>(pos));
+        //__mus_handle->setPause(snd->handle,false);
         return;
     }
     
