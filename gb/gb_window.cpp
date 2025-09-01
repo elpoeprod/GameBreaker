@@ -97,5 +97,11 @@ namespace GameBreaker {
 		SDL_SetWindowGrab(gb_win->win,enable>0.5?SDL_TRUE:SDL_FALSE);
     	return;
     }
+    void window::minimize(int mini) {
+    	if(mini)
+    		SDL_MinimizeWindow(gb_win->win);
+    	else
+    		SDL_MaximizeWindow(gb_win->win);
+    }
 
 }
