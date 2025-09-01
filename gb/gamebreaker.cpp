@@ -240,8 +240,7 @@ void update()
     date::current.hour=ts.tm_hour;
     date::current.day=ts.tm_mday;
     date::current.weekday=__gb_weekdays[date::current.day%7];
-
-
+	
     SDL_GetGlobalMouseState(&display::mouse_x,&display::mouse_y);
 
     for(int i=0;i<GB_MAX_ROOM_CAMERAS;i++) {
