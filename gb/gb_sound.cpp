@@ -27,10 +27,10 @@ namespace GameBreaker {
         mus->y = 0;
         mus->pan = 0;
         mus->fname=fname;
-
         mus->loops=0;
+        
         if(type==GB_MUSIC) {
-        mus->chunk.stream.load(fname.c_str());
+			mus->chunk.stream.load(fname.c_str());
         	mus->handle=__mus_handle->play(mus->chunk.stream,1*master_vol,0,1);
         	mus->len=mus->chunk.stream.getLength();
         }
@@ -65,7 +65,7 @@ namespace GameBreaker {
     	SAssert;
         snd->pos = pos;
         //__mus_handle->setPause(snd->handle,true);
-        __mus_handle->seek(snd->handle,static_cast<float>(pos));
+        __mus_handle->seek(snd->handle,pos);//,static_cast<float>(pos));
         //__mus_handle->setPause(snd->handle,false);
         return;
     }
@@ -92,9 +92,13 @@ namespace GameBreaker {
     void audio::loop(GBAudio* snd, int loops) {
     	SAssert;
     	snd->loops=loops;
-        if(snd->type==GB_MUSIC) snd->chunk.stream.setLooping((loops>0||loops==-1));
-        else snd->chunk.nonstream.setLooping((loops>0||loops==-1));
-        snd->handle=__mus_handle->play(snd->chunk.stream);
+    	
+        if(snd->type==GB_MUSIC) 
+        	snd->chunk.stream.setLooping((loops>0||loops==-1));
+        else 
+        	snd->chunk.nonstream.setLooping((loops>0||loops==-1));
+
+        __mus_handle->setPause(snd->handle,false);
     }
     /**
     * pauses the sound
@@ -168,7 +172,7 @@ namespace GameBreaker {
     }
 
     float audio::get_wave(GBAudio *snd, int pos) {
-    	if(snd==nullptr) return 0.f;
+    	SAssertn;
     	if(snd->type==GB_MUSIC)
     		return __mus_handle->getWave()[pos];//*4;//*(256*((pos+2)/128));
     	else 
@@ -176,7 +180,7 @@ namespace GameBreaker {
     }
 
     float audio::get_fft(GBAudio *snd, int pos) {
-    	if(snd==nullptr) return 0.f;
+    	SAssertn;
     	if(pos==0) return __mus_handle->calcFFT()[pos]/4;
     	if(snd->type==GB_MUSIC)
     		return __mus_handle->calcFFT()[pos]*4;//*(256*((pos+2)/128));
