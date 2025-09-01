@@ -401,6 +401,7 @@ public:
     static void 			set_ontop		(int enable);
     static void				show_borders	(int enable);
     static void				grab 			(int enable);
+    static void				minimize		(int mini);
 };
 
 extern int display_current;
@@ -443,7 +444,7 @@ public:
     static double 		get_luminance	(SDL_Color col);
     static SDL_Color 	merge_corrected	(SDL_Color col1, SDL_Color col2, double amount);
 };
-
+/*
 typedef struct GBPOMItem {
 	gb_str title;
 	int id;
@@ -451,11 +452,12 @@ typedef struct GBPOMItem {
 } GBPOMItem;
 
 typedef std::vector<GBPOMItem> GBPOMItems;
+*/
 
 class show {public:
     static void message(gb_str title, gb_str msg);
     static void error(gb_str msg, int abort);
-    static int popover_menu(GBPOMItems items);
+    static int popover_menu(gb_str file);
 };
 
 enum mb {//public:
@@ -663,6 +665,8 @@ class gstr {public:
     static gb_str   del				(gb_str str, int pos, int len);
     static gb_str   insert			(gb_str str, gb_str substr, int pos);
     static gb_str   duplicate		(gb_str str, int count);
+	static gb_str	format			(int num, int tot, int dec);
+    static gb_str	pad 			(int num, int padding);
 };
 
 enum ERROR {
