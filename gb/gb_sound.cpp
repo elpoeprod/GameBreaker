@@ -30,14 +30,26 @@ namespace GameBreaker {
         mus->loops=0;
         
         if(type==GB_MUSIC) {
-			mus->chunk.stream.load(fname.c_str());
-        	mus->handle=__mus_handle->play(mus->chunk.stream,1*master_vol,0,1);
-        	mus->len=mus->chunk.stream.getLength();
+        	if(gstr::pos(gstr::file_ext(fname),"669, amf, ams, dbm, digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, mid, mo3, mod, mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow, xm")) {
+        		mus->chunk.mod.load(fname.c_str());
+		       	mus->handle=__mus_handle->play(mus->chunk.mod,1*master_vol,0,1);
+		       	mus->len=-1;//mus->chunk.mod.getLength();
+        	} else {
+				mus->chunk.stream.load(fname.c_str());
+	        	mus->handle=__mus_handle->play(mus->chunk.stream,1*master_vol,0,1);
+	        	mus->len=mus->chunk.stream.getLength();
+        	}
         }
         else {
-        	mus->chunk.nonstream.load(fname.c_str());
-        	mus->handle=__mus_handle->play(mus->chunk.nonstream,1*master_vol,0,1);
-        	mus->len=mus->chunk.nonstream.getLength();
+        	if(gstr::pos(gstr::file_ext(fname),"669, amf, ams, dbm, digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, mid, mo3, mod, mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow, xm")) {
+           		mus->chunk.mod.load(fname.c_str());
+   		       	mus->handle=__mus_handle->play(mus->chunk.mod,1*master_vol,0,1);
+   		       	mus->len=-1;//mus->chunk.mod.getLength();
+           	} else {
+		       	mus->chunk.nonstream.load(fname.c_str());
+		       	mus->handle=__mus_handle->play(mus->chunk.nonstream,1*master_vol,0,1);
+		       	mus->len=mus->chunk.nonstream.getLength();
+        	}
         }       
 		
         curmusic = mus;
@@ -53,20 +65,18 @@ namespace GameBreaker {
         snd->tag["year"]=	stringify(f.tag()->year());
         snd->tag["genre"]=	f.tag()->genre().to8Bit();
         snd->tag["track"]=	stringify(f.tag()->track());
-        
+        return;
     }
     
     /**
     * set sound pos
     **/
     
-    void audio::set_pos(GBAudio* snd, double pos)
+    void audio::set_pos(GBAudio* snd, float pos)
     {
     	SAssert;
         snd->pos = pos;
-        //__mus_handle->setPause(snd->handle,true);
-        __mus_handle->seek(snd->handle,pos);//,static_cast<float>(pos));
-        //__mus_handle->setPause(snd->handle,false);
+        __mus_handle->seek(snd->handle,pos);
         return;
     }
     
@@ -99,6 +109,7 @@ namespace GameBreaker {
         	snd->chunk.nonstream.setLooping((loops>0||loops==-1));
 
         __mus_handle->setPause(snd->handle,false);
+        return;
     }
     /**
     * pauses the sound
@@ -107,11 +118,13 @@ namespace GameBreaker {
     void audio::pause(GBAudio *snd) {
     	SAssert;
     	__mus_handle->setPause(snd->handle,true);
+    	return;
     }
     
     void audio::resume(GBAudio *snd) {
     	SAssert;
     	__mus_handle->setPause(snd->handle,false);
+    	return;
     }
     /**
     * stops the sound entirely
@@ -120,6 +133,7 @@ namespace GameBreaker {
     void audio::stop(GBAudio* snd) { 
     	SAssert;
     	__mus_handle->stop(snd->handle); 
+    	return;
     }
     /**
     * sets the volume of a sound
