@@ -22,7 +22,6 @@ double  view_xview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
 int     view_wview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0},
         view_hview[GB_MAX_ROOM_CAMERAS]={0,0,0,0,0,0,0,0};
 
-
 std::string __gb_weekdays[7]= {
     "Monday",
     "Tuesday",
@@ -38,6 +37,7 @@ SDL_Texture *__gb_empty_1x1__;
 /**********START*********************/
 namespace GameBreaker {
 
+int debug_mode=0;
 SDL_Color _realcol_={255,255,255,255};
 _curfont curfon={nullptr,0,0};
 int current_time=0;
@@ -94,26 +94,33 @@ SDL_Renderer *current_render;
 
 int init(int x, int y, std::string label)
 {
+    DMSG("gb::init START\nInitializing SDL2")
     SDL_Init(SDL_INIT_EVERYTHING);
+    DMSG("Initializing SDL2 TTF")
     TTF_Init();
+    DMSG("Initializing SDL2 IMG")
     IMG_Init(IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_AVIF | IMG_INIT_JXL | IMG_INIT_TIF);
+    DMSG("Initializing SoLoud")
     __mus_handle->init(
     	SoLoud::Soloud::ENABLE_VISUALIZATION|SoLoud::Soloud::CLIP_ROUNDOFF,
     	SoLoud::Soloud::AUTO,
     	SoLoud::Soloud::AUTO,
     	GB_DEFAULT_SAMPLESIZE
     );
-
+    DMSG("Creating main window gb_win")
     gb_win = new GBWindow;
     gb_win->cur_win=0;
+    DMSG("Creating SDL_Window")
     gb_win->win = SDL_CreateWindow(label.c_str(), x, y, 640,480, GB_INIT_WIN_FLAGS);
+    DMSG("Creating SDL_Renderer")
     gb_win->ren = SDL_CreateRenderer(gb_win->win, -1, GB_INIT_REN_FLAGS);
     gb_win->x = x;
     gb_win->y = y;
     gb_win->w = 640;
     gb_win->h = 480;
     gb_win->running = 1;
-
+    
+    DMSG("Creating 1x1 white texture for drawing rectangles")
 	__gb_empty_1x1__=SDL_CreateTexture(gb_win->ren,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,1,1);
 
 	SDL_SetRenderTarget(gb_win->ren,__gb_empty_1x1__);
@@ -124,19 +131,24 @@ int init(int x, int y, std::string label)
 		
 	current_render=gb_win->ren;
     
+    DMSG("Mouse position is 0,0")
     mouse::x = 0;
     mouse::y = 0;
+    DMSG("Mouse buttons initialized, 0,0,0,0")
     for (int i = 0; i < 3; i++) {
         mybut[i] = 0;
         mylastbut[i] = 0;
     }
-    for (int i = 0; i < joy::count(); i++) {
+    DMSG("Joystick buttons initialized")
+    for (int i = 0; i < 31; i++) {
         for (int ii = 0; ii < SDL_CONTROLLER_BUTTON_MAX; ii++) {
             myjoybut[i][ii] = 0;
             mylastjoybut[i][ii] = 0;
         }
     }
+    DMSG("Finding controllers")
     _gb_find_controllers();
+    DMSG("Creating date::current struct and gathering data")
     time_t tist=time(NULL);
     struct tm ts=*localtime(&tist);
     date::current.second=ts.tm_sec;
@@ -155,8 +167,9 @@ int init(int x, int y, std::string label)
     graphics::draw::color(0xFFFFFF);
     room_current=nullptr;
 
+    DMSG("Randomizing our random seed")
     std::srand(__gb_rand_seed);
-
+    DMSG("gb::init END")
     return 1;
 }
 
