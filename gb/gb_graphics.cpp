@@ -314,12 +314,27 @@ namespace GameBreaker {
         SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
     }
+    
+    void graphics::draw::text_transformed(float x, float y, GBText* text, float xscale, float yscale, float rot)
+	{
+	    GAssert;
+	    auto _real_=GBXyfy(x,y);
+	    SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
+	    SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w*xscale, (float)text->surf->h*yscale };
+	    SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
+	    SDL_FPoint cen={(float)_gm_halign*text->surf->w,(float)_gm_valign*text->surf->h};
+	    int myflip=SDL_FLIP_NONE;
+		if(xscale<0) myflip|=(int)SDL_FLIP_HORIZONTAL;
+		if(yscale<0) myflip|=(int)SDL_FLIP_VERTICAL;
+		SDL_RenderCopyExF(gb_win->ren, text->tex, &myrect, &extrect, rot, &cen, (SDL_RendererFlip)myflip);
+    }
 
     std::vector<GBText*> _gb_txt_;
     int __my_text_cursor=0;
 
     int __gb_find_text_in_db(gb_str text) {
         for(int i=0;i<(int)_gb_txt_.size();i++) {
+            __my_text_cursor=i;
             if(text==_gb_txt_[i]->txt) return i;
         }
         return -1;
@@ -328,25 +343,35 @@ namespace GameBreaker {
     int graphics::draw::text_rt(float x, float y, gb_str txt)
     {
         GAssert;
+        DMSG("graphics::draw::text_rt START\nCreating _real_ var which handles")
         auto _real_=GBXyfy(x,y);
+        DMSG("Hello, GBText *text!")
         GBText *text;
+        DMSG("Checking if the text from txt already exists in text database...")
+        DMSG(("(OUR TEXT IS \""+txt+"\")").c_str())
         int finder=__gb_find_text_in_db(txt);
         if(finder!=-1&&finder<1024) {
+            DMSG(("Does exist, our text is "+_gb_txt_[finder]->txt).c_str())
             text=_gb_txt_[finder];
         }
         else if(finder<0) {
+            DMSG("Does not exist, creating new one...")
             _gb_txt_.push_back(new GBText(txt));
             __my_text_cursor=_gb_txt_.size()-1;
             text=_gb_txt_[__my_text_cursor];
         } else if(finder>1023) {
+            DMSG("Database overflow, overwriting...")
         	__my_text_cursor=0;
         	_gb_txt_.erase(_gb_txt_.cbegin()+__my_text_cursor);
         	_gb_txt_[__my_text_cursor]=new GBText(txt);
         }
+        DMSG("Drawing...")
+        if(text->surf==nullptr||text->surf->w<=0||text->surf->h<=0) return __my_text_cursor;
         SDL_Rect myrect = { 0, 0, text->surf->w, text->surf->h };
         SDL_FRect extrect = { _real_.x - (float)_gm_halign * text->surf->w, _real_.y - (float)_gm_valign * text->surf->h, (float)text->surf->w, (float)text->surf->h };
         SDL_SetTextureColorMod(text->tex,_realcol_.r,_realcol_.g,_realcol_.b);
         SDL_RenderCopyF(gb_win->ren, text->tex, &myrect, &extrect);
+        DMSG("graphics::draw::text_rt END")
         return __my_text_cursor;
     }
 

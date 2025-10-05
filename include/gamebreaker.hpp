@@ -42,6 +42,7 @@
 #define repeat(a) if(a>0) for(int __rep_i=0;__rep_i<(int)a;__rep_i++)
 
 #define GB_WINPOS_CENTER SDL_WINDOWPOS_CENTERED
+#define DMSG(a) if(GameBreaker::debug_mode==1) puts(a);
 
 extern void _gb_find_controllers();
 
@@ -64,6 +65,8 @@ typedef std::string gb_str;
 typedef double real;
 
 namespace GameBreaker {
+
+extern int debug_mode;
 
 extern int current_time;
 extern SDL_Color _realcol_;
@@ -127,17 +130,15 @@ typedef struct GBObject {
         int inst_id;
         int alarm[GB_MAX_OBJ_ALARMS];
     
-    void (*event_create)					(GBObject *self);// __attribute__((weak));
-    void (*event_step_begin)				(GBObject *self);// __attribute__((weak));
-    void (*event_step)						(GBObject *self);// __attribute__((weak));
-    void (*event_step_end)					(GBObject *self);// __attribute__((weak));
-    void (*event_destroy)					(GBObject *self);// __attribute__((weak));
-    void (*event_draw)						(GBObject *self);// __attribute__((weak));
+    void (*event_create)					(GBObject *self);
+    void (*event_step_begin)				(GBObject *self);
+    void (*event_step)						(GBObject *self);
+    void (*event_step_end)					(GBObject *self);
+    void (*event_destroy)					(GBObject *self);
+    void (*event_draw)						(GBObject *self);
     int (*event_alarm[GB_MAX_OBJ_ALARMS])	(GBObject *self);
 
 	int initialized;
-    private:
-        int _in_path;
 } GBObject;
 
 typedef struct GBFont {
@@ -417,7 +418,7 @@ class display {public:
 class audio {
 public:
     static GBAudio*     add 		(gb_str fname, int type);
-    static void         set_pos 	(GBAudio* snd, double pos);
+    static void         set_pos 	(GBAudio* snd, float pos);
     static void         play 		(GBAudio* snd);
     static void         loop 		(GBAudio* snd, int loops);
     static void         pause 		(GBAudio *snd);
@@ -562,6 +563,7 @@ public:
         static void 			sprite_ext 			(GBSprite* spr, int frame, int x, int y, float xscale, float yscale, float rot, SDL_Color col);
         static gb_button_state 	button 				(int x, int y, int w, int h, GBSprite *spr, int types);
         static void 			text 				(float x, float y, GBText* text);
+        static void 			text_transformed	(float x, float y, GBText* text, float xscale, float yscale, float rot);
         static int	 			text_rt 			(float x, float y, gb_str text);
         static GBText 		   *text_get_from_db 	(int num);
         static void 			set_font 			(GBFont *fnt);
@@ -667,6 +669,7 @@ class gstr {public:
     static gb_str   duplicate		(gb_str str, int count);
 	static gb_str	format			(int num, int tot, int dec);
     static gb_str	pad 			(int num, int padding);
+    static gb_str	file_ext		(gb_str fname);
 };
 
 enum ERROR {
