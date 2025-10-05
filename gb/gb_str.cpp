@@ -134,5 +134,10 @@ namespace GameBreaker {
    		str nnnnum=stringify(num);
    		return gstr::duplicate("-",num<0)+gstr::duplicate("0",padding-nnnnum.length())+gstr::format(math::abs(num),padding,0);
    	}
+   	
+   	gb_str gstr::file_ext(gb_str fname) {
+   		auto ppos=fname.find_last_of(".");
+   		return gstr::copy(fname,ppos,fname.length()-ppos);
+   	}
     
 }
