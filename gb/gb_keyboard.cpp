@@ -1,3 +1,8 @@
+/*
+ * Keyboard handling
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
@@ -21,7 +26,9 @@ namespace GameBreaker {
     };
     
     char *keyboard::chr(int ch) {
-        return (char *)(ch+"\0");
+		char mych[2]={(char)ch,0};
+		char *mymy=mych;
+        return mymy;
     } //i think this is bad
 
 }
