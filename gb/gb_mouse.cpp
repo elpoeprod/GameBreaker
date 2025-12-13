@@ -1,8 +1,9 @@
-#include "../include/gamebreaker.hpp"
-
 /***************
  * GAMEBREAKER::MOUSE
+ * 2025 elpoep
 */
+
+#include "../include/gamebreaker.hpp"
 
 int chmouse(int id, int ch1, int ch2) {
     return (GameBreaker::mybut[id]==ch1)&&(GameBreaker::mylastbut[id]==ch2);

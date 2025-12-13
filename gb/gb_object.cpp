@@ -1,3 +1,8 @@
+/*
+ * Object manipulation etc
+ * @ elpoep 2025
+*/
+
 #include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
