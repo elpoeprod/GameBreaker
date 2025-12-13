@@ -1,9 +1,10 @@
+/*
+ * GAMEBREAKER::GRAPHICS
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
 #include <SDL2/SDL_render.h>
-
-/*
-* GAMEBREAKER::GRAPHICS
-*/
 
 #define GAssert //if(room_current->view_enabled[room_current->view_current]==0) return;
 

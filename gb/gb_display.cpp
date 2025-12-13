@@ -1,3 +1,8 @@
+/*
+ * Display (display::) functions.
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
 #include <SDL2/SDL_video.h>
 

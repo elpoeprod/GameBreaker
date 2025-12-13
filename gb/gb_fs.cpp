@@ -1,3 +1,8 @@
+/*
+ * Filesystem functions
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
 #include "../include/nfd/nfd.hpp"
 #include <filesystem>

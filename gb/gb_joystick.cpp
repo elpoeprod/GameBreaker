@@ -1,7 +1,9 @@
+/*
+ * Joystick(s) handling.
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
-
-
-
 
 void _gb_find_controllers()
 {
