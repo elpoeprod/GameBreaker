@@ -7,6 +7,9 @@
  *
 */
 
+gb_str _my_mod_files=
+		".669.amf.ams.dbm.digi.dmf.dsm.far.gdm.ice.imf.it.itp.j2b.m15.mdl.med.mid.mo3.mod.mptm.mt2.mtm.okt.plm.psm.ptm.s3m.stm.ult.umx.wow.xm";
+
 #define SAssert if(snd==nullptr) return;
 #define SAssertn if(snd==nullptr) return (int)NULL;
 
@@ -28,31 +31,28 @@ namespace GameBreaker {
         mus->pan = 0;
         mus->fname=fname;
         mus->loops=0;
-        
-        if(type==GB_MUSIC) {
-        	if(gstr::pos(gstr::file_ext(fname),"669, amf, ams, dbm, digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, mid, mo3, mod, mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow, xm")) {
-        		mus->chunk.mod.load(fname.c_str());
-		       	mus->handle=__mus_handle->play(mus->chunk.mod,1*master_vol,0,1);
-		       	mus->len=-1;//mus->chunk.mod.getLength();
-        	} else {
+
+		switch(type) {
+			case GB_MUSIC: {
 				mus->chunk.stream.load(fname.c_str());
 	        	mus->handle=__mus_handle->play(mus->chunk.stream,1*master_vol,0,1);
 	        	mus->len=mus->chunk.stream.getLength();
-        	}
-        }
-        else {
-        	if(gstr::pos(gstr::file_ext(fname),"669, amf, ams, dbm, digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, mid, mo3, mod, mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow, xm")) {
-           		mus->chunk.mod.load(fname.c_str());
-   		       	mus->handle=__mus_handle->play(mus->chunk.mod,1*master_vol,0,1);
-   		       	mus->len=-1;//mus->chunk.mod.getLength();
-           	} else {
-		       	mus->chunk.nonstream.load(fname.c_str());
-		       	mus->handle=__mus_handle->play(mus->chunk.nonstream,1*master_vol,0,1);
-		       	mus->len=mus->chunk.nonstream.getLength();
-        	}
-        }       
+       	        curmusic = mus;
+			} break;
+			case GB_2D:
+				case GB_3D: {
+					mus->chunk.nonstream.load(fname.c_str());
+			       	mus->handle=__mus_handle->play(mus->chunk.nonstream,1*master_vol,0,1);
+			       	mus->len=mus->chunk.nonstream.getLength();
+				} break;
+
+			case GB_MOD: {
+				mus->chunk.mod.load(fname.c_str());
+		       	mus->handle=__mus_handle->play(mus->chunk.mod,1*master_vol,0,1);
+		       	mus->len=-1;//mus->chunk.mod.getLength();
+			} break;
+		}
 		
-        curmusic = mus;
         return mus;
     }
     
@@ -76,7 +76,10 @@ namespace GameBreaker {
     {
     	SAssert;
         snd->pos = pos;
-        __mus_handle->seek(snd->handle,pos);
+		//show::error(__mus_handle->getErrorString(
+			__mus_handle->seek(snd->handle,pos);
+		//),1);
+
         return;
     }
     
@@ -187,18 +190,12 @@ namespace GameBreaker {
 
     float audio::get_wave(GBAudio *snd, int pos) {
     	SAssertn;
-    	if(snd->type==GB_MUSIC)
-    		return __mus_handle->getWave()[pos];//*4;//*(256*((pos+2)/128));
-    	else 
-    		return __mus_handle->getWave()[pos];//*4;//*(256*((pos+2)/128));
+		return __mus_handle->getWave()[pos];//*4;//*(256*((pos+2)/128));
     }
 
     float audio::get_fft(GBAudio *snd, int pos) {
     	SAssertn;
     	if(pos==0) return __mus_handle->calcFFT()[pos]/4;
-    	if(snd->type==GB_MUSIC)
-    		return __mus_handle->calcFFT()[pos]*4;//*(256*((pos+2)/128));
-    	else
-    		return __mus_handle->calcFFT()[pos]*4;//*(256*((pos+2)/128));
+		return __mus_handle->calcFFT()[pos]*4;//*(256*((pos+2)/128));
     }
 }
