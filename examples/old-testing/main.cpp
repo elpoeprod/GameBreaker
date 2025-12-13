@@ -4,17 +4,17 @@
 namespace gb = GameBreaker;
 
 GBObject *obj,*obj2,*obj3;
-GBText *text;
+GBText *mytext;
 GBRoom *myroom,*room2;
 
-void obj_Draw() {
+void obj_Draw(GBObject *self) {
 	draw::color(0xFFFFFF);
     draw::sprite(obj->spr, 0, obj->x+math::lendir_x(60,gb::current_time), obj->y, 1 + 4 * mouse::holding(mb::left), 2, 0);
     draw::color(0x000000);
     draw::line(5, 5, 88, 99);
     draw::triangle(30,400,30,470,140,445,col::lime,col::green,col::white);
     draw::rect_color(200,200,120,80,col::black,col::black,col::green,col::blue,0);
-    draw::text(50,60,text);
+    draw::text(50,60,mytext);
     if(mouse::released(mb::left)&&mouse::x>500&&mouse::y>400) show::message("Test","H...");
    	if(keyboard::released('T')) {
    		show::message("Test","Lorem ipsum dolor sit amet");
@@ -22,12 +22,12 @@ void obj_Draw() {
    	}
 }
 
-void obj2_draw() {
+void obj2_draw(GBObject *self) {
 	draw::color_rgb(192,216,192);
 	draw::rect(70,70,70+150+math::lendir_x(150,gb::current_time*0.95),70+150+math::lendir_y(150,gb::current_time),0);
 }
 
-void obj3_draw() {
+void obj3_draw(GBObject *self) {
 	draw::color_rgb(14,88,186);
 	draw::rect(70,70,70+150+math::lendir_x(75,gb::current_time*0.9),70+150+math::lendir_y(75,gb::current_time*0.95),0);
 	if(keyboard::released('G')) {
@@ -40,7 +40,7 @@ void obj3_draw() {
 
 int main()
 {
-    gb::init(640, 480, 640, 480, "test");
+    gb::init(640, 480,"test");
     var spr = sprite::add("elpaudio.png", 1, 0, 0);
     var sndMusic=audio::add("A.ogg",gb::GB_MUSIC);
     obj=object::add(spr,nullptr);
@@ -75,7 +75,7 @@ int main()
     ds_list temp=file::find::list_ext(".",tempfilter,fa::fullpath);
     show::message("test",gb::list::get_string(temp,"\n"));
 	draw::color_sdl(col::lime);
-    text=new GBText("Hello world");
+    mytext=new GBText("Hello world");
     gb::run();
     gb::shutdown();
 }
