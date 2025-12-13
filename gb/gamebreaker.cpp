@@ -1,7 +1,8 @@
 /*
-    This file is meant to handle rendering stuff on the screen(s),
-    Find controllers, handle joystick, mouse and keyboard input,
-    And initialize/end system.
+ * This file is meant to handle rendering stuff on the screen(s),
+ * Find controllers, handle joystick, mouse and keyboard input,
+ * And initialize/end system.
+ * 2025 elpoep
 */
 
 #include "../include/gamebreaker.hpp"
@@ -55,7 +56,7 @@ int display_current=0;
 int display::mouse_x=0;
 int display::mouse_y=0;
 
-gb_str const gb_version="0.0.17";
+gb_str const gb_version="0.0.18";
 
 GBWindow* gb_win;
 SoLoud::Soloud *__mus_handle=new SoLoud::Soloud;
@@ -160,7 +161,7 @@ int init(int x, int y, std::string label)
     date::current.year=ts.tm_year;
     date::current.century=math::floor(ts.tm_year/365.25);
     date::current.planet=3; //0 - sun
-    date::current.millenium=math::floor((date::current.year/1000)+1);
+    date::current.millenium=math::floor((date::current.year/1000.f)+1);
     
     //_fntDefault__=font::add("default.ttf",12);
     //graphics::draw::set_font(_fntDefault__);
@@ -269,8 +270,8 @@ void update()
 
 	if(room_current->background_visible) {
 		if(room_current->background_image!=nullptr) {
-			graphics::draw::sprite_ext(room_current->background_image,0,0,0,room_current->width/room_current->background_image->w,
-			room_current->height/room_current->background_image->h,0.f,color::white);
+			graphics::draw::sprite_ext(room_current->background_image,0,0,0,(float)room_current->width/room_current->background_image->w,
+			(float)room_current->height/room_current->background_image->h,0.f,color::white);
 		} else {
 			auto _col=graphics::draw::color_get();
 			graphics::draw::color_sdl(room_current->background_color);
@@ -363,13 +364,22 @@ void update()
                     }
                     printf("\n");
                     */
+
+                    //struct
+                    //{
+                    //    bool operator()(GBObject* a, GBObject* b) const { return a->depth > b->depth; }
+                    //}
+                    //gbObjectCmp;
+                     
+                    //std::sort(gb_objects.begin(), gb_objects.end(), gbObjectCmp);
+                    
                     for(long unsigned int i=0;i<si;i++) {
-                    	for(long unsigned ii=0;ii<si;ii++) {
+                   		for(long unsigned ii=0;ii<si;ii++) {
 	                        if(gb_objects[i]->depth==myvec[ii]&&(gb_objects[i]->id==room_current->objects[_iobj].obj_id)==1) {
 		                        if(__drawn[i]==0) {
 		                        	__drawn[i]=1;
 		                            if(gb_objects[i]->event_draw!=nullptr)
-		                                gb_objects[i]->event_draw(gb_objects[__i]);
+		                                gb_objects[i]->event_draw(gb_objects[i]);
 		                        }
 	                        }
                         }
@@ -413,8 +423,8 @@ void screen::draw(double fps)
     SDL_RenderSetScale(gb_win->ren,
         /*(float)gb_win->w/room_current->view[room_current->view_current].w,
         (float)gb_win->h/room_current->view[room_current->view_current].h*/
-        room_current->port[camdraw].w/room_current->view[camdraw].w,
-        room_current->port[camdraw].h/room_current->view[camdraw].h
+        (float)room_current->port[camdraw].w/room_current->view[camdraw].w,
+        (float)room_current->port[camdraw].h/room_current->view[camdraw].h
     );
     //SDL_Rect rect={0,0,room_current->port[room_current->view_current].w,room_current->port[room_current->view_current].h};
     //SDL_RenderSetViewport(gb_win->ren,&rect);
