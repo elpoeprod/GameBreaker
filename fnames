@@ -22,13 +22,13 @@ sign(x)                             - Y, math::sign()
 frac(x)                             - Y, math::frac()
 sqrt(x)                             - Y, math::sqrt()
 sqr(x)                              - Y, math::sqr()
-exp(x)                              - N
-ln(x)                               - N
-log2(x)                             - N
-log10(x)                            - N
+exp(x)                              - Y, math::exp()
+ln(x)                               - Y, math::ln()
+log2(x)                             - Y, math::log2()
+log10(x)                            - Y, math::log10()
 sin(x)                              - Y, math::sin()
 cos(x)                              - Y, math::cos()
-tan(x)                              - N
+tan(x)                              - Y, math::tan() and math::cotan()
 arcsin(x)                           - N
 arccos(x)                           - N
 arctan(x)                           - N
