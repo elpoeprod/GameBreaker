@@ -16,8 +16,12 @@ namespace GameBreaker {
         repeat(7) {
             rm->view_enabled[i]=0;
             rm->view[i]={0,0,width,height,0};
+			rm->port[i]={0,0,width,height,0};
             i++;
         }
+        rm->target_id=-1;
+		rm->target_setup={0,0,0,0};
+        rm->view_enabled[0]=1;
         gb_rooms.push_back(rm);
         rm->id=gb_rooms.size()-1;
         return rm;
