@@ -77,7 +77,7 @@ namespace GameBreaker {
     }
     
 	gb_str gstr::char_at(gb_str str, int pos) {
-		return ""+str.at(pos);
+		return ""+str.at(pos);	//dangerous
 	}
 
 	int gstr::ord_at(gb_str str, int pos) {
@@ -89,8 +89,8 @@ namespace GameBreaker {
     }
 
     int gstr::pos(gb_str substr, gb_str str) {
-        static int pos;
-        pos+=str.find(substr,pos);
+        static int pos=0;
+        pos=str.find(substr,pos);
         return pos;
     }
 
