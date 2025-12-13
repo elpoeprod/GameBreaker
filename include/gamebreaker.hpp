@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <iostream>
+//#include <iostream>
 #include <fstream>
 
 //#ifndef _GB_HPP_
@@ -39,10 +39,10 @@
 
 #endif
 
-#define repeat(a) if(a>0) for(int __rep_i=0;__rep_i<(int)a;__rep_i++)
+#define repeat(a) if (a > 0) for (int __rep_i = 0; __rep_i < (int)a; __rep_i++)
 
 #define GB_WINPOS_CENTER SDL_WINDOWPOS_CENTERED
-#define DMSG(a) if(GameBreaker::debug_mode==1) puts(a);
+#define DMSG(a) if(GameBreaker::debug_mode) puts(a);
 
 extern void _gb_find_controllers();
 
@@ -82,53 +82,53 @@ extern SoLoud::Soloud *__mus_handle;
 
 #ifndef GB_DONT_USE_SFX
 enum GBAudioType {
-    GB_2D=0,
+    GB_2D = 0,
     GB_3D,
-    GB_MUSIC
+    GB_MUSIC,
+    GB_MOD
 };
 
-typedef struct _GB_AudioType_{
+struct _GB_AudioType_ {
     SoLoud::Wav nonstream;
     SoLoud::WavStream stream;
     SoLoud::Openmpt mod;
-} _GB_AudioType_;
+};
 
-typedef struct GBAudio {
+class GBAudio { public:
     _GB_AudioType_ chunk;
     double vol;
     double pos;
     int type;
-    double x,y,z;
+    double x, y, z;
     double pan;
     int handle;
     double len;
     int loops;
     std::string fname;
-    std::map<gb_str,gb_str> tag;
-} GBAudio;
+    std::map<gb_str, gb_str> tag;
+};
 #endif
 
-typedef struct GBSprite {
+class GBSprite { public:
     int offx, offy;
     int w, h;
     int frames;
     SDL_Texture* tex;
-    int _selx,_sely,_selw,_selh;
-} GBSprite;
+    int _selx, _sely, _selw, _selh;
+};
 
-typedef struct GBObject {
-    public:
-        double x, y;
-        double xprevious, yprevious;
-        double direction, gravity, gravity_direction,friction;
-        double spd,hspd,vspd;
-        GBSprite *spr, *mask;
-        int depth;
-        int id;
-        double image_index;
-        double image_speed;
-        int inst_id;
-        int alarm[GB_MAX_OBJ_ALARMS];
+class GBObject {public:
+	double x, y;
+	double xprevious, yprevious;
+	double direction, gravity, gravity_direction, friction;
+	double spd, hspd, vspd;
+	GBSprite *spr, *mask;
+	int depth;
+	int id;
+	double image_index;
+	double image_speed;
+	int inst_id;
+	int alarm[GB_MAX_OBJ_ALARMS];
     
     void (*event_create)					(GBObject *self);
     void (*event_step_begin)				(GBObject *self);
@@ -139,15 +139,15 @@ typedef struct GBObject {
     int (*event_alarm[GB_MAX_OBJ_ALARMS])	(GBObject *self);
 
 	int initialized;
-} GBObject;
+};
 
-typedef struct GBFont {
+class GBFont {public:
     int size;
     int bold, italic;
     TTF_Font* font;
-} GBFont;
+};
 
-typedef struct GBWin {
+class GBWin {public:
     gb_str label;
     int x, y, w, h;
     //std::vector<SDL_Window*> win;
@@ -157,21 +157,21 @@ typedef struct GBWin {
     int cur_win;
     SDL_Event ev;
     int running;
-} GBWindow;
+};
 
-typedef struct GBSurface {
+class GBSurface {public:
 	int w,h;
 	SDL_Texture *surf; //very strange, but it's the only way...
-} GBSurface;
+};
 
-extern std::vector<GBSurface *>gb_surfs;
+extern std::vector<GBSurface *> gb_surfs;
 
-typedef struct GBTile {
+class GBTile {public:
 	GBSprite *spr;
-	int w,h;
-	int x,y;
+	int w, h;
+	int x, y;
 	int depth;
-} GBTile;
+};
 
 
 struct rmtile {
@@ -184,26 +184,26 @@ struct rmobj {
     int obj_id;
     int instance_id;
     GBObject *object;
-    double x,y;
+    double x, y;
     void (*event_create)();
 } ;
 
 typedef struct GB_CamSetup {
-    double x,y;
-    int w,h;
+    double x, y;
+    int w, h;
     double angle;
 } GB_CamSetup;
 
 typedef struct GB_CamTarget {
-    int hspeed,vspeed;
-    int borderw,borderh;
+    int hspeed, vspeed;
+    int borderw, borderh;
 } GB_CamTarget;
 
-typedef struct GBRoom {
-    std::vector<rmobj>objects;
-    std::vector<rmtile>tiles;
+class GBRoom {public:
+    std::vector<rmobj> objects;
+    std::vector<rmtile> tiles;
     int id;
-    int width,height;
+    int width, height;
     int background_visible;
     int speed;
     SDL_Color background_color;
@@ -215,12 +215,13 @@ typedef struct GBRoom {
     GB_CamSetup view[GB_MAX_ROOM_CAMERAS];
     GB_CamSetup port[GB_MAX_ROOM_CAMERAS];	// GameBreaker ignores `angle` variable in portview when rendering, so angle works
                             				// only in camview.
-} GBRoom; 
+}; 
 
 extern std::vector<GBRoom *> gb_rooms;
 
+// todo path
 struct _GBPath {
-    float x,y;
+    float x, y;
 };
 
 struct GBPath {
@@ -243,9 +244,14 @@ struct _gm_file {
     gb_str name;
 };
 
-extern GBWindow* gb_win;
+extern GBWin* gb_win;
 
-typedef struct _curfont{GBFont *f; int bold; int italic;} _curfont;
+typedef struct _curfont {
+	GBFont *f; 
+	int bold; 
+	int italic;
+} _curfont;
+
 extern _curfont curfon;
 extern GBFont *_fntDefault__;
 
@@ -266,15 +272,15 @@ extern int mywheel;
 
 extern Uint32 fps_current;
 
-extern std::map<std::string,int> mykey;
-extern std::map<std::string,int> mylastkey;
+extern std::map<std::string, int> mykey;
+extern std::map<std::string, int> mylastkey;
 
 struct GBText {
 public:
     GBText(const std::string& newText)
     {
         *this = newText;
-        this->txt=newText;
+        this->txt = newText;
     }
 
     ~GBText()
@@ -301,10 +307,10 @@ public:
         return *this;
     }
 
-    SDL_Color m_col {(SDL_Color){255,255,255,255}};
+    SDL_Color m_col {(SDL_Color){0xff, 0xff, 0xff, 0xff}};
     std::string txt {};
-    SDL_Surface* surf { nullptr };
-    SDL_Texture* tex { nullptr };
+    SDL_Surface* surf {nullptr};
+    SDL_Texture* tex {nullptr};
     GBFont *m_font{GameBreaker::curfon.f};
 };
 
@@ -323,21 +329,21 @@ public:
     static GBFont* 	add 		(gb_str fname, int size);
     static void 	style 		(GBFont *font, int bold, int italic);
     static void 	style_ext 	(GBFont *font, int style); // use TTF_STYLE_* 
-    static void 	destroy		(GBFont* font);
+    static void 	destroy		(GBFont *font);
     static void 	option		(Uint32 style_flags);
 };
 
 class object {
 public:
-    static GBObject* 	add 		(GBSprite* spr, GBSprite* mask);
+    static GBObject* 	add 		(GBSprite *spr, GBSprite *mask);
     static void 		add_event	(GBObject *obj, int ev_type, void(*event)(GBObject *self));
-    static void 		destroy		(GBObject* obj);
+    static void 		destroy		(GBObject *obj);
 };
 
 class io {public:
     static void clear();
 };
-#ifndef GB_DONT_USE_KEYB
+
 class keyboard {public:
     static int 		pressed		(int key);
     static int 		released	(int key);
@@ -346,9 +352,7 @@ class keyboard {public:
     static char*	chr			(int ch);
     //static int get_numlock();
 };
-#endif
 
-#ifndef GB_DONT_USE_JOY
 class joy {
 public:
     static int count	();
@@ -382,7 +386,6 @@ public:
         max
     };
 };
-#endif
 
 class window {
 public:
@@ -438,12 +441,13 @@ public:
 
 class color {
 public:
-    static const SDL_Color black, white, red, blue, green, lime,
-    gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
+    static const SDL_Color	black, white, red, blue, green, lime,
+							gray,lt_gray,dk_gray,fuchsia,purple,aqua,pink;
     static SDL_Color 	merge 			(SDL_Color col1, SDL_Color col2, double amount);
     static SDL_Color 	mix 			(SDL_Color col1, SDL_Color col2);
     static double 		get_luminance	(SDL_Color col);
     static SDL_Color 	merge_corrected	(SDL_Color col1, SDL_Color col2, double amount);
+    static SDL_Color	rgb(int col);
 };
 /*
 typedef struct GBPOMItem {
@@ -456,9 +460,14 @@ typedef std::vector<GBPOMItem> GBPOMItems;
 */
 
 class show {public:
-    static void message(gb_str title, gb_str msg);
-    static void error(gb_str msg, int abort);
-    static int popover_menu(gb_str file);
+    static void message	(gb_str title, gb_str msg);
+    static void error	(gb_str msg, int abort);
+};
+
+class popover {public:
+	static int	create		();
+	static int	add_entry	(int menu_id, gb_str text);
+	static int	show		(int menu_id);
 };
 
 enum mb {//public:
@@ -525,8 +534,8 @@ public:
 };
 
 struct gb_button_state {
-    int released;
-    mb button;
+    int	released;
+    mb 	button;
 };
 
 class graphics {
@@ -574,8 +583,8 @@ public:
 };
 class screen {
 public:
-    static void draw(double fps);
-    static void end();
+    static void draw	(double fps);
+    static void end		();
 };
 struct __gblist {
     int type;
@@ -584,10 +593,10 @@ struct __gblist {
 
 class list {
 public:
-    static gb_str get_string(std::vector<__gblist> list, gb_str sep);
+    static gb_str	get_string(std::vector<__gblist> list, gb_str sep);
     class find {public:
         static int 		pos		(std::vector<__gblist> list, gb_str value);
-        static gb_str 	value	(std::vector<__gblist>,int pos);
+        static gb_str 	value	(std::vector<__gblist>, int pos);
     };
 };
 
@@ -599,19 +608,19 @@ struct fname_list {
 class fs {
 public:
     enum fmode {
-        read=0,
-        write=1,
-        append=2
+        read	= 0,
+        write	= 1,
+        append	= 2
     };
     enum fa {
-        hidden = 0x0010, // show hidden files
-        dir = 0x0020, // show directories
-        sysfile = 0x0040, // show system files
-        fullpath = 0x0080, // (for fs::find::list() - adds a path to found filename)
+        hidden		= 0x0010, // show hidden files
+        dir			= 0x0020, // show directories
+        sysfile		= 0x0040, // show system files
+        fullpath	= 0x0080, // (for fs::find::list() - adds a path to found filename)
     };
     enum type {
-        tfile=DT_REG,
-        tdir=DT_DIR
+        tfile	= DT_REG,
+        tdir	= DT_DIR
     };
     static int exists(gb_str fname);
     class find {
@@ -620,8 +629,8 @@ public:
         static std::vector<__gblist> list_ext	(gb_str directory, std::vector<std::string> filter, Uint32 mask);
     };
     class text {public:
-        static int 		open	(gb_str fname,int mode);
-        static void 	write 	(int file,gb_str str);
+        static int 		open	(gb_str fname, int mode);
+        static void 	write 	(int file, gb_str str);
         static gb_str 	read 	(int file);
         static void 	ln		(int file);
         static int 		eof		(int file);
@@ -647,14 +656,14 @@ class ini {public:
 class d3d {
 };
 
-class date{public:
+class date {public:
     static __current current;
 };
 
 class gstr {public:
-    static gb_str   replace 		(gb_str text,gb_str in, gb_str out);
-    static gb_str   replace_all		(gb_str text,gb_str in, gb_str out);
-    static gb_str   cat				(std::vector<void *>args);
+    static gb_str   replace 		(gb_str text, gb_str in, gb_str out);
+    static gb_str   replace_all		(gb_str text, gb_str in, gb_str out);
+    static gb_str   cat				(std::vector<void *> args);
     static int      count			(gb_str text, gb_str n);
     static gb_str   shorten			(gb_str fname);
     static gb_str   lowercase		(gb_str str);
@@ -673,8 +682,8 @@ class gstr {public:
 };
 
 enum ERROR {
-    SPRITE_FILE_DOESNT_EXIST=0x000100,
-    SPRITE_FILE_NOT_SUPPORTED=0x000101
+    SPRITE_FILE_DOESNT_EXIST = 0x000100,
+    SPRITE_FILE_NOT_SUPPORTED = 0x000101
 };
 
 extern int __gb_rand_seed;
@@ -683,43 +692,57 @@ typedef std::vector<real> GB_NumberBag;
 
 class math {
 public:
-	static double 	abs				(double num);
-    static double 	lendir_x		(double len, int dir);
-    static double 	lendir_y		(double len, int dir);
-    static double 	degtorad		(double deg);
-    static double 	clamp			(double val, double minval, double maxval);
-    static double 	point_in_rect	(double px, double py, double rx1, double ry1, double rx2, double ry2);
-    static double 	dsin			(double x);
-    static double 	dcos			(double x);
-    static int 		round			(double x);
-    static int 		floor			(double x);
-    static int 		ceil			(double x);
-    static double 	pdistance		(double x1, double y1, double x2, double y2);
-    static double 	pdirection		(double x1, double y1, double x2, double y2);
-    static double 	power			(double x, int n);
-    static double 	sqr				(double x);
-    static double 	sqrt			(double x);
-    static double 	min 			(GB_NumberBag bag);
-    static double 	max 			(GB_NumberBag bag);
-    static int 		sign			(double num);
-    static double 	frac			(double x);
+	static real 	abs				(real num);
+    static real 	lendir_x		(real len, int dir);
+    static real 	lendir_y		(real len, int dir);
+    static real 	degtorad		(real deg);
+    static real 	clamp			(real val, real minval, real maxval);
+    static real 	point_in_rect	(real px, real py, real rx1, real ry1, real rx2, real ry2);
+    static real		sin				(real x);
+    static real		cos				(real x);
+    static real 	dsin			(real x);
+    static real 	dcos			(real x);
+    static int 		round			(real x);
+    static int 		floor			(real x);
+    static int 		ceil			(real x);
+	static real		round_to		(real x, real to);
+	static real		floor_to		(real x, real to);
+	static real		ceil_to			(real x, real to);
+    static real 	pdistance		(real x1, real y1, real x2, real y2);
+    static real 	pdirection		(real x1, real y1, real x2, real y2);
+    static real 	power			(real x, int n);
+    static real 	sqr				(real x);
+    static real 	sqrt			(real x);
+    static real 	min 			(GB_NumberBag bag);
+    static real 	max 			(GB_NumberBag bag);
+    static int 		sign			(real num);
+    static real 	frac			(real x);
 
-    static double 	median			(GB_NumberBag bag);
-    static double 	mean			(GB_NumberBag bag);
-    static double 	lerp			(double a, double b, double num);
+    static real 	median			(GB_NumberBag bag);
+    static real 	mean			(GB_NumberBag bag);
+    static real 	lerp			(real a, real b, real num);
 
-    static double 	random 			(double n);
+    static real 	random 			(real n);
     static int 		irandom 		(int n);
-    static double 	random_range	(double min, double max);
+    static real 	random_range	(real min, real max);
     static int 		irandom_range	(int min, int max);
     static void 	random_set_seed	(int seed);
     static int 		irandom_fresh	(int oldval, int minval, int maxval);
     static int 		random_get_seed	();
     static void 	randomize		();
 	static void *	choose			(GB_ChooseBag bag);
-	static double 	gauss 			(double range);
-	static double	gauss_range		(double min, double max);
-	static double 	modwrap			(double val, double minval, double maxval);
+	static real 	gauss 			(real range);
+	static real		gauss_range		(real min, real max);
+	static real 	modwrap			(real val, real minval, real maxval);
+	static real		exp				(real x);
+	static real		log				(real x);
+	static real		ln				(real x);
+	static real		log10			(real x);
+	static real		log2			(real x);
+	static real		tan				(real x);
+	static real		cotan			(real x);
+	static real		tg				(real x);
+	static real		ctg				(real x);
 
     class motion {public:
         static void add(GBObject *obj, real dir, real speed);
@@ -728,23 +751,23 @@ public:
 };
 
 class room{public:
-    static int width,height;
-    static GBRoom *add(int w, int h);
-    static int add_instance(GBRoom *room, GBObject *obj, double x, double y, void (*event_create)());
-    static void remove_instances(GBRoom *room, GBObject *obj);
-    static void remove_instance(GBRoom *room, int instance_id);
-    static void current(GBRoom *room);
-    static GBObject *find_object(int inst_id);
-    static void camera_setup(GBRoom *room, int camera_id, int enabled, GB_CamSetup view, GB_CamSetup port, int target_inst_id, GB_CamTarget target);
+    static int			width, height;
+    static GBRoom*		add				(int w, int h);
+    static int			add_instance	(GBRoom *room, GBObject *obj, double x, double y, void (*event_create)());
+    static void			remove_instances(GBRoom *room, GBObject *obj);
+    static void			remove_instance	(GBRoom *room, int instance_id);
+    static void			current			(GBRoom *room);
+    static GBObject*	find_object		(int inst_id);
+    static void			camera_setup	(GBRoom *room, int camera_id, int enabled, GB_CamSetup view, GB_CamSetup port, int target_inst_id, GB_CamTarget target);
 };
 
 struct __gbmap {
-    std::string key;
-    void *value;
+    std::string	key;
+    void*		value;
 };
 
 enum class ev {
-	create=0,
+	create = 0,
 	step,
 	step_begin,
 	step_end,
@@ -755,15 +778,15 @@ enum class ev {
 extern int __gb_uses_surface;
 
 class surface{public:
-	static GBSurface *add(int w, int h);
-	static void target_set(GBSurface *surf);
-	static void target_reset();
-	static void clone(GBSurface *src, GBSurface *dst, int x, int y);
+	static GBSurface*	add(int w, int h);
+	static void			target_set(GBSurface *surf);
+	static void			target_reset();
+	static void			clone(GBSurface *src, GBSurface *dst, int x, int y);
 };
 
 }
 
-#define undefined "\0"
+#define undefined '\0'
 
 extern double view_xview[GB_MAX_ROOM_CAMERAS],view_yview[GB_MAX_ROOM_CAMERAS],view_angle[GB_MAX_ROOM_CAMERAS];
 extern int view_wview[GB_MAX_ROOM_CAMERAS],view_hview[GB_MAX_ROOM_CAMERAS];
@@ -795,7 +818,7 @@ typedef GameBreaker::mb mb;
 #define var auto
 
 /* functions */
-#ifdef GB_USE_SMALL_FUNCNAMES
+//#ifdef GB_USE_SMALL_FUNCNAMES
 typedef GameBreaker::graphics::draw 			draw;
 typedef GameBreaker::graphics::sprite 			sprite;
 typedef GameBreaker::audio 						audio;
@@ -819,6 +842,10 @@ typedef GameBreaker::room 						room;
 typedef GameBreaker::ini 						ini;
 typedef GameBreaker::surface					surface;
 typedef GameBreaker::math::motion				motion;
-#endif	// GB_USE_SMALL_FUNCNAMES
+//#endif	// GB_USE_SMALL_FUNCNAMES
+
+#ifdef GB_USE_SMALL_FUNCNAMES
+#warning GB_USE_SMALL_FUNCNAMES is outdated. All function names, starting from 0.0.18, got smaller.
+#endif
 
 //#endif // _GB_HPP_

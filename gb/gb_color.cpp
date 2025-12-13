@@ -1,3 +1,8 @@
+/*
+ * This file is meant to handle everything about the colors.
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
@@ -27,15 +32,20 @@ namespace GameBreaker {
 
 	SDL_Color color::merge_corrected(SDL_Color col1, SDL_Color col2, double amount) {
 		return {
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.r),math::sqr(col2.r),amount))),
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.g),math::sqr(col2.g),amount))),
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.b),math::sqr(col2.b),amount))),
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.a),math::sqr(col2.a),amount)))
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.r), math::sqr(col2.r), amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.g), math::sqr(col2.g), amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.b), math::sqr(col2.b), amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.a), math::sqr(col2.a), amount)))
 			};
 	}
 
 	real color::get_luminance(SDL_Color col) {
 		return (col.r*0.2126+col.g*0.7152+col.b*0.0722);
+	}
+
+	SDL_Color color::rgb(int col) {
+		Uint8 mcol = col;
+		return (SDL_Color){(mcol>>16)&0xff, (mcol>>8)&0xff, mcol&0xff};
 	}
 
 }
