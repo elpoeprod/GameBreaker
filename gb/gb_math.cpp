@@ -1,3 +1,8 @@
+/*
+ * Math functions and calculations
+ * 2025 elpoep
+*/
+
 #include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
@@ -184,4 +189,59 @@ namespace GameBreaker {
 		return ((__i-6)/6+0.5)*(max-min)+min;
 	}
 
+	real math::floor_to(real x, real to) {
+		return std::floor(x/to)*to;
+	}
+
+	real math::ceil_to(real x, real to) {
+		return std::ceil(x/to)*to;
+	}
+
+	real math::round_to(real x, real to) {
+		return std::round(x/to)*to;
+	}
+	
+	real math::exp(real x) {
+		return math::power(2.718282,(int)x);
+	}
+
+	real math::log(real x) {
+		return std::log(x);
+	}
+
+	real math::log10(real x) {
+		return std::log10(x);
+	}
+	
+	real math::log2(real x) {
+		return std::log2(x);
+	}
+
+	real math::ln(real x) {
+		return log1p(x-1.l);
+	}
+
+	real math::sin(real x) {
+		return std::sin(x);
+	}
+
+	real math::cos(real x) {
+		return std::cos(x);
+	}
+
+	real math::tan(real x) {
+		return math::sin(x)/math::cos(x);
+	}
+	
+	real math::cotan(real x) {
+		return 1/math::tan(x);
+	}
+	
+	real math::tg(real x) {
+		return math::tan(x);
+	}
+
+	real math::ctg(real x) {
+		return math::cotan(x);
+	}
 }
