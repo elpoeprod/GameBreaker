@@ -1,5 +1,5 @@
 CXX_COMPILER=g++
-CXX_ARGS=-c -Wall -Werror -fpic -g -ggdb
+CXX_ARGS=-pipe -c -Wall -Werror -fpic -g -ggdb
 CXX_ARGS_LIBS=-lSDL2 -lSDL2_image -lSDL2_ttf  #-lSDL2_main
 CXX_ARGS_SOLOUD=include/SoLoud/libSoLoud_MA.a
 CXX_ARGS_GTK=`pkg-config --libs --cflags gtk+-3.0`
@@ -32,11 +32,16 @@ all:
 	$(CXX_CMD) gb/3rdparty/nfd/nfd_gtk.cpp -o build/nfd.o $(CXX_ARGS_GTK)
 	$(CXX_COMPILER) -g -ggdb -fpic -rdynamic -Lstatic -Wall -Werror -shared -o $(LIB_NAME) build/*.o $(CXX_ARGS_LIBS) $(CXX_ARGS_GTK) include/SoLoud/libSoLoud_MA.a -lasound $(CXX_ARGS_TAGLIB) $(CXX_ARGS_OPENMPT) #-lstatic 
 
+
 install:
 	rm -rf /usr/local/include/gamebreaker/
 	rm /usr/lib/$(LIB_NAME)
 	cp -rf include/ /usr/local/include/gamebreaker/
 	cp $(LIB_NAME) /usr/lib/
+
+headers_only:
+	rm -rf /usr/local/include/gamebreaker/
+	cp -rf include/ /usr/local/include/gamebreaker/
 
 windows:
 	echo Not implemented. Linux is the only supported OS at this time.
