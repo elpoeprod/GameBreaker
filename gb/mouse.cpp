@@ -1,17 +1,18 @@
-#include "../include/gamebreaker.hpp"
-
 /***************
  * GAMEBREAKER::MOUSE
+ * 2025 elpoep
 */
 
-int chmouse(int id, int ch1, int ch2) {
-    return (GameBreaker::mybut[id]==ch1)&&(GameBreaker::mylastbut[id]==ch2);
-}
+#include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
 
     int mybut[4]; //fucking warning i hate it
     int mylastbut[4];
+    
+    int system::chmouse(int id, int ch1, int ch2) {
+        return (gb::_gbsys_->mybut[id]==ch1)&&(gb::_gbsys_->mylastbut[id]==ch2);
+    }
 
     /**
     * check if mouse button was pressed
@@ -20,12 +21,12 @@ namespace GameBreaker {
     int mouse::pressed(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  chmouse(1,1,0) or
-                    chmouse(2,1,0) or
-                    chmouse(3,1,0);
+            return  _gbsys_->chmouse(1,1,0) or
+                    _gbsys_->chmouse(2,1,0) or
+                    _gbsys_->chmouse(3,1,0);
         }
         if(mouse_button!=mb::none)
-            return chmouse(mouse_button,1,0);
+            return _gbsys_->chmouse(mouse_button,1,0);
 
         return 0;
     }
@@ -36,12 +37,12 @@ namespace GameBreaker {
     int mouse::released(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  chmouse(1,0,1) or
-                    chmouse(2,0,1) or
-                    chmouse(3,0,1);
+            return  _gbsys_->chmouse(1,0,1) or
+                    _gbsys_->chmouse(2,0,1) or
+                    _gbsys_->chmouse(3,0,1);
         }
         if(mouse_button!=mb::none)
-            return chmouse(mouse_button,0,1);
+            return _gbsys_->chmouse(mouse_button,0,1);
 
         return 0;
     }
@@ -53,9 +54,9 @@ namespace GameBreaker {
     int mouse::holding(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  chmouse(1,1,1) or
-                    chmouse(2,1,1) or
-                    chmouse(3,1,1);
+            return  _gbsys_->chmouse(1,1,1) or
+                    _gbsys_->chmouse(2,1,1) or
+                    _gbsys_->chmouse(3,1,1);
         }
         if(mouse_button!=mb::none)
             return mybut[mouse_button];
@@ -70,12 +71,12 @@ namespace GameBreaker {
     int mouse::nothing(mb mouse_button)
     {
         if(mouse_button==mb::any) {
-            return  chmouse(1,0,0) or
-                    chmouse(2,0,0) or
-                    chmouse(3,0,0); 
+            return  _gbsys_->chmouse(1,0,0) or
+                    _gbsys_->chmouse(2,0,0) or
+                    _gbsys_->chmouse(3,0,0); 
         }
         if(mouse_button!=mb::none)
-            return chmouse(mouse_button,0,0);
+            return _gbsys_->chmouse(mouse_button,0,0);
 
         return 0;
     }
@@ -89,10 +90,10 @@ namespace GameBreaker {
     }
 
     int mouse::wheel_up() {
-    	return gb_win->ev.wheel.y>0&&gb_win->ev.wheel.y<2;
+    	return _gbsys_->get_event().wheel.y>0&&_gbsys_->get_event().wheel.y<2;
     }
 
     int mouse::wheel_down() {
-    	return gb_win->ev.wheel.y<0;
+    	return _gbsys_->get_event().wheel.y<0;
     }
 }
