@@ -21,6 +21,7 @@ void myobj2_event_draw(gb::object *self) {
 	//spr0->draw({(float)self->x, (float)self->y+10}, 0);
 	gb::draw::color({255,255,255,255});
 	gb::draw::rect({0,0,60,60},0);
+	spr0->draw({50,50},1);
 	gb::show::message("DEBUG","I'm on depth "+std::to_string(self->depth)+"!");
 	return;
 }

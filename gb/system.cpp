@@ -52,17 +52,17 @@ namespace GameBreaker {
 			}
 
 			for (luint iobj = 0; iobj < objects.size(); iobj++) { //checks every instance
-				for(luint iobjinroom = 0; iobjinroom < this->current_room()->instance_count(GB_INSTANCE_ANY); iobjinroom++) { //checks every instance in room
-					if(this->objects[iobj]==this->current_room()->get_instance(iobjinroom)) { //if object is in room then do the code, else continue
+			//	for(luint iobjinroom = 0; iobjinroom < this->current_room()->instance_count(GB_INSTANCE_ANY); iobjinroom++) { //checks every instance in room
+			//		if(this->objects[iobj]==this->current_room()->get_instance(iobjinroom)) { //if object is in room then do the code, else continue
 						if(this->objects[iobj]->event_step) 
 							this->objects[iobj]->event_step(this->objects[iobj]);
 							
 						if(this->objects[iobj]->event_draw)
 							this->objects[iobj]->event_draw(this->objects[iobj]);
-					}
-				}	
+			//		}
+			//	}	
 			}
-
+			EndBlendMode();
 			EndDrawing();
 		}
 		
