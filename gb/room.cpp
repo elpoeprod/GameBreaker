@@ -10,6 +10,7 @@ namespace GameBreaker {
 			this->port[i]={0,0,640,480};
 		}
 		this->id = _gbsys_->__add(this);
+		this->room_speed=60;
 	}
 	void room::remove() {
 		delete this;
@@ -35,10 +36,9 @@ namespace GameBreaker {
 		return 0;
 	}
 
-	void room::add_instance(object obj, GBPoint pos) {
-		object myobj=object(obj);
-		myobj.x=pos.x;
-		myobj.y=pos.y;
-		this->robjects.push_back(&myobj);
+	void room::add_instance(object *obj, GBPoint pos) {
+		obj->x=pos.x;
+		obj->y=pos.y;
+		this->robjects.push_back(obj);
 	}
 }

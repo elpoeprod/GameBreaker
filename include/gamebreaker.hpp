@@ -6,13 +6,7 @@
 
 */
 //#pragma once //do not remove or die
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include "SoLoud/soloud.h"
-#include "SoLoud/soloud_wav.h"
-#include "SoLoud/soloud_wavstream.h"
-#include "SoLoud/soloud_openmpt.h"
-#include <SDL2/SDL_ttf.h>
+#include <raylib.h>
 #include <dirent.h>
 #include <math.h>
 #include <stdlib.h>
@@ -36,11 +30,12 @@ typedef float real;
 typedef std::string str;
 
 typedef struct {int w, h;} GBSize;
-typedef struct {int x, y;} GBPoint;
+typedef Vector2 GBPoint;
+typedef Vector3 GBPoint3D;
 typedef struct {float x, y;} GBFPoint;
 typedef struct {int x, y, w, h;} GBRect;
 typedef struct {float x, y, w, h;} GBFRect;
-typedef struct {Uint8 r, g, b, a;} GBColor;
+typedef Color GBColor;//struct {unsigned char r, g, b, a;} GBColor;
 typedef struct {double xscale, yscale;} GBScale;
 typedef long unsigned int luint;
 typedef struct {double x, y; int w, h; double angle;} GBCamera;
@@ -58,7 +53,7 @@ namespace GameBreaker {
 
 	class sprite {
 		private:
-		SDL_Texture *tex;
+		Texture2D tex;
 		GBSize size;
 		GBPoint offset;
 
@@ -68,7 +63,7 @@ namespace GameBreaker {
 		real image_speed;
 		int frames;
 		
-		void add(str fname, int frames, GBPoint offset);
+		int add(str fname, int frames, GBPoint offset);
 		void remove();
 		GBSize get_size();
 		GBPoint get_offset();
@@ -100,7 +95,7 @@ namespace GameBreaker {
 		void add();
 		void add(sprite *spr);
 		void remove();
-		object(object& other);
+		//object(object& other);
 
 		void (*event_create)(object *self);
 		void (*event_destroy)(object *self);
@@ -123,12 +118,13 @@ namespace GameBreaker {
 			GBPoint	pos, 
 					tile_pos;
 		};
-		std::vector<object>		robjects;
-		std::vector<tile>			rtiles;
-		std::vector<tile_data>	rtiles_data;
+		std::vector<object *>		robjects;
+		std::vector<tile *>			rtiles;
+		std::vector<tile_data *>	rtiles_data;
 		GBSize size;
 	
 		public:
+		int room_speed;
 		int id;
 		GBColor 	background_color;
 		int 		background_image[GB_MAX_CAMERAS];
@@ -136,8 +132,8 @@ namespace GameBreaker {
 		GBVPort		port			[GB_MAX_CAMERAS];
 		
 		void add			(GBSize size);
-		void add_instance	(object obj, GBPoint pos);
-		object get_instance(int id);
+		void add_instance	(object *obj, GBPoint pos);
+		object *get_instance(int id);
 		luint instance_count(int id);
 		void add_tile		(tile t, GBPoint tile_pos);
 		void remove			();
@@ -145,51 +141,26 @@ namespace GameBreaker {
 	};
 	
 	class window {
-		private:
-		SDL_Window *win;
-		SDL_Renderer *render;
-		str title;
-		int window_id;
-		GBSize size;
-		GBPoint pos;
-		void default_init();
-
+		static str title;
 		public:
-		void add(str title);
-		void add(str title, GBPoint pos);
-		void add();
-		void remove();
-		void current();
-		SDL_Window *get_winid();
-		SDL_Renderer *get_render();
-		GBSize get_size();
-		GBPoint get_pos();
-		void set_size(GBSize size);
-		void set_pos(GBPoint pos);
+		static GBSize get_size();
+		static GBPoint get_pos();
+		static void set_size(GBSize size);
+		static void set_pos(GBPoint pos);
+		static void set_title(str title);
+		static str get_title(void);
 
 	};
 
 	class font {
 		private:
-		TTF_Font *fnt;
+		Font fnt;
 		int size, bold, italic;
 		int id;
 
 		public:
 		void add(str fname, int size, int bold, int italic);
 		void remove();
-	};
-
-	class text {
-		private:
-			str text;
-			GBColor col;
-			font fnt;
-
-		public:
-			void add(str text);
-			void draw(GBPoint pos);	//draw
-			void draw(GBPoint pos, GBScale scale, real rot, GBColor col);	//draw_ext
 	};
 
 	GBFPoint GBXyfy(float x, float y);
@@ -205,6 +176,10 @@ namespace GameBreaker {
 		static void		color(GBColor col);
 		static GBColor	color();
 
+		static void text(GBPoint pos, str text);	//draw
+		static void text(GBPoint pos, str text, GBScale scale, real rot, GBColor col);	//draw_ext
+		void set_font(Font font);
+
 		private:
 		static GBColor current_color;
 			
@@ -217,35 +192,20 @@ namespace GameBreaker {
 		std::vector<room *> 	rooms;
 		std::vector<font *> 	fonts;
 		std::vector<window *> 	windows;
-		std::vector<text *> 	texts;
 		int __current_room;
-		int __current_window;
 		int __current_display;
 		int __current_view;
-		int running;
-		SoLoud::Soloud *music_handle;
-		SDL_Event event;
-		std::map<str, int> mykey;
-		std::map<str, int> mylastkey;
-		int mybut		[4];
-		int mylastbut	[4];
 		
 		public:
 		int __add	(room *rm);
-		int __add	(window *win);
 		int __add	(object *obj);
 		int __add	(font *fnt);
-		int __add	(text *txt);
 		int __add	(sprite *spr);
 		
 		void __sys_sort_objects();
 		
 		void 	*__get		(int id, str type); //sprite, room, object, window, text, font
-		SDL_Event get_event	();
 		int chmouse			(int id, int ch1, int ch2);
-		
-		window *current_win	();
-		void current_win	(window *win);
 
 		room *current_room	();
 		void current_room	(room *rm);
@@ -268,9 +228,9 @@ namespace GameBreaker {
 
 	enum mb {
 	    none	= -1,
-	    left	= SDL_BUTTON_LEFT,
-	    middle	= SDL_BUTTON_MIDDLE,
-	    right	= SDL_BUTTON_RIGHT,
+	    left	= MOUSE_BUTTON_LEFT,
+	    middle	= MOUSE_BUTTON_MIDDLE,
+	    right	= MOUSE_BUTTON_RIGHT,
 	    any		= 0x100
 	};
 
@@ -289,6 +249,20 @@ namespace GameBreaker {
 	class display {public:
 		static GBSize size();
 		static str name();
+	};
+
+	extern GBColor c_aqua, c_black, c_blue, c_dkgray, c_fuchsia, c_gray,
+					c_green, c_lime, c_ltgray, c_maroon, c_navy, c_olive, c_purple,
+					c_red, c_silver, c_teal, c_white, c_yellow, c_orange;
+
+	class color {public:
+		static real get_hue(GBColor col);
+		static real get_saturation(GBColor col);
+		static real get_value(GBColor col);
+		static GBColor merge(GBColor col1, GBColor col2, real amount);
+		static GBColor merge_corrected(GBColor col1, GBColor col2, real amount);
+		static GBColor make_hsv(real hue, real saturation, real value);
+
 	};
 
 	extern str gb_version;

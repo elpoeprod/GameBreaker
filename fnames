@@ -658,7 +658,7 @@ draw_set_color(col) 						-Y, graphics::draw::color()/color_sdl()/color_hsv()/co
 draw_set_alpha(alpha) 						-Y, graphics::draw::alpha()
 draw_get_color() 							-Y, graphics::draw::color_get()
 draw_get_alpha() 							-N
-c_aqua#										-Y, color::aqua
+c_aqua#										-Y, c_aqua
 c_black#									-Y, color::black
 c_blue#										-Y, color::blue
 c_dkgray#									-Y, color::dk_gray

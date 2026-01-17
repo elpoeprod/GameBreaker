@@ -7,6 +7,8 @@ namespace GameBreaker {
 	int debug_mode=0;
 	str keyboard_string="";
 
+	str window::title="";
+
 	int mouse::x=0, mouse::y=0;
 
 	GBColor draw::current_color={0xa0, 0xa0, 0xa0, 0xff};
@@ -14,73 +16,26 @@ namespace GameBreaker {
 	void system::init() {
 		debug_message("GameBreaker starts\nversion "+gb_version+"\ninitializing system");
 		_gbsys_ = this;
-		debug_message("set _gbsys_->as this SUCCESS");
-		SDL_Init(SDL_INIT_EVERYTHING);
-		debug_message("initialized SDL2");
-		TTF_Init();
-		debug_message("initialized SDL2_ttf");
-		IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF);
-		debug_message("initialized SDL2_image");
-		this->running = 1;
+		debug_message("set _gbsys_->as this SUCCESS");	
+		InitWindow(640,480,"");
+		window::set_title("GameBreaker Game");
+		debug_message("Created new window");
 		this->__current_room = GB_TYPE_NONE;
-		this->__current_window = GB_TYPE_NONE;
 		debug_message("intialized first variables");
-		// this->music_handle = new SoLoud::Soloud;
-		// this->music_handle->init(
-		// 	SoLoud::Soloud::ENABLE_VISUALIZATION|SoLoud::Soloud::CLIP_ROUNDOFF,
-		// 	SoLoud::Soloud::AUTO,
-		// 	SoLoud::Soloud::AUTO,
-		// 	SoLoud::Soloud::AUTO,
-		// );
 	}
 	
 	int system::run() {
 		debug_message("running system in system::run()");
-		if(this->__current_window == GB_TYPE_NONE) {
-			show::message("ERROR", "Did you forget to set window.current()?");
-			exit(1);
-		}
 		if(this->__current_room == GB_TYPE_NONE) {
 			show::message("ERROR" , "Did you forget to set room.current()?");
 			exit(1);
 		}
 		debug_message("checks were passed. continuing");
 
-		mylastkey=mykey;
-		
-		while(this->running) {
-			while(SDL_PollEvent(&this->event)!=0) {
-				switch(this->event.type) {
-					case SDL_QUIT: {
-						this->shutdown();
-					} break;
-					case SDL_KEYDOWN: {
-						mykey[SDL_GetKeyName(this->event.key.keysym.sym)]=1;
-						if(this->event.key.keysym.sym==SDLK_RETURN)
-		            		keyboard_string+="\n";
-		            	else 
-		            		keyboard_string+=SDL_GetKeyName(this->event.key.keysym.sym);
-					} break;
-					case SDL_KEYUP: {
-						mykey[SDL_GetKeyName(this->event.key.keysym.sym)]=0;
-					}
-					//Mouse
-		            case SDL_MOUSEMOTION: 
-		                mouse::x=this->event.motion.x; 
-		                mouse::y=this->event.motion.y; 
-		            break;
-		
-		            case SDL_MOUSEBUTTONDOWN: {
-		                    mybut[this->event.button.button] = 1;
-		            } break;
-		
-		            case SDL_MOUSEBUTTONUP: {
-		                    mybut[this->event.button.button] = 0;
-		            } break;
-				}
-			}
-			SDL_SetRenderDrawBlendMode(this->current_win()->get_render(),SDL_BLENDMODE_BLEND);
-			SDL_RenderClear(this->current_win()->get_render());
+		SetTargetFPS(this->current_room()->room_speed);
+		while(!WindowShouldClose()) {
+			BeginDrawing();
+			BeginBlendMode(BLEND_ALPHA);
 			
 			GBColor mycol = draw::color();
 			draw::color(this->current_room()->background_color);
@@ -98,7 +53,6 @@ namespace GameBreaker {
 
 			for (luint iobj = 0; iobj < objects.size(); iobj++) { //checks every instance
 				for(luint iobjinroom = 0; iobjinroom < this->current_room()->instance_count(GB_INSTANCE_ANY); iobjinroom++) { //checks every instance in room
-					puts(("IOBJ: "+std::to_string(iobj)+"\nIOBJINROOM: "+std::to_string(iobjinroom)).c_str());
 					if(this->objects[iobj]==this->current_room()->get_instance(iobjinroom)) { //if object is in room then do the code, else continue
 						if(this->objects[iobj]->event_step) 
 							this->objects[iobj]->event_step(this->objects[iobj]);
@@ -108,9 +62,8 @@ namespace GameBreaker {
 					}
 				}	
 			}
-			
-			SDL_RenderPresent(this->current_win()->get_render());
-			SDL_Delay(1000/16.f);
+
+			EndDrawing();
 		}
 		
 		debug_message("ending the game. goodbye!");
@@ -126,7 +79,6 @@ namespace GameBreaker {
 			if(type=="sprite") return this->sprites[id];
 			if(type=="object") return this->objects[id];
 			if(type=="room") return this->fonts[id];
-			if(type=="text") return this->texts[id];
 			if(type=="window") return this->windows[id];
 		// }
 		return nullptr;
@@ -134,7 +86,6 @@ namespace GameBreaker {
 
 	void system::shutdown() {
 		debug_message("game stops running...");
-		this->running=0;
 		this->end();
 		debug_message("Here i am!");
 	}
@@ -152,28 +103,12 @@ namespace GameBreaker {
 			rooms[i]->remove();
 			rooms.erase(rooms.begin()+i);
 		}
-		for(luint i = 0; i < this->windows.size(); i++) {
-			windows[i]->remove();
-			windows.erase(windows.begin()+i);
-		}
 		for(luint i = 0; i < this->fonts.size(); i++) {
 			fonts[i]->remove();
 			fonts.erase(fonts.begin()+i);
 		}
+		CloseWindow();
 		debug_message("Erased everything. (not your system just things that are used in game)");
-	}
-
-	window *system::current_win() {
-		return this->windows[this->__current_window];
-		debug_message("Got current window of the program");
-	}
-
-	void system::current_win(window *win) {
-		for(luint i = 0; i < windows.size(); i++) {
-			if(windows[i]==win) this->__current_window=i;
-		}
-		debug_message("Set current window of the program");
-		return;
 	}
 
 	room *system::current_room() {
@@ -189,28 +124,29 @@ namespace GameBreaker {
 		return this->__current_view;
 	}
 
-	SDL_Event system::get_event() {
-		return this->event;
-	}
-
 	void system::current_room(room *rm) {
 		for(luint i = 0; i < this->rooms.size(); i++) {
 			if(rooms[i]==rm) this->__current_room=i;
 		}
 	}
 
+	int system::current_display() {
+		return this->__current_display;
+	}
+
+	void system::current_display(int display_id) {
+		this->__current_display=display_id;
+		return;
+	}
+
 	void debug_message(str msg) {
-		if(debug_mode) puts(msg.c_str());
+		if(debug_mode) puts(("INFO: "+msg).c_str());
+		return;
 	}
 	
 	int system::__add(room *rm) {
 		this->rooms.push_back(rm);
 		return this->rooms.size()-1;
-	}
-	
-	int system::__add(window *win) {
-		this->windows.push_back(win);
-		return this->windows.size()-1;
 	}
 	
 	int system::__add(object *obj) {
@@ -221,11 +157,6 @@ namespace GameBreaker {
 	int system::__add(font *fnt) {
 		this->fonts.push_back(fnt);
 		return this->fonts.size()-1;
-	}
-	
-	int system::__add(text *txt) {
-		this->texts.push_back(txt);
-		return this->texts.size()-1;
 	}
 	
 	int system::__add(sprite *spr) {

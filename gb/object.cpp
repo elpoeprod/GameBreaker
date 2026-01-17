@@ -13,7 +13,7 @@ namespace GameBreaker {
 		this->friction=0;
 		this->speed=0;
 		this->hspeed=0;
-		this->vspeed=0;	
+		this->vspeed=0;
 		this->depth=0;
 
 		//Events
@@ -23,6 +23,7 @@ namespace GameBreaker {
 		this->event_step=nullptr;
 		this->event_step_end=nullptr;
 		this->event_draw=nullptr;
+		debug_message("End of initializing");
 		return;
 	}
 	void object::default_adder() {
