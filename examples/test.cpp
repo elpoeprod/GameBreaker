@@ -5,6 +5,7 @@ gb::object myobj2;
 gb::system sys;
 gb::room *room0;
 gb::sprite *spr0;
+gb::sound *snd0;
 
 void myobj_event_draw(gb::object *self) {
 	gb::draw::color({255,0,255,255});
@@ -31,10 +32,14 @@ int main(void) {
 	// myobj2=	new gb::object;
 	room0=	new gb::room;
 	spr0=	new gb::sprite;
+	snd0=	new gb::sound;
 	
 	//gb::debug_mode=1;
 	
 	sys.init();
+
+	snd0->add("d.mp3",gb::SOUND_TYPE::stream);
+	snd0->play();
 	
 	spr0->add("c.png",1,{0,0});
 	myobj.add(spr0);

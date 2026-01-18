@@ -24,6 +24,14 @@
 #define GB_MAX_CAMERAS 7
 #endif
 
+#define SUPPORT_FILEFORMAT_WAV
+#define SUPPORT_FILEFORMAT_OGG
+#define SUPPORT_FILEFORMAT_MP3
+#define SUPPORT_FILEFORMAT_QOA
+#define SUPPORT_FILEFORMAT_FLAC
+#define SUPPORT_FILEFORMAT_XM
+#define SUPPORT_FILEFORMAT_MOD
+
 
 // typedef double real;
 typedef float real;
@@ -44,13 +52,11 @@ typedef GBRect GBVPort;
 #ifndef GB_TYPE_NONE
 #define GB_TYPE_NONE -1
 #define GB_INSTANCE_ANY 0xfffffe
-#define var auto
-#define repeat(a) for (luint __gb_repeat_i_i__ = 0; __gb_repeat_i_i__ < a; __gb_repeat_i_i__++);
 #endif
 
-#ifndef Uint8
-#define Uint8 (unsigned char)
-#endif
+#define var auto
+#define repeat(a) for (luint __gb_repeat_i_i__ = 0; __gb_repeat_i_i__ < a; __gb_repeat_i_i__++);
+#define undefined '\0'
 
 namespace GameBreaker {
 
@@ -108,6 +114,40 @@ namespace GameBreaker {
 		void (*event_step)(object *self);
 		void (*event_step_end)(object *self);
 		void (*event_draw)(object *self);
+	};
+
+	struct GB_HANDLE {
+		Music mus;
+		Sound snd;
+	};
+
+	enum SOUND_TYPE {
+		nonstream=0,
+		stream,
+	};
+
+	class sound {
+		private:
+		real _pan, _volume;
+		int _type;
+		int _loops;
+
+		public:
+		void add(str fname, int type);
+
+		void volume(real vol);
+		real volume();
+		
+		void pan(real pan);
+		real pan();
+		
+		void play();
+		void loop(int loops);
+		void stop();
+		void pause();
+		void resume();
+		void remove();
+		GB_HANDLE handle;
 	};
 
 	class tile {
@@ -200,7 +240,7 @@ namespace GameBreaker {
 		std::vector<object *> 	objects;
 		std::vector<room *> 	rooms;
 		std::vector<font *> 	fonts;
-		std::vector<window *> 	windows;
+		std::vector<sound *>	sounds;
 		int __current_room;
 		int __current_display;
 		int __current_view;
@@ -237,6 +277,7 @@ namespace GameBreaker {
 
 	class show {public:
 		static void message(str title, str msg);
+		static void error(str msg, int abort);
 	};
 
 	enum mb {
@@ -345,6 +386,102 @@ namespace GameBreaker {
 		static real		tg				(real x);
 		static real		ctg				(real x);
 	};
+
+	class gstr {public:
+	    static str	replace 		(str text, str in, str out);
+	    static str	replace_all		(str text, str in, str out);
+	    static str	cat				(std::vector<void *> args);
+	    static int	count			(str text, str n);
+	    static str	shorten			(str fname);
+	    static str	lowercase		(str text);
+	    static str	uppercase		(str text); 
+	    static str	char_at			(str text, int pos);
+	    static int	ord_at			(str text, int pos);
+	    static int	length			(str text); // why not use strlen(str.c_str()) or str.length()? because no.
+	    static int	pos				(str substr, str text);
+	    static str	copy			(str text, int pos, int len);
+	    static str	del				(str text, int pos, int len);
+	    static str	insert			(str text, str substr, int pos);
+	    static str	duplicate		(str text, int count);
+		static str	format			(int num, int tot, int dec);
+	    static str	pad 			(int num, int padding);
+	    static str	file_ext		(str fname);
+	};
+
+	class ini {public:
+	    static int      open		(str fname);
+	    static int      read_int	(int file, str section, str keyName, int defKey);
+	    static str   	read_str	(int file, str section, str keyName, str defKey);
+	    static void     write_int	(int file, str section, str key, int num);
+	    static void     write_str	(int file, str section, str key, str num);
+	    static void     close		(int file);
+	};
+
+
+	struct fname_list {
+	    str title;
+	    str filter;
+	};
+	struct __gblist {
+	    int type;
+	    str data;
+	};
+	
+	typedef std::vector<__gblist> ds_list;
+
+	struct _gm_ftype {
+		std::ofstream out;
+		std::ifstream in;
+		std::fstream a;
+	};
+	
+	struct _gm_file {
+	    _gm_ftype file;
+	    int mode;
+	    int line;
+	    str name;
+	};
+	
+	class fs {
+	public:
+	    enum fmode {
+	        read	= 0,
+	        write	= 1,
+	        append	= 2
+	    };
+	    enum fa {
+	        hidden		= 0x0010, // show hidden files
+	        dir			= 0x0020, // show directories
+	        sysfile		= 0x0040, // show system files
+	        fullpath	= 0x0080, // (for fs::find::list() - adds a path to found filename)
+	    };
+	    enum type {
+	        tfile	= DT_REG,
+	        tdir	= DT_DIR
+	    };
+	    static int exists(str fname);
+	    class find {
+	    public:
+	        static ds_list list 		(str directory, str filter, luint mask);
+	        static ds_list list_ext	(str directory, std::vector<str> filter, luint mask);
+	    };
+	    class text {public:
+	        static int 		open	(str fname, int mode);
+	        static void 	write 	(int file, str str);
+	        static str 		read 	(int file);
+	        static void 	ln		(int file);
+	        static int 		eof		(int file);
+	        static void 	close 	(int file);
+	    };
+	    static str 	path_parent		(str path);
+	    static str 	path			(str fname);
+	    static str	fname			(str fname);
+	    static str 	get_fname		(std::vector<fname_list> filter, str title);
+	    static str 	get_folder		(str title);
+	    static void create_folder	(str path);
+	};
 }
+
+#define stringify std::to_string
 
 namespace gb = GameBreaker;

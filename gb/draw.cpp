@@ -88,4 +88,8 @@ namespace GameBreaker {
 		//SDL_ShowSimpleMessageBox(0,title.c_str(), msg.c_str(),nullptr);
 		return;
 	}
+
+	void show::error(str msg, int abort) {
+		return;
+	}
 }

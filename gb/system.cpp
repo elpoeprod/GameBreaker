@@ -20,6 +20,7 @@ namespace GameBreaker {
 		_gbsys_ = this;
 		debug_message("set _gbsys_->as this SUCCESS");	
 		InitWindow(640,480,"");
+		InitAudioDevice();
 		window::set_title("GameBreaker Game");
 		debug_message("Created new window");
 		this->__current_room = GB_TYPE_NONE;
@@ -39,6 +40,11 @@ namespace GameBreaker {
 
 		SetTargetFPS(this->current_room()->room_speed);
 		while(!WindowShouldClose()) {
+
+			for(luint i=0;i<this->sounds.size();i++) {
+				UpdateMusicStream(this->sounds[i]->handle.mus);
+			}
+		
 			BeginDrawing();
 			BeginBlendMode(BLEND_ALPHA);
 			
@@ -46,15 +52,6 @@ namespace GameBreaker {
 			draw::color(this->current_room()->background_color);
 			draw::rect({0,0,display::size().w,display::size().h},0);
 			draw::color(mycol);
-			
-			// for(luint irooms = 0; irooms < this->rooms.size(); irooms++) {
-			// 	for (luint i = 0; i < GB_MAX_CAMERAS; i++ ) {
-			// 		if(this->rooms[irooms]->background_image[i]!=GB_TYPE_NONE) {
-			// 			sprite *spr=(sprite *)this->__get(this->rooms[irooms]->background_image[i],"sprite");
-			// 			spr->draw({(float)this->rooms[irooms]->view[i].x,(float)this->rooms[irooms]->view[i].y}, spr->image_index);
-			// 		}
-			// 	}
-			// }
 
 			static auto myobjs=*this->current_room()->__get_room_objects();
 
@@ -73,6 +70,8 @@ namespace GameBreaker {
 			EndBlendMode();
 			EndDrawing();
 		}
+
+		this->shutdown();
 		
 		debug_message("ending the game. goodbye!");
 		return 0;
@@ -83,12 +82,9 @@ namespace GameBreaker {
 	}
 
 	void *system::__get(int id, str type) {
-		// switch(type) {
-			if(type=="sprite") return this->sprites[id];
-			if(type=="object") return this->objects[id];
-			if(type=="room") return this->fonts[id];
-			if(type=="window") return this->windows[id];
-		// }
+		if(type=="sprite") return this->sprites[id];
+		if(type=="object") return this->objects[id];
+		if(type=="room") return this->fonts[id];
 		return nullptr;
 	}
 
@@ -115,8 +111,13 @@ namespace GameBreaker {
 			fonts[i]->remove();
 			fonts.erase(fonts.begin()+i);
 		}
+		for(luint i = 0; i < this->sounds.size(); i++) {
+			sounds[i]->remove();
+			sounds.erase(sounds.begin()+i);
+		}
+		CloseAudioDevice();
 		CloseWindow();
-		debug_message("Erased everything. (not your system just things that are used in game)");
+		debug_message("Freed resources");
 	}
 
 	room *system::current_room() {

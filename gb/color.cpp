@@ -97,20 +97,30 @@ namespace GameBreaker {
 	}
 	
 	GBColor color::mix(GBColor col1, GBColor col2) {
-			return {Uint8((col1.r*col2.r)/255),Uint8((col1.g*col2.g)/255),Uint8((col1.b*col2.b)/255),Uint8((col1.a*col2.a)/255)};
+			return {
+				(unsigned char)((col1.r*col2.r)/255),
+				(unsigned char)((col1.g*col2.g)/255),
+				(unsigned char)((col1.b*col2.b)/255),
+				(unsigned char)((col1.a*col2.a)/255)
+			};
 		}
 	
 	GBColor color::merge(GBColor col1, GBColor col2, real amount) {
-		return {Uint8(math::lerp(col1.r,col2.r,amount)),Uint8(math::lerp(col1.g,col2.g,amount)),Uint8(math::lerp(col1.b,col2.b,amount)),Uint8(math::lerp(col1.a,col2.a,amount))};
+		return {
+			(unsigned char)(math::lerp(col1.r,col2.r,amount)),
+			(unsigned char)(math::lerp(col1.g,col2.g,amount)),
+			(unsigned char)(math::lerp(col1.b,col2.b,amount)),
+			(unsigned char)(math::lerp(col1.a,col2.a,amount))
+		};
 	}
 
 	GBColor color::merge_corrected(GBColor col1, GBColor col2, real amount) {
 		return {
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.r), math::sqr(col2.r), amount))),
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.g), math::sqr(col2.g), amount))),
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.b), math::sqr(col2.b), amount))),
-			Uint8(math::sqrt(math::lerp(math::sqr(col1.a), math::sqr(col2.a), amount)))
-			};
+			(unsigned char)(math::sqrt(math::lerp(math::sqr(col1.r), math::sqr(col2.r), amount))),
+			(unsigned char)(math::sqrt(math::lerp(math::sqr(col1.g), math::sqr(col2.g), amount))),
+			(unsigned char)(math::sqrt(math::lerp(math::sqr(col1.b), math::sqr(col2.b), amount))),
+			(unsigned char)(math::sqrt(math::lerp(math::sqr(col1.a), math::sqr(col2.a), amount)))
+		};
 	}
 
 	real color::get_luminance(GBColor col) {
@@ -119,7 +129,11 @@ namespace GameBreaker {
 
 	GBColor color::make_rgb(long unsigned int col) {
 		auto mcol = col;
-		return (GBColor){Uint8((mcol>>16)&0xff), Uint8((mcol>>8)&0xff), Uint8(mcol&0xff)};
+		return (GBColor){
+			(unsigned char)((mcol>>16)&0xff), 
+			(unsigned char)((mcol>>8)&0xff), 
+			(unsigned char)(mcol&0xff)
+		};
 	}
 }
 
