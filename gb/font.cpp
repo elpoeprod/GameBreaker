@@ -13,4 +13,8 @@ namespace GameBreaker {
 	void font::remove() {
 		delete this;
 	}
+
+	Font font::_getor() {
+		return this->fnt;
+	}
 }
