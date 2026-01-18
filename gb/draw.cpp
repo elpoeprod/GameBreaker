@@ -1,11 +1,13 @@
 #include "../include/gamebreaker.hpp"
 #include <rlgl.h>
+//#include <SDL2/SDL.h>
 
 namespace GameBreaker {
 
 	GBFPoint GBXyfy(float x, float y) {
-		return {x-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].x,
-				y-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].y};	
+		 return {x-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].x,
+		 		y-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].y};	
+		//return {x,y};
 	}
 
 	void draw::rect(GBRect rect, int outline) {
@@ -60,9 +62,30 @@ namespace GameBreaker {
 		return current_color;
 	}
 
+	void draw::set_font(font *fnt) {
+		_gbsys_->current_font(fnt->id);
+		return;
+	}
+
+	void draw::text(GBPoint pos, str text) {
+		if(_gbsys_->current_font()<0)
+			DrawText(text.c_str(),pos.x,pos.y,12,current_color);
+		else
+			DrawText(text.c_str(),pos.x,pos.y,((font *)_gbsys_->__get(_gbsys_->current_font(),"font"))->size,current_color);
+		return;
+	}
+
+	void draw::text(GBPoint pos, str text, GBScale scale, real rot, GBColor col) {
+		auto myfont=((font *)_gbsys_->__get(_gbsys_->current_font(),"font"));
+		if(_gbsys_->current_font()<0)
+			DrawTextEx(GetFontDefault(),text.c_str(),pos,12*scale.xscale,12*scale.yscale,col);
+		else
+			DrawTextEx(myfont->_getor(),text.c_str(),pos,myfont->size*scale.xscale,myfont->size*scale.yscale,col);
+		return;
+	}		
 
 	void show::message(str title, str msg) {
-		//SDL_ShowSimpleMessageBox(0,title.c_str(), msg.c_str(),_gbsys_->current_win()->get_winid());
+		//SDL_ShowSimpleMessageBox(0,title.c_str(), msg.c_str(),nullptr);
 		return;
 	}
 }
