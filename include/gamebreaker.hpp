@@ -44,8 +44,13 @@ typedef GBRect GBVPort;
 #ifndef GB_TYPE_NONE
 #define GB_TYPE_NONE -1
 #define GB_INSTANCE_ANY 0xfffffe
+#define var auto
+#define repeat(a) for (luint __gb_repeat_i_i__ = 0; __gb_repeat_i_i__ < a; __gb_repeat_i_i__++);
 #endif
-#define repeat(a) for (luint __gb_repeat_i_i__ = 0; __gb_repeat_i_i__ < a; __gb_repeat_i_i__++;);
+
+#ifndef Uint8
+#define Uint8 (unsigned char)
+#endif
 
 namespace GameBreaker {
 
@@ -134,6 +139,8 @@ namespace GameBreaker {
 		void add			(GBSize size);
 		void add_instance	(object *obj, GBPoint pos);
 		object *get_instance(int id);
+		std::vector<object *> *__get_room_objects();
+		void __set_room_objects(std::vector<object *>);
 		luint instance_count(int id);
 		void add_tile		(tile t, GBPoint tile_pos);
 		void remove			();
@@ -155,12 +162,14 @@ namespace GameBreaker {
 	class font {
 		private:
 		Font fnt;
-		int size, bold, italic;
-		int id;
+		int bold, italic;
+		public:
+		int id, size;
 
 		public:
 		void add(str fname, int size, int bold, int italic);
 		void remove();
+		Font _getor();
 	};
 
 	GBFPoint GBXyfy(float x, float y);
@@ -178,7 +187,7 @@ namespace GameBreaker {
 
 		static void text(GBPoint pos, str text);	//draw
 		static void text(GBPoint pos, str text, GBScale scale, real rot, GBColor col);	//draw_ext
-		void set_font(Font font);
+		void set_font(font *fnt);
 
 		private:
 		static GBColor current_color;
@@ -195,6 +204,7 @@ namespace GameBreaker {
 		int __current_room;
 		int __current_display;
 		int __current_view;
+		int __current_font;
 		
 		public:
 		int __add	(room *rm);
@@ -215,6 +225,9 @@ namespace GameBreaker {
 		
 		int current_view	();
 		void current_view	(int view);
+
+		void current_font(int id);
+		int current_font(void);
 		
 		void init		();
 		void shutdown	();
@@ -259,9 +272,12 @@ namespace GameBreaker {
 		static real get_hue(GBColor col);
 		static real get_saturation(GBColor col);
 		static real get_value(GBColor col);
+		static GBColor mix(GBColor col1, GBColor col2);
 		static GBColor merge(GBColor col1, GBColor col2, real amount);
 		static GBColor merge_corrected(GBColor col1, GBColor col2, real amount);
 		static GBColor make_hsv(real hue, real saturation, real value);
+		static GBColor make_rgb(long unsigned int col);
+		static real get_luminance(GBColor col);
 
 	};
 
@@ -269,6 +285,66 @@ namespace GameBreaker {
 	extern str keyboard_string;
 	extern system *_gbsys_;
 	extern int debug_mode;
+
+	typedef std::vector<void *> GB_ChooseBag;
+	typedef std::vector<real> GB_NumberBag;
+
+	extern int __gb_rand_seed;
+	
+	class math {
+	public:
+		static real 	abs				(real num);
+	    static real 	lendir_x		(real len, int dir);
+	    static real 	lendir_y		(real len, int dir);
+	    static real 	degtorad		(real deg);
+	    static real 	clamp			(real val, real minval, real maxval);
+	    static real 	point_in_rect	(real px, real py, real rx1, real ry1, real rx2, real ry2);
+	    static real		sin				(real x);
+	    static real		cos				(real x);
+	    static real 	dsin			(real x);
+	    static real 	dcos			(real x);
+	    static int 		round			(real x);
+	    static int 		floor			(real x);
+	    static int 		ceil			(real x);
+		static real		round_to		(real x, real to);
+		static real		floor_to		(real x, real to);
+		static real		ceil_to			(real x, real to);
+	    static real 	pdistance		(real x1, real y1, real x2, real y2);
+	    static real 	pdirection		(real x1, real y1, real x2, real y2);
+	    static real 	power			(real x, int n);
+	    static real 	sqr				(real x);
+	    static real 	sqrt			(real x);
+	    static real 	min 			(GB_NumberBag bag);
+	    static real 	max 			(GB_NumberBag bag);
+	    static int 		sign			(real num);
+	    static real 	frac			(real x);
+	
+	    static real 	median			(GB_NumberBag bag);
+	    static real 	mean			(GB_NumberBag bag);
+	    static real 	lerp			(real a, real b, real num);
+	
+	    static real 	random 			(real n);
+	    static int 		irandom 		(int n);
+	    static real 	random_range	(real min, real max);
+	    static int 		irandom_range	(int min, int max);
+	    static void 	random_set_seed	(int seed);
+	    static int 		irandom_fresh	(int oldval, int minval, int maxval);
+	    static int 		random_get_seed	();
+	    static void 	randomize		();
+		static void *	choose			(GB_ChooseBag bag);
+		static real 	gauss 			(real range);
+		static real		gauss_range		(real min, real max);
+		static real 	modwrap			(real val, real minval, real maxval);
+		static real		exp				(real x);
+		static real		log				(real x);
+		static real		ln				(real x);
+		static real		log10			(real x);
+		static real		log2			(real x);
+		static real		tan				(real x);
+		static real		cotan			(real x);
+		static real		tg				(real x);
+		static real		ctg				(real x);
+	};
 }
 
 namespace gb = GameBreaker;
