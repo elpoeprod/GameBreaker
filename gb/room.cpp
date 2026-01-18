@@ -23,6 +23,15 @@ namespace GameBreaker {
 	object *room::get_instance(int id) {
 		return this->robjects[id];
 	}
+
+	std::vector<object *> *room::__get_room_objects() {
+		return &this->robjects;
+	}
+
+	void room::__set_room_objects(std::vector<object *>obj) {
+		this->robjects=obj;
+		return;
+	}
 	
 	luint room::instance_count(int id) {
 		if(id==GB_INSTANCE_ANY) return this->robjects.size();
