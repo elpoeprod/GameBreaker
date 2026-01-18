@@ -1,5 +1,6 @@
 #include "../include/gamebreaker.hpp"
 #include <algorithm>
+#include <random>
 
 namespace GameBreaker {
 	str gb_version = "0.1a INDEV";
@@ -10,6 +11,7 @@ namespace GameBreaker {
 	str window::title="";
 
 	int mouse::x=0, mouse::y=0;
+	int __gb_rand_seed;
 
 	GBColor draw::current_color={0xa0, 0xa0, 0xa0, 0xff};
 	
@@ -22,6 +24,9 @@ namespace GameBreaker {
 		debug_message("Created new window");
 		this->__current_room = GB_TYPE_NONE;
 		debug_message("intialized first variables");
+		__gb_rand_seed=time(NULL);
+		std::srand(__gb_rand_seed);
+		this->__current_font=-1;
 	}
 	
 	int system::run() {
@@ -42,25 +47,28 @@ namespace GameBreaker {
 			draw::rect({0,0,display::size().w,display::size().h},0);
 			draw::color(mycol);
 			
-			for(luint irooms = 0; irooms < this->rooms.size(); irooms++) {
-				for (luint i = 0; i < GB_MAX_CAMERAS; i++ ) {
-					if(this->rooms[irooms]->background_image[i]!=GB_TYPE_NONE) {
-						sprite *spr=(sprite *)this->__get(this->rooms[irooms]->background_image[i],"sprite");
-						spr->draw({(float)this->rooms[irooms]->view[i].x,(float)this->rooms[irooms]->view[i].y}, spr->image_index);
-					}
-				}
-			}
+			// for(luint irooms = 0; irooms < this->rooms.size(); irooms++) {
+			// 	for (luint i = 0; i < GB_MAX_CAMERAS; i++ ) {
+			// 		if(this->rooms[irooms]->background_image[i]!=GB_TYPE_NONE) {
+			// 			sprite *spr=(sprite *)this->__get(this->rooms[irooms]->background_image[i],"sprite");
+			// 			spr->draw({(float)this->rooms[irooms]->view[i].x,(float)this->rooms[irooms]->view[i].y}, spr->image_index);
+			// 		}
+			// 	}
+			// }
 
-			for (luint iobj = 0; iobj < objects.size(); iobj++) { //checks every instance
-			//	for(luint iobjinroom = 0; iobjinroom < this->current_room()->instance_count(GB_INSTANCE_ANY); iobjinroom++) { //checks every instance in room
-			//		if(this->objects[iobj]==this->current_room()->get_instance(iobjinroom)) { //if object is in room then do the code, else continue
-						if(this->objects[iobj]->event_step) 
-							this->objects[iobj]->event_step(this->objects[iobj]);
-							
-						if(this->objects[iobj]->event_draw)
-							this->objects[iobj]->event_draw(this->objects[iobj]);
-			//		}
-			//	}	
+			static auto myobjs=*this->current_room()->__get_room_objects();
+
+			std::sort(myobjs.begin(),myobjs.end(),[](object *a,object *b){return a->depth<b->depth;});
+
+			this->current_room()->__set_room_objects(myobjs);
+			
+			//checks every instance in room
+			for(luint iobjinroom = 0; iobjinroom < this->current_room()->instance_count(GB_INSTANCE_ANY); iobjinroom++) {
+				if(this->current_room()->get_instance(iobjinroom)->event_step) 
+					this->current_room()->get_instance(iobjinroom)->event_step(this->current_room()->get_instance(iobjinroom));
+			
+				if(this->current_room()->get_instance(iobjinroom)->event_draw) 
+					this->current_room()->get_instance(iobjinroom)->event_draw(this->current_room()->get_instance(iobjinroom));
 			}
 			EndBlendMode();
 			EndDrawing();
@@ -137,6 +145,15 @@ namespace GameBreaker {
 	void system::current_display(int display_id) {
 		this->__current_display=display_id;
 		return;
+	}
+
+	void system::current_font(int id) {
+		this->__current_font=id;
+		return;
+	}
+
+	int system::current_font(void) {
+		return this->__current_font;
 	}
 
 	void debug_message(str msg) {
