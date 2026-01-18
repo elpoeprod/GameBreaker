@@ -13,6 +13,11 @@ namespace GameBreaker {
     **/
     int mouse::pressed(mb mouse_button)
     {
+    	if(mouse_button==mb::any) {
+    		return 	IsMouseButtonPressed(mb::left) or
+    				IsMouseButtonPressed(mb::right) or
+    				IsMouseButtonPressed(mb::middle);
+    	}
         return IsMouseButtonPressed(mouse_button);
     }
     /**
@@ -20,7 +25,12 @@ namespace GameBreaker {
     * \sa mouse_button - mb::*
     **/
     int mouse::released(mb mouse_button)
-    {
+    {	
+    	if(mouse_button==mb::any) {
+    		return 	IsMouseButtonReleased(mb::left) or
+    				IsMouseButtonReleased(mb::right) or
+    				IsMouseButtonReleased(mb::middle);
+    	}
 		return IsMouseButtonReleased(mouse_button);
     }
     /**
@@ -30,6 +40,11 @@ namespace GameBreaker {
     //int __debug__hold=0;
     int mouse::holding(mb mouse_button)
     {
+    	if(mouse_button==mb::any) {
+    		return 	IsMouseButtonDown(mb::left) or
+    				IsMouseButtonDown(mb::right) or
+    				IsMouseButtonDown(mb::middle);
+    	}
 		return IsMouseButtonDown(mouse_button);
     }
 
@@ -39,6 +54,11 @@ namespace GameBreaker {
     **/
     int mouse::nothing(mb mouse_button)
     {
+    	if(mouse_button==mb::any) {
+    		return 	IsMouseButtonUp(mb::left) or
+    				IsMouseButtonUp(mb::right) or
+    				IsMouseButtonUp(mb::middle);
+    	}
         return IsMouseButtonUp(mouse_button);
     }
 
