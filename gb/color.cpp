@@ -1,7 +1,7 @@
 #include "../include/gamebreaker.hpp"
 
 struct hsv {
-	real h, s, v;
+	int h, s, v;
 };
 
 hsv rgb2hsv(GBColor in);
@@ -87,11 +87,39 @@ namespace GameBreaker {
 	real color::get_hue(GBColor col) {
 		return rgb2hsv(col).h;
 	}
+	
 	real color::get_saturation(GBColor col) {
 			return rgb2hsv(col).s;
 	}
+	
 	real color::get_value(GBColor col) {
 			return rgb2hsv(col).v;
+	}
+	
+	GBColor color::mix(GBColor col1, GBColor col2) {
+			return {Uint8((col1.r*col2.r)/255),Uint8((col1.g*col2.g)/255),Uint8((col1.b*col2.b)/255),Uint8((col1.a*col2.a)/255)};
+		}
+	
+	GBColor color::merge(GBColor col1, GBColor col2, real amount) {
+		return {Uint8(math::lerp(col1.r,col2.r,amount)),Uint8(math::lerp(col1.g,col2.g,amount)),Uint8(math::lerp(col1.b,col2.b,amount)),Uint8(math::lerp(col1.a,col2.a,amount))};
+	}
+
+	GBColor color::merge_corrected(GBColor col1, GBColor col2, real amount) {
+		return {
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.r), math::sqr(col2.r), amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.g), math::sqr(col2.g), amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.b), math::sqr(col2.b), amount))),
+			Uint8(math::sqrt(math::lerp(math::sqr(col1.a), math::sqr(col2.a), amount)))
+			};
+	}
+
+	real color::get_luminance(GBColor col) {
+		return (col.r*0.2126+col.g*0.7152+col.b*0.0722);
+	}
+
+	GBColor color::make_rgb(long unsigned int col) {
+		auto mcol = col;
+		return (GBColor){Uint8((mcol>>16)&0xff), Uint8((mcol>>8)&0xff), Uint8(mcol&0xff)};
 	}
 }
 
