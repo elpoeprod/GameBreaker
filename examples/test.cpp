@@ -8,12 +8,12 @@ gb::sprite *spr0;
 
 void myobj_event_draw(gb::object *self) {
 	gb::draw::color({255,0,255,255});
-	gb::draw::rect({30,30,60,60},gb::draw::color(),gb::draw::color(),gb::draw::color(),gb::draw::color());
+	gb::draw::rect({30,30,60,60},0);
 	if(gb::mouse::pressed(gb::mb::any)) {
 		self->depth=-self->depth;
 		myobj2.depth=-myobj2.depth;
 	}
-	gb::show::message("DEBUG","I'm on depth "+std::to_string(self->depth)+"!");
+	//gb::debug_message("I'm on depth "+std::to_string(self->depth)+"! 1");
 	return;
 }
 
@@ -22,7 +22,7 @@ void myobj2_event_draw(gb::object *self) {
 	gb::draw::color({255,255,255,255});
 	gb::draw::rect({0,0,60,60},0);
 	spr0->draw({50,50},1);
-	gb::show::message("DEBUG","I'm on depth "+std::to_string(self->depth)+"!");
+	//gb::debug_message("I'm on depth "+std::to_string(self->depth)+"! 2");
 	return;
 }
 
@@ -32,7 +32,7 @@ int main(void) {
 	room0=	new gb::room;
 	spr0=	new gb::sprite;
 	
-	gb::debug_mode=1;
+	//gb::debug_mode=1;
 	
 	sys.init();
 	
@@ -45,8 +45,8 @@ int main(void) {
 	room0->add_instance(&myobj,{0,0});
 	room0->add_instance(&myobj2,{10,10});
 	
-	myobj.depth=-10;
-	myobj2.depth=10;
+	myobj.depth=10;
+	myobj2.depth=-10;
 	
 	myobj.event_draw=myobj_event_draw;
 	myobj2.event_draw=myobj2_event_draw;
