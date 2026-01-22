@@ -10,6 +10,8 @@ namespace GameBreaker {
 		this->_pan=0;
 		this->_volume=1;
 		this->_type=type;
+		this->id=_gbsys_->__add(this);
+		return;
 	}
 
 	void sound::volume(real vol) {
@@ -80,6 +82,6 @@ namespace GameBreaker {
 			StopSound(this->handle.snd);
 			UnloadSound(this->handle.snd);
 		}
-		delete this;
+		//delete this;
 	}
 }
