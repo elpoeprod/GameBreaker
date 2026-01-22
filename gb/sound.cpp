@@ -2,15 +2,11 @@
 
 namespace GameBreaker {
 	void sound::add(str fname, int type) {
-		switch(type) {
-			case SOUND_TYPE::stream: 
-				this->handle.mus=LoadMusicStream(fname.c_str()); 
-				break;
-			case SOUND_TYPE::nonstream: 
-				this->handle.snd=LoadSound(fname.c_str()); 
-				break;
-			default: break;
-		}
+		this->handle={0};
+		if(type==SOUND_TYPE::stream)
+			this->handle.mus=LoadMusicStream(fname.c_str()); 
+		else
+			this->handle.snd=LoadSound(fname.c_str()); 
 		this->_pan=0;
 		this->_volume=1;
 		this->_type=type;
