@@ -19,7 +19,7 @@ all:
 	$(CXX_CMD) gb/system.cpp 	-o build/main.o $(CXX_ARGS_TAGLIB)
 	$(CXX_CMD) gb/gstr.cpp 	-o build/gstr.o
 	$(CXX_CMD) gb/math.cpp 	-o build/math.o
-	$(CXX_CMD) gb/mouse.cpp 	-o build/mouse.o
+	$(CXX_CMD) gb/input.cpp 	-o build/input.o
 	$(CXX_CMD) gb/ini.cpp 	-o build/ini.o
 	$(CXX_CMD) gb/color.cpp  -o build/color.o
 	$(CXX_CMD) gb/sprite.cpp -o build/spr.o
