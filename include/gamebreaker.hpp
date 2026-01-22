@@ -1,12 +1,11 @@
 /*
 
 	GAMEBREAKER
-	rewritten edition
-	class functions instead of *::*::*::*::*::*::*::*........
+	class functions instead of *::*::*::*::*::*::*::*........ (somewhere)
 
 */
 //#pragma once //do not remove or die
-#include <raylib.h>
+
 #include <dirent.h>
 #include <math.h>
 #include <stdlib.h>
@@ -16,10 +15,6 @@
 #include <map>
 #include <iostream>
 #include <fstream>
-
-#ifndef GB_MAX_WINDOWS
-#define GB_MAX_WINDOWS 8
-#endif
 
 #ifndef GB_MAX_CAMERAS
 #define GB_MAX_CAMERAS 7
@@ -32,6 +27,9 @@
 #define SUPPORT_FILEFORMAT_FLAC
 #define SUPPORT_FILEFORMAT_XM
 #define SUPPORT_FILEFORMAT_MOD
+#define SUPPORT_CAMERA_SYSTEM
+#define SUPPORT_FILEFORMAT_TTF
+#include <raylib.h>
 
 
 // typedef double real;
