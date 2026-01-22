@@ -1,9 +1,20 @@
 #include "../include/gamebreaker.hpp"
 #include <algorithm>
 #include <random>
+#include <time.h>
+
+str __gb_weekdays[7]= {
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+};
 
 namespace GameBreaker {
-	str gb_version = "0.1a INDEV";
+	str gb_version = "0.1.0 beta";
 	system *_gbsys_;
 	int debug_mode=0;
 	str keyboard_string="";
@@ -14,6 +25,8 @@ namespace GameBreaker {
 	int __gb_rand_seed;
 
 	GBColor draw::current_color={0xa0, 0xa0, 0xa0, 0xff};
+
+	struct date::_cur date::current;
 	
 	void system::init() {
 		debug_message("GameBreaker starts\nversion "+gb_version+"\ninitializing system");
@@ -28,6 +41,22 @@ namespace GameBreaker {
 		__gb_rand_seed=time(NULL);
 		std::srand(__gb_rand_seed);
 		this->__current_font=-1;
+		this->fps_current=0;
+		this->fps_delta=0;
+
+		auto myt=time(NULL);
+		
+		struct tm ts=*localtime(&myt);
+	    date::current.second=ts.tm_sec;
+	    date::current.minute=ts.tm_sec;
+	    date::current.hour=ts.tm_hour;
+	    date::current.day=ts.tm_mday;
+	    date::current.weekday=__gb_weekdays[date::current.day%7];
+	    date::current.month=ts.tm_mon;
+	    date::current.year=ts.tm_year;
+	    date::current.century=math::floor(ts.tm_year/365.25);
+	    date::current.planet=3; //0 - sun
+	    date::current.millenium=math::floor((date::current.year/1000.f)+1);
 	}
 	
 	int system::run() {
@@ -38,11 +67,36 @@ namespace GameBreaker {
 		}
 		debug_message("checks were passed. continuing");
 
-		SetTargetFPS(this->current_room()->room_speed);
+		int myroomid=-1;
 		while(!WindowShouldClose()) {
+			this->fps_current=GetFPS();
+			this->fps_delta=GetFrameTime();
+		
+			// Time update
+			auto myt=time(NULL);
+			struct tm ts=*localtime(&myt);
+			date::current.second=ts.tm_sec;
+		    date::current.minute=ts.tm_sec;
+		    date::current.hour=ts.tm_hour;
+		    date::current.day=ts.tm_mday;
+		    date::current.weekday=__gb_weekdays[date::current.day%7];
+		    date::current.month=ts.tm_mon;
+		    date::current.year=ts.tm_year;
 
+		    // Mouse pos checking
+			mouse::x=GetMouseX();
+			mouse::y=GetMouseY();
+
+			// Checking if room was changed to change FPS
+			if(myroomid!=this->current_room()->id) {
+				myroomid=this->current_room()->id;
+				SetTargetFPS(this->current_room()->room_speed);
+			}
+
+			// Update music stream if 
 			for(luint i=0;i<this->sounds.size();i++) {
 				UpdateMusicStream(this->sounds[i]->handle.mus);
+				puts("Updated stream!");
 			}
 		
 			BeginDrawing();
@@ -60,12 +114,13 @@ namespace GameBreaker {
 			this->current_room()->__set_room_objects(myobjs);
 			
 			//checks every instance in room
-			for(luint iobjinroom = 0; iobjinroom < this->current_room()->instance_count(GB_INSTANCE_ANY); iobjinroom++) {
-				if(this->current_room()->get_instance(iobjinroom)->event_step) 
-					this->current_room()->get_instance(iobjinroom)->event_step(this->current_room()->get_instance(iobjinroom));
+			for(luint iobjinroom = 0; iobjinroom < instance::count(GB_INSTANCE_ANY); iobjinroom++) {
+				auto myinst=instance::get(iobjinroom);
+				if(myinst->event_step) 
+					myinst->event_step(myinst);
 			
-				if(this->current_room()->get_instance(iobjinroom)->event_draw) 
-					this->current_room()->get_instance(iobjinroom)->event_draw(this->current_room()->get_instance(iobjinroom));
+				if(myinst->event_draw) 
+					myinst->event_draw(myinst);
 			}
 			EndBlendMode();
 			EndDrawing();
@@ -75,6 +130,12 @@ namespace GameBreaker {
 		
 		debug_message("ending the game. goodbye!");
 		return 0;
+	}
+
+	void system::sleep(real sec) {
+		// TODO
+		WaitTime(sec);
+		return;
 	}
 
 	void system::__sys_sort_objects() {	 
