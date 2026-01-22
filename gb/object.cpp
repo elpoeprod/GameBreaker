@@ -30,7 +30,6 @@ namespace GameBreaker {
 	void object::default_adder() {
 		this->id=_gbsys_->__add(this);
 		debug_message("Initialized "+std::to_string(this->id)+". continuing...");
-		_gbsys_->__sys_sort_objects();
 	}
 	
 	void object::add(sprite *spr, sprite *mask) {
@@ -83,10 +82,10 @@ namespace GameBreaker {
 		return 1;
 	}
 
-	int place::meeting(GBPoint pos, object *obj) {
+	int place::meeting(GBPoint pos, int obj_id) {
 		auto myobj=*_gbsys_->current_room()->__get_room_objects(); //can be slow as fuck
 		for(luint ob=0;ob<myobj.size();ob++) {
-			if(myobj[ob]->x==pos.x&&myobj[ob]->y==pos.y&&myobj[ob]->id==obj->id) {
+			if(myobj[ob]->x==pos.x&&myobj[ob]->y==pos.y&&myobj[ob]->id==obj_id) {
 				if(myobj[ob]->solid) return 0;
 			} 
 		}
