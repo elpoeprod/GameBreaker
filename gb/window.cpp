@@ -1,31 +1,31 @@
 #include "../include/gamebreaker.hpp"
 
 namespace GameBreaker {
-	GBSize window::get_size() {
+	GBSize window::size() {
 		return {GetRenderWidth(),GetRenderHeight()};
 	}
 
-	void window::set_size(GBSize size) {
+	void window::size(GBSize size) {
 		SetWindowSize(size.w,size.h);
 		return;
 	}
 
-	GBPoint window::get_pos() {
+	GBPoint window::pos() {
 		return GetWindowPosition();
 	}
 
-	void window::set_pos(GBPoint pos) {
+	void window::pos(GBPoint pos) {
 		SetWindowPosition(pos.x,pos.y);
 		return;
 	}
 
-	void window::set_title(str title) {
+	void window::title(str title) {
 		SetWindowTitle(title.c_str());
-		window::title=title;
+		window::__title=title;
 		return;
 	}
 
-	str window::get_title() {
-		return window::title;
+	str window::title() {
+		return window::__title;
 	}
 }
