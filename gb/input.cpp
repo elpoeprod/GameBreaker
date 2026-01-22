@@ -137,7 +137,7 @@ namespace GameBreaker {
 		vk_rcontrol=KEY_RIGHT_CONTROL;
 
 	int keyboard::pressed(int key) {
-			return IsKeyPressed(key);
+		return IsKeyPressed(key);
 	}
 
 	int keyboard::holding(int key) {
