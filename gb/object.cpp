@@ -15,6 +15,7 @@ namespace GameBreaker {
 		this->hspeed=0;
 		this->vspeed=0;
 		this->depth=0;
+		this->solid=0;
 
 		//Events
 		this->event_create=nullptr;
@@ -60,5 +61,35 @@ namespace GameBreaker {
 		this->mask_index=GB_TYPE_NONE;
 		debug_message("Removed object with id "+std::to_string(this->id));
 		delete this;
+	}
+
+	// Collisions (place::*, move::* etc)
+	int place::free(GBPoint pos) {
+		auto myobj=*_gbsys_->current_room()->__get_room_objects(); //can be slow as fuck
+		for(luint ob=0;ob<myobj.size();ob++) {
+			if(myobj[ob]->x==pos.x&&myobj[ob]->y==pos.y) {
+				if(myobj[ob]->solid) return 0;
+			} 
+		}
+		return 1;
+	}
+
+	int place::empty(GBPoint pos) {
+		auto myobj=*_gbsys_->current_room()->__get_room_objects(); //can be slow as fuck
+		for(luint ob=0;ob<myobj.size();ob++) {
+			if(myobj[ob]->x==pos.x&&myobj[ob]->y==pos.y)
+				return 0;
+		}
+		return 1;
+	}
+
+	int place::meeting(GBPoint pos, object *obj) {
+		auto myobj=*_gbsys_->current_room()->__get_room_objects(); //can be slow as fuck
+		for(luint ob=0;ob<myobj.size();ob++) {
+			if(myobj[ob]->x==pos.x&&myobj[ob]->y==pos.y&&myobj[ob]->id==obj->id) {
+				if(myobj[ob]->solid) return 0;
+			} 
+		}
+		return 1;
 	}
 };
