@@ -1,3 +1,2 @@
--camera manipulation completed!!!!!!!!!11
--get cameras working completed!!!!!!!!!!11
--3d (in future) uncompleted
+- 3d (in future) uncompleted
+- 
