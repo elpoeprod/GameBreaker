@@ -50,9 +50,9 @@ namespace GameBreaker {
     * \sa px, py - point coordinates
     * \sa rx*, ry* - x/y of rectangle
     **/
-    real math::point_in_rect(real px, real py, real rx1, real ry1, real rx2, real ry2)
+    real math::point_in_rect(GBPoint pos, GBRect rect)
     {
-        return px > rx1 && py > ry1 && px <= rx2 && py <= ry2;
+        return pos.x > rect.x && pos.y > rect.y && pos.x <= rect.x+rect.w && pos.y <= rect.y+rect.h;
     }
 
     int math::round(real x) {
@@ -89,7 +89,7 @@ namespace GameBreaker {
     }
 
     int math::sign(real num) {
-    	return (int(num)!=0) ? num/math::abs(num) : 0;
+    	return num>1 ? 1 : num<-1 ? -1 : num;
     } 
 
     real math::random(real num) {
