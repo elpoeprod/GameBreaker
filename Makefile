@@ -23,6 +23,8 @@ all:
 	$(CXX_CMD) gb/ini.cpp 	-o build/ini.o
 	$(CXX_CMD) gb/color.cpp  -o build/color.o
 	$(CXX_CMD) gb/sprite.cpp -o build/spr.o
+	$(CXX_CMD) gb/d3d.cpp	-o build/d3d.o
+	$(CXX_CMD) gb/buffer.cpp	-o build/buffer.o
 	$(CXX_CMD) gb/3rdparty/nfd/nfd_gtk.cpp -o build/nfd.o $(CXX_ARGS_GTK)
 	$(CXX_COMPILER) -g -ggdb -fpic -rdynamic -Lstatic -Wall -Werror -shared -o $(LIB_NAME) -O3 build/*.o $(CXX_ARGS_LIBS) $(CXX_ARGS_GTK) -lasound $(CXX_ARGS_TAGLIB)
 
