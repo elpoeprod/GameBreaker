@@ -73,11 +73,15 @@ namespace GameBreaker {
     	return std::cos(degtorad(x));
     }
 
-    real math::pdirection(real x1,real y1,real x2,real y2) {
-        return math::modwrap(atan2(-(y2-y1),x2-x1)*180/M_PI,0,360);
+    real math::pdirection(GBPoint v1, GBPoint v2) {
+        return math::modwrap(atan2(-(v2.y-v1.y),v2.x-v1.x)*180/M_PI,0,360);
     }
-    real math::pdistance(real x1, real y1, real x2, real y2) {
-        return hypot(x2-x1,y2-y1);
+    real math::pdistance(GBPoint v1, GBPoint v2) {
+        return hypot(v2.x-v1.x,v2.y-v1.y);
+    }
+    
+    real math::pdistance_3d(GBPoint3D v1, GBPoint3D v2) {
+        return sqrt(sqr(v2.x-v1.x)+sqr(v2.y-v1.y)+sqr(v2.z-v1.z));
     }
 
     real math::abs(real num) {
@@ -122,10 +126,10 @@ namespace GameBreaker {
 
     real math::power(real x, int n) {
     	real myxnum=x;
-    	for(int i=0;i<n;i++) {
+    	for(int i=0;i<abs(n);i++) {
     		myxnum*=x;
     	}
-    	return myxnum;
+    	return n>0?myxnum:1/myxnum;
     }
     real math::sqr(real x) {
     	return x*x;
@@ -209,6 +213,12 @@ namespace GameBreaker {
 		return std::log(x);
 	}
 
+	real math::logn(real n, real x) {
+		if(x!=0)
+			return math::log(n)/math::log(x);
+		return 0;
+	}
+
 	real math::log10(real x) {
 		return std::log10(x);
 	}
@@ -228,7 +238,7 @@ namespace GameBreaker {
 	real math::cos(real x) {
 		return std::cos(x);
 	}
-
+	
 	real math::tan(real x) {
 		return math::sin(x)/math::cos(x);
 	}
@@ -244,4 +254,31 @@ namespace GameBreaker {
 	real math::ctg(real x) {
 		return math::cotan(x);
 	}
+
+	real math::arcsin(real x) {
+		return std::asin(x);
+	}
+
+	real math::arccos(real x) {
+		return std::acos(x);
+	}
+
+	real math::arctan(real x) {
+		return std::atan(x);
+	}
+
+	real math::arctan2(real y, real x) {
+		return math::arctan(y/x);
+	}
+
+
+	real math::dot_product(GBPoint v1, GBPoint v2) {
+		return v1.x*v2.x+v1.y*v2.y;
+	}
+
+	real math::dot_product_3d(GBPoint3D v1, GBPoint3D v2) {
+		return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;
+	}
+
+	
 }
