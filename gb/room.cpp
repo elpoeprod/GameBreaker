@@ -25,6 +25,10 @@ namespace GameBreaker {
 		return;
 	}
 
+	void room::__add(object *obj) {
+		this->robjects.push_back(obj);
+	}
+
 	object *instance::get(int id) {
 		if(id==GB_INSTANCE_ANY) {debug_message("instance::get() doesn't accept GB_INSTANCE_ANY."); return nullptr;}
 		auto myobj=*_gbsys_->current_room()->__get_room_objects();
