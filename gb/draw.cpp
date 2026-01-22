@@ -5,9 +5,9 @@
 namespace GameBreaker {
 
 	GBFPoint GBXyfy(float x, float y) {
-		 return {x-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].x,
-		 		y-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].y};	
-		//return {x,y};
+		//  return {x-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].position.x,
+		//  		y-(float)_gbsys_->current_room()->view[_gbsys_->current_view()].position.y};	
+		return {x,y};
 	}
 
 	void draw::rect(GBRect rect, int outline) {
