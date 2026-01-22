@@ -11,6 +11,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string>
+#include <complex>
 #include <vector>
 #include <map>
 #include <iostream>
@@ -57,6 +58,8 @@ typedef GBRect GBVPort;
 #define var auto
 #define repeat(a) for (luint __gb_repeat_i_i__ = 0; __gb_repeat_i_i__ < a; __gb_repeat_i_i__++);
 #define undefined '\0'
+#define stringify std::to_string
+#define realify std::real
 
 namespace GameBreaker {
 
@@ -96,6 +99,7 @@ namespace GameBreaker {
 		int id;
 		int sprite_index, mask_index;
 		int depth;
+		int solid;
 
 		private:
 		void default_init();
@@ -177,25 +181,43 @@ namespace GameBreaker {
 		GBVPort		port			[GB_MAX_CAMERAS];
 		
 		void add			(GBSize size);
-		void add_instance	(object *obj, GBPoint pos);
-		object *get_instance(int id);
+		
 		std::vector<object *> *__get_room_objects();
 		void __set_room_objects(std::vector<object *>);
-		luint instance_count(int id);
+		void __add(object *obj);
+		
 		void add_tile		(tile t, GBPoint tile_pos);
 		void remove			();
 		void current		();
 	};
+
+	class instance {public:
+		static luint 	create(object *obj, GBPoint pos);
+		static object*	get(int id);
+		static luint 	count(int id);
+		static void		destroy(int id);
+		static void		pos_destroy(GBPoint pos);
+		static int		exists(int id);
+		
+		static int		nearest(GBPoint pos, int obj_id);
+		static int		furthest(GBPoint pos, int obj_id);
+	};
+
+	class place {public:
+		static int empty(GBPoint pos);
+		static int meeting(GBPoint pos, object *obj);
+		static int free(GBPoint pos);
+	};
 	
 	class window {
-		static str title;
+		static str __title;
 		public:
-		static GBSize get_size();
-		static GBPoint get_pos();
-		static void set_size(GBSize size);
-		static void set_pos(GBPoint pos);
-		static void set_title(str title);
-		static str get_title(void);
+		static void 	pos(GBPoint pos);
+		static GBPoint 	pos();
+		static void 	size(GBSize size);
+		static GBSize 	size();
+		static void 	title(str title);
+		static str 		title(void);
 
 	};
 
@@ -268,11 +290,36 @@ namespace GameBreaker {
 
 		void current_font(int id);
 		int current_font(void);
+
+		int fps_current;
+		int fps_delta;
+
+		void sleep(real ms);
 		
 		void init		();
 		void shutdown	();
 		void end		();
 		int run			();
+	};
+
+	class date {public:
+		struct _cur {
+			int planet,
+				millenium,
+				century,
+				year,
+				month,
+				week,
+				day,
+				hour,
+				minute,
+				second;
+			str weekday;
+		} _cur;
+
+		public:
+		static struct _cur current;
+			
 	};
 
 	class show {public:
@@ -298,6 +345,105 @@ namespace GameBreaker {
 		static mb which();
 		static int wheel_up();
 		static int wheel_down();
+	};
+
+	//sorry for that mess c++ thinks that vk::left can conflict with mb::left
+	int vk_nokey=0,
+		vk_anykey=512,
+		vk_enter=KEY_ENTER,
+		vk_ret=vk_enter,
+		vk_shift=KEY_LEFT_SHIFT,
+		vk_control=KEY_LEFT_CONTROL,
+		vk_alt=KEY_LEFT_ALT,
+		vk_escape=KEY_ESCAPE,
+		vk_space=KEY_SPACE,
+		vk_backspace=KEY_BACKSPACE,
+		vk_tab=KEY_TAB,
+		vk_pause=KEY_PAUSE,
+		vk_printscreen=KEY_PRINT_SCREEN,
+		vk_left=KEY_LEFT,
+		vk_right=KEY_RIGHT,
+		vk_up=KEY_UP,
+		vk_down=KEY_DOWN,
+		vk_home=KEY_HOME,
+		vk_end=KEY_END,
+		vk_pageup=KEY_PAGE_UP,
+		vk_pagedown=KEY_PAGE_DOWN,
+		vk_del=KEY_DELETE,
+		vk_ins=KEY_INSERT,
+		vk_f1=KEY_F1,
+		vk_f2=KEY_F2,
+		vk_f3=KEY_F3,
+		vk_f4=KEY_F4,
+		vk_f5=KEY_F5,
+		vk_f6=KEY_F6,
+		vk_f7=KEY_F7,
+		vk_f8=KEY_F8,
+		vk_f9=KEY_F9,
+		vk_f10=KEY_F10,
+		vk_f11=KEY_F11,
+		vk_f12=KEY_F12,
+		vk_numpad0=KEY_KP_0,
+		vk_numpad1=KEY_KP_1,
+		vk_numpad2=KEY_KP_2,
+		vk_numpad3=KEY_KP_3,
+		vk_numpad4=KEY_KP_4,
+		vk_numpad5=KEY_KP_5,
+		vk_numpad6=KEY_KP_6,
+		vk_numpad7=KEY_KP_7,
+		vk_numpad8=KEY_KP_8,
+		vk_numpad9=KEY_KP_9,
+		vk_divide=KEY_KP_DIVIDE,
+		vk_multiply=KEY_KP_MULTIPLY,
+		vk_subtract=KEY_KP_SUBTRACT,
+		vk_add=KEY_KP_ADD,
+		vk_decimal=KEY_KP_DECIMAL,
+		vk_lshift=KEY_LEFT_SHIFT,
+		vk_rshift=KEY_RIGHT_SHIFT,
+		vk_lalt=KEY_LEFT_ALT,
+		vk_ralt=KEY_RIGHT_ALT,
+		vk_lcontrol=KEY_LEFT_CONTROL,
+		vk_rcontrol=KEY_RIGHT_CONTROL;
+
+	class keyboard {public:
+		static int pressed(int key);
+		static int holding(int key);
+		static int released(int key);
+	};
+
+	int joy_cross=GAMEPAD_BUTTON_RIGHT_FACE_DOWN,
+		joy_triangle=GAMEPAD_BUTTON_RIGHT_FACE_UP,
+		joy_circle=GAMEPAD_BUTTON_RIGHT_FACE_RIGHT,
+		joy_square=GAMEPAD_BUTTON_RIGHT_FACE_LEFT,
+		joy_select=GAMEPAD_BUTTON_MIDDLE_LEFT,
+		joy_dpad_up=GAMEPAD_BUTTON_LEFT_FACE_UP,
+		joy_dpad_down=GAMEPAD_BUTTON_LEFT_FACE_DOWN,
+		joy_dpad_left=GAMEPAD_BUTTON_LEFT_FACE_LEFT,
+		joy_dpad_right=GAMEPAD_BUTTON_RIGHT_FACE_RIGHT,
+		joy_rbumper=GAMEPAD_BUTTON_RIGHT_TRIGGER_2,
+		joy_lbumper=GAMEPAD_BUTTON_LEFT_TRIGGER_2,
+		joy_ltrigger=GAMEPAD_BUTTON_LEFT_TRIGGER_1,
+		joy_rtrigger=GAMEPAD_BUTTON_RIGHT_TRIGGER_1,
+		joy_middle=GAMEPAD_BUTTON_MIDDLE,
+		joy_start=GAMEPAD_BUTTON_MIDDLE_RIGHT,
+		joy_lthumb=GAMEPAD_BUTTON_LEFT_THUMB,
+		joy_rthumb=GAMEPAD_BUTTON_RIGHT_THUMB,
+		joy_unknown=0,
+		joy_axis_lx=GAMEPAD_AXIS_LEFT_X,
+		joy_axis_ly=GAMEPAD_AXIS_LEFT_Y,
+		joy_axis_rx=GAMEPAD_AXIS_RIGHT_X,
+		joy_axis_ry=GAMEPAD_AXIS_RIGHT_Y,
+		joy_axis_ltrigger=GAMEPAD_AXIS_LEFT_TRIGGER,
+		joy_axis_rtrigger=GAMEPAD_AXIS_RIGHT_TRIGGER;
+
+	class joystick {public:
+		static int 	exists(int id);
+		static int 	pressed(int id, int button);
+		static int 	holding(int id, int button);
+		static int 	released(int id, int button);
+		static str 	name(int id);
+		static int 	axes(int id);
+		static real axis_pos(int id, int axis);
 	};
 
 	class display {public:
@@ -340,18 +486,29 @@ namespace GameBreaker {
 	    static real 	degtorad		(real deg);
 	    static real 	clamp			(real val, real minval, real maxval);
 	    static real 	point_in_rect	(real px, real py, real rx1, real ry1, real rx2, real ry2);
+
 	    static real		sin				(real x);
 	    static real		cos				(real x);
 	    static real 	dsin			(real x);
 	    static real 	dcos			(real x);
+	    static real		tan				(real x);
+   		static real		cotan			(real x);
+   		static real		tg				(real x);
+   		static real		ctg				(real x);
+   		static real		arcsin			(real x);
+   		static real		arccos			(real x);
+   		static real		arctan			(real x);
+   		static real		arctan2			(real x, real y);
+	    
 	    static int 		round			(real x);
 	    static int 		floor			(real x);
 	    static int 		ceil			(real x);
 		static real		round_to		(real x, real to);
 		static real		floor_to		(real x, real to);
 		static real		ceil_to			(real x, real to);
-	    static real 	pdistance		(real x1, real y1, real x2, real y2);
-	    static real 	pdirection		(real x1, real y1, real x2, real y2);
+	    static real 	pdistance		(GBPoint v1, GBPoint v2);
+	    static real 	pdistance_3d	(GBPoint3D v1, GBPoint3D v2);
+	    static real 	pdirection		(GBPoint v1, GBPoint v2);
 	    static real 	power			(real x, int n);
 	    static real 	sqr				(real x);
 	    static real 	sqrt			(real x);
@@ -378,13 +535,13 @@ namespace GameBreaker {
 		static real 	modwrap			(real val, real minval, real maxval);
 		static real		exp				(real x);
 		static real		log				(real x);
+		static real		logn			(real n, real x);
 		static real		ln				(real x);
 		static real		log10			(real x);
 		static real		log2			(real x);
-		static real		tan				(real x);
-		static real		cotan			(real x);
-		static real		tg				(real x);
-		static real		ctg				(real x);
+
+		static real		dot_product		(GBPoint v1, GBPoint v2);
+		static real		dot_product_3d	(GBPoint3D v1, GBPoint3D v2);
 	};
 
 	class gstr {public:
@@ -406,6 +563,15 @@ namespace GameBreaker {
 		static str	format			(int num, int tot, int dec);
 	    static str	pad 			(int num, int padding);
 	    static str	file_ext		(str fname);
+		static str	chr				(int val);
+		static int	ord				(str chr);
+	    
+	};
+
+	class clipboard {public:
+		static int	has_text		();
+		static void	set_text		(str text);
+		static str	get_text		();
 	};
 
 	class ini {public:
@@ -481,7 +647,5 @@ namespace GameBreaker {
 	    static void create_folder	(str path);
 	};
 }
-
-#define stringify std::to_string
 
 namespace gb = GameBreaker;
