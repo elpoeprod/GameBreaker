@@ -1,5 +1,5 @@
 /***************
- * GAMEBREAKER::MOUSE
+ * GAMEBREAKER::INPUT
  * 2025 elpoep
 */
 
@@ -73,4 +73,54 @@ namespace GameBreaker {
     int mouse::wheel_down() {
     	return GetMouseWheelMove()<0;
     }
+
+
+
+
+	// Keyboard
+
+	int keyboard::pressed(int key) {
+			return IsKeyPressed(key);
+	}
+
+	int keyboard::holding(int key) {
+		return IsKeyDown(key);
+	}
+
+	int keyboard::released(int key) {
+		return IsKeyReleased(key);
+	}
+
+
+
+
+	// Joystick
+
+	int joystick::exists(int id) {
+		return IsGamepadAvailable(id);
+	}
+
+	str joystick::name(int id) {
+		return GetGamepadName(id);
+	}	
+
+	int joystick::pressed(int id, int button) {
+		return IsGamepadButtonPressed(id, button);
+	}
+
+	int joystick::holding(int id, int button) {
+		return IsGamepadButtonDown(id, button);
+	}
+
+	int joystick::released(int id, int button) {
+		return IsGamepadButtonReleased(id, button);
+	}
+
+	int joystick::axes(int id) {
+		return GetGamepadAxisCount(id);
+	}
+
+	real joystick::axis_pos(int id, int axis) {
+		return GetGamepadAxisMovement(id, axis);
+	}
 }
