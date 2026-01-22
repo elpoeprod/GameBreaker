@@ -11,14 +11,23 @@ namespace GameBreaker {
 		this->background_color={0xaa, 0xaa, 0xaa, 0xff};
 		for (int i = 0; i < GB_MAX_CAMERAS; i++) {
 			this->background_image[i]=GB_TYPE_NONE;
-			this->view[i]={0,0,640,480,0};
 			this->port[i]={0,0,640,480};
+
+			this->view[i].position = (Vector3){ 0.0f, 0.0f, 10.0f };  // Camera position
+			this->view[i].target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
+			this->view[i].up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+			this->view[i].fovy = 45.0f;                                // Camera field-of-view Y
+			this->view[i].projection = CAMERA_PERSPECTIVE;             // Camera mode type
 		}
 		this->id = _gbsys_->__add(this);
 		this->room_speed=60;
 	}
 	void room::remove() {
-		delete this;
+		this->size={0};
+		puts("0");
+		this->robjects.erase(this->robjects.begin(),this->robjects.end());
+		puts("1");
+		//delete this;
 	}
 	void room::current() {
 		_gbsys_->current_room(this);
