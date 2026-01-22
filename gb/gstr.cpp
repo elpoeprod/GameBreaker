@@ -138,5 +138,29 @@ namespace GameBreaker {
    		auto ppos=fname.find_last_of(".");
    		return gstr::copy(fname,ppos,fname.length()-ppos);
    	}
+
+   	str gstr::chr(int val) {
+   		return ""+(char)val;
+   	}
+
+   	int gstr::ord(str chr) {
+   		return (int)chr.at(0);
+   	}
+
+
+
+
+   	int clipboard::has_text() {
+   		return gstr::length(GetClipboardText())>0;
+   	}
+   	
+   	void clipboard::set_text(str text) {
+		SetClipboardText(text.c_str());
+   		return;
+   	}
+
+   	str clipboard::get_text() {
+   		return GetClipboardText();
+   	}
     
 }
