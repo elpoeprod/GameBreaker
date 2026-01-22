@@ -22,45 +22,46 @@ sign(x)                             - Y, math::sign()
 frac(x)                             - Y, math::frac()
 sqrt(x)                             - Y, math::sqrt()
 sqr(x)                              - Y, math::sqr()
-exp(x)                              - N
-ln(x)                               - N
-log2(x)                             - N
-log10(x)                            - N
+exp(x)                              - Y, math::exp()
+ln(x)                               - Y, math::ln()
+log2(x)                             - Y, math::log2()
+log10(x)                            - Y, math::log10()
 sin(x)                              - Y, math::sin()
 cos(x)                              - Y, math::cos()
-tan(x)                              - N
-arcsin(x)                           - N
-arccos(x)                           - N
-arctan(x)                           - N
-arctan2(y,x)                        - N
+tan(x)                              - Y, math::tan() and cotan() or tg() or ctg()
+arcsin(x)                           - Y, math::arcsin()
+arccos(x)                           - Y, math::arccos()
+arctan(x)                           - Y, math::arctan()
+arctan2(y,x)                        - Y, math::arctan2()
 degtorad(x)                         - Y, math::degtorad()
 radtodeg(x)                         - Y, same as degtorad
 power(x,n)                          - Y, math::power()
-logn(n,x)                           - N
+logn(n,x)                           - Y, math::log() or logn
 min(x1,x2,x3,...)                   - Y, math::min(), BUT uses struct instead of x1,x2,x3,...
 max(x1,x2,x3,...)                   - Y, math::max(), BUT uses struct instead of x1,x2,x3,...
-mean(x1,x2,x3,...)                  - N
+mean(x1,x2,x3,...)                  - Y, math::mean(), BUT uses struct instead of x1,x2,x3,...
 median(x1,x2,x3,...)                - Y, math::median()
 clamp(val,min,max)                  - Y, math::clamp()
 lerp(val1,val2,amount)              - Y, math::lerp()
-dot_product(x1,y1,x2,y2)            - N
-dot_product_3d(x1,y1,z1,x2,y2,z2)   - N
-point_distance_3d(x1,y1,z1,x2,y2,z2)- N
+dot_product(x1,y1,x2,y2)            - Y, math::dot_product()
+dot_product_3d(x1,y1,z1,x2,y2,z2)   - Y, math::dot_product_3d()
+point_distance_3d(x1,y1,z1,x2,y2,z2)- Y, math::pdistance_3d()
 point_distance(x1,y1,x2,y2)         - Y, math::pdistance()
 point_direction(x1,y1,x2,y2)        - Y, math::pdirection()
 lengthdir_x(len,dir)                - Y, math::lendir_x()
 lengthdir_y(len,dir)                - Y, math::lendir_y()
+100%
 
 // section 2.3
 
-real(str)                           - N
+real(str)                           - Y, realify()
 string(val)                         - Y, stringify()
-string_format(val,total,dec)        - N
-chr(val)                            - Y, keyboard::chr()
+string_format(val,total,dec)        - Y, gstr::format()
+chr(val)                            - Y, gstr::chr()
 ansi_char(val)                      - N, maybe chr() works
-ord(char)                           - Y, keyboard::ord()
-string_byte_length(str)             - N
-string_byte_at(str,index)           - N
+ord(char)                           - Y, gstr::ord()
+string_byte_length(str)             - = below
+string_byte_at(str,index)           - = below
 string_length(str)                  - Y, gstr::length()
 string_pos(substr,str)              - Y, gstr::pos()
 string_copy(str,index,count)        - Y, gstr::copy()
@@ -76,9 +77,10 @@ string_lettersdigits(str)           - N
 string_replace(str,substr,newstr)   - Y, gstr::replace()
 string_replace_all(str,substr,newstr) Y, gstr::replace_all()
 string_count(substr,str)            - Y, gstr::count()
-clipboard_has_text()                - N
-clipboard_set_text(str)             - N
-clipboard_get_text()                - N
+clipboard_has_text()                - Y, clipboard::has_text()
+clipboard_set_text(str)             - Y, clipboard::set_text()
+clipboard_get_text()                - Y, clipboard::get_text()
+not fully implemented
 
 // section 2.4
 
@@ -134,22 +136,22 @@ EVERYTHING IS N!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // section 3.1
 
-x                               - Y, GBObject->x
-y                               - Y, GBObject->y
-xprevious                       - Y, GBObject->xprevious
-yprevious                       - Y, GBObject->yprevious
+x                               - Y, object->x
+y                               - Y, object->y
+xprevious                       - Y, object->xprevious
+yprevious                       - Y, object->yprevious
 xstart                          - N
 ystart                          - N
-hspeed                          - Y, GBObject->hspeed
-vspeed                          - Y, GBObject->vspeed
-direction                       - Y, GBObject->direction
-speed                           - Y, GBObject->spd
-friction                        - Y, GBObject->friction
-gravity                         - Y, GBObject->gravity
-gravity_direction               - Y, GBObject->gravity_direction
-motion_set(dir,speed)           - M
-motion_add(dir,speed)           - M
-place_free(x,y)                 - N
+hspeed                          - Y, object->hspeed
+vspeed                          - Y, object->vspeed
+direction                       - Y, object->direction
+speed                           - Y, object->spd
+friction                        - Y, object->friction
+gravity                         - Y, object->gravity
+gravity_direction               - Y, object->gravity_direction
+motion_set(dir,speed)           - N, why?
+motion_add(dir,speed)           - N, why?
+place_free(x,y)                 - Y, place::free()
 place_empty(x,y)                - N
 place_meeting(x,y,obj)          - N
 place_snapped(hsnap,vsnap)      - N
@@ -163,12 +165,12 @@ move_outside_all(dir,maxdist)
 move_bounce_solid(advanced)
 move_bounce_all(advanced)
 move_wrap(hor,vert,margin)
-distance_to_point(x,y)
-distance_to_object(obj)
-position_empty(x,y)
-position_meeting(x,y,obj)
+distance_to_point(x,y)			- unused
+distance_to_object(obj)			- unused
+position_empty(x,y)				- unused, why th should someone use it when there is place::empty()?
+position_meeting(x,y,obj)		- unused, above
 
-EVERYTHING IS N!!!!!!!!!!!!!!!!!!!
+not everything is here
 
 // section 3.2
 
@@ -218,28 +220,28 @@ EVERYTHING IS N@!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // section 3.5
 
-object_index                    - Y, GBObject->inst_id or obj_id
-id                              - Y, GBObject->id
-solid                           - Y, GBObject->solid
+object_index                    - Y, object->inst_id or obj_id
+id                              - Y, object->id
+solid                           - Y, object->solid
 persistent                      - N
-mask_index                      - Y, GBObject->mask
+mask_index                      - Y, object->mask
 instance_count*                 
-instance_id*					- Y, GBObject->inst_id
+instance_id*					- N
 instance_find(obj,n)
-instance_exists(obj)
-instance_number(obj)
+instance_exists(obj)			- Y, instance::exists()
+instance_number(obj)			- Y, instance::count()
 instance_position(x,y,obj)
-instance_nearest(x,y,obj)
-instance_furthest(x,y,obj)
+instance_nearest(x,y,obj)		- Y, instance::nearest()
+instance_furthest(x,y,obj)		- Y, instance::furthest()
 instance_place(x,y,obj)
-instance_create(x,y,obj)		- Y, room::add_instance()
+instance_create(x,y,obj)		- Y, instance::create()
 instance_copy(performevent)
 instance_change(obj,performevents)
-instance_destroy()
+instance_destroy()				- Y, instance_destroy()
 position_destroy(x,y)
 position_change(x,y,obj,performevents)
 
-EVERYTHING IS N!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+not everything is completed
 
 // section 3.6
 
@@ -254,8 +256,9 @@ EVERYTHING IS N!!!!!!!!!!!!!!!!!!!!!!!
 
 // section 3.7
 
-room_speed          - Y, room_current->speed
-fps                 - Y, fps_current
+room_speed          - Y, sys->room_current()->room_speed
+fps                 - Y, sys->fps_current
+fps_delta			- Y, sys->fps_delta
 current_time        - Y, current_time
 current_year        - Y, date::current.year
 current_month       - Y, date::current.month
@@ -278,17 +281,17 @@ TIMELINES ARE NOT IMPLEMENTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 room                        - N, use room variables or current_room;
 room_first                  - N
 room_last                   - N
-room_width                  - Y, room::width;
-room_height*                - Y, room::height;
-room_caption                - N, use window::set_title();
+room_width                  - Y, room->width;
+room_height*                - Y, room->height;
+room_caption                - Y, window::set_title() or window::get_title()
 room_persistent             - N
-room_goto(numb)             - Y, room::current()
+room_goto(numb)             - Y, sys::current_room()
 room_goto_previous()        - N
 room_goto_next()            - N
 room_previous(numb)         - N
 room_next(numb)             - N
 room_restart()              - N
-game_end()                  - Y, screen::end()
+game_end()                  - Y, sys->shutdown()
 game_restart()              - N
 game_load(filename)         - N
 game_save(filename)         - N
@@ -424,8 +427,8 @@ gamemaker_registered*                               - N
 gamemaker_version*                                  - Y, gb_version
 error_occurred                                      - N
 error_last                                          - N
-show_debug_message(str)                             - Y, puts() or printf()
-debug_mode                                          - N
+show_debug_message(str)                             - Y, debug_message()
+debug_mode                                          - Y
 variable_global_exists(name)                        - N
 variable_global_get(name)
 variable_global_array_get(name,ind) 
@@ -440,7 +443,7 @@ variable_local_array2_get(name,ind1,ind2)
 variable_local_set(name,value)
 variable_local_array_set(name,ind,value)
 variable_local_array2_set(name,ind1,ind2,value)
-set_program_priority(priority)                      - Y, window::set_priority()
+set_program_priority(priority)                      -N
 set_application_title(title)                        - Y, window::set_title()
 
 
@@ -465,13 +468,13 @@ keyboard_get_numlock()          - N
 keyboard_set_numlock(on)        - N
 keyboard_key_press(key)         - N
 keyboard_key_release(key)       - N
-vk_nokey#                       - N
-vk_anykey#                      - N
+vk_nokey#                       - Y
+vk_anykey#                      - Y
 vk_enter#                       - Y, vk::enter
 vk_return#                      - Y, above
 vk_shift#                       - Y, vk::shift
-vk_control#                     - N
-vk_alt#                         - N
+vk_control#                     - Y
+vk_alt#                         - Y
 vk_escape#                      - Y
 vk_space#                       - Y
 vk_backspace#                   - Y
@@ -516,13 +519,13 @@ vk_subtract#
 vk_add#
 vk_decimal#
 vk_lshift#              -Y
-vk_lcontrol#            -N
-vk_lalt#                -N
+vk_lcontrol#            -Y
+vk_lalt#                -Y
 vk_rshift#              -Y
-vk_rcontrol#            -N
-vk_ralt#                -N
+vk_rcontrol#            -Y
+vk_ralt#                -Y
 keyboard_clear(key)     -N
-io_clear()              -Y, io::clear()
+io_clear()              -N
 io_handle()
 keyboard_wait()
 
@@ -548,19 +551,19 @@ cursor_sprite                               -N
 
 // section 4.3
 
-joystick_exists(id)							-Y, joy::working()
+joystick_exists(id)							-Y, joystick::working()
 joystick_direction(id)						-N
-joystick_name(id)							-N
-joystick_axes(id)							-N
+joystick_name(id)							-Y, joystick::name()
+joystick_axes(id)							-Y, joystick::axes()
 joystick_buttons(id)						-N
 joystick_has_pov(id)						-N
-joystick_check_button(id,button)			-Y, joy::released()/pressed()/holding()
-joystick_xpos(id)							-N
-joystick_ypos(id)							-N
-joystick_zpos(id)							-N
-joystick_rpos(id)							-N
-joystick_upos(id)							-N
-joystick_vpos(id)							-N
+joystick_check_button(id,button)			-Y, joystick::released()/pressed()/holding()
+joystick_xpos(id)							-Y, joystick::axis_pos()
+joystick_ypos(id)							-Y,
+joystick_zpos(id)							-Y,
+joystick_rpos(id)							-Y,
+joystick_upos(id)							-Y,
+joystick_vpos(id)							-Y,
 joystick_pov(id)							-N
 
 
