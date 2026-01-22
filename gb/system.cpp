@@ -19,7 +19,7 @@ namespace GameBreaker {
 	int debug_mode=0;
 	str keyboard_string="";
 
-	str window::title="";
+	str window::__title="";
 
 	int mouse::x=0, mouse::y=0;
 	int __gb_rand_seed;
@@ -34,7 +34,7 @@ namespace GameBreaker {
 		debug_message("set _gbsys_->as this SUCCESS");	
 		InitWindow(640,480,"");
 		InitAudioDevice();
-		window::set_title("GameBreaker Game");
+		window::title("GameBreaker Game");
 		debug_message("Created new window");
 		this->__current_room = GB_TYPE_NONE;
 		debug_message("intialized first variables");
