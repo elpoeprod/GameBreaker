@@ -93,10 +93,9 @@ namespace GameBreaker {
 				SetTargetFPS(this->current_room()->room_speed);
 			}
 
-			// Update music stream if 
+			// Update music stream if some music was added
 			for(luint i=0;i<this->sounds.size();i++) {
 				UpdateMusicStream(this->sounds[i]->handle.mus);
-				puts("Updated stream!");
 			}
 		
 			BeginDrawing();
@@ -138,14 +137,11 @@ namespace GameBreaker {
 		return;
 	}
 
-	void system::__sys_sort_objects() {	 
-		std::sort(objects.begin(), objects.end(), [this](object *a, object *b){return a->depth>b->depth;});
-	}
-
 	void *system::__get(int id, str type) {
 		if(type=="sprite") return this->sprites[id];
 		if(type=="object") return this->objects[id];
 		if(type=="room") return this->fonts[id];
+		if(type=="sound") return this->sounds[id];
 		return nullptr;
 	}
 
@@ -218,6 +214,14 @@ namespace GameBreaker {
 		return this->__current_font;
 	}
 
+	void system::current_shader(Shader *shader) {
+		this->__current_shader=shader;
+	}
+
+	Shader *system::current_shader() {
+		return this->__current_shader;
+	}
+
 	void debug_message(str msg) {
 		if(debug_mode) puts(("INFO: "+msg).c_str());
 		return;
@@ -241,6 +245,11 @@ namespace GameBreaker {
 	int system::__add(sprite *spr) {
 		this->sprites.push_back(spr);
 		return this->sprites.size()-1;
+	}
+
+	int system::__add(sound *snd) {
+		this->sounds.push_back(snd);
+		return this->sounds.size()-1;
 	}
 	
 };
